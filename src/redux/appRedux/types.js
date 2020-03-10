@@ -1,0 +1,1 @@
+export const CHANGE_APP_COLOR = 'CHANGE_APP_COLOR'

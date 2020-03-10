@@ -1,0 +1,5 @@
+export const LOGIN_SUCCEEDED = 'LOGIN_SUCCEEDED'
+
+export const SIGNUP_SUCCEEDED = 'SIGNUP_SUCCEEDED'
+
+export const LOGOUT = 'LOGOUT'
