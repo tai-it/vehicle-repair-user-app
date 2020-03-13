@@ -14,6 +14,7 @@ import HomeScreen from "./src/screens/HomeScreen"
 
 import StationList from './src/components/Home/StationList'
 import StationModal from './src/components/Home/StationModal'
+import UpdateProfile from './src/components/Profile/UpdateProfile'
 
 // Screens
 Navigation.registerComponent("SplashScreen", () => SplashScreen)
@@ -46,6 +47,7 @@ Navigation.registerComponent(
   () => ReduxProvider(SplashScreen),
   () => SplashScreen,
 );
+// 
 
 Navigation.registerComponent(
   'AuthScreen',
@@ -57,6 +59,14 @@ Navigation.registerComponent(
   'HomeScreen',
   () => ReduxProvider(HomeScreen),
   () => HomeScreen,
+);
+// 
+
+// Addtional Component
+Navigation.registerComponent(
+  'UpdateProfile',
+  () => ReduxProvider(UpdateProfile),
+  () => UpdateProfile,
 );
 // 
 

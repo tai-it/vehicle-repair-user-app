@@ -7,13 +7,23 @@ import { connect } from 'react-redux'
 class SplashScreen extends Component {
 
   componentDidMount() {
-    const { authenticated } = this.props.auth
+    const { authenticated, user } = this.props.auth
     if (authenticated) {
-      Navigation.setRoot({
-        root: {
-          sideMenu
-        }
-      });
+      if (user?.displayName) {
+        Navigation.setRoot({
+          root: {
+            sideMenu
+          }
+        });
+      } else {
+        Navigation.setRoot({
+          root: {
+            component: {
+              name: 'UpdateProfile'
+            }
+          }
+        });
+      }
     } else {
       Navigation.setRoot({
         root: {

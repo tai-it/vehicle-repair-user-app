@@ -10,13 +10,21 @@ import { changeVehicle, changeLocation } from '../redux/optionsRedux/actions'
 import Geocoder from 'react-native-geocoder'
 import Geolocation from 'react-native-geolocation-service'
 import Vehicle from '../constants/vehicle'
+import MapView, { Marker } from 'react-native-maps'
 
 class HomeScreen extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      showOptions: false
+      marginTop: 0,
+      showOptions: false,
+      mapRegion: {
+        latitude: props.options.userLocation.coords.lat,
+        longitude: props.options.userLocation.coords.lng,
+        latitudeDelta: 0.00922 * 1.5,
+        longitudeDelta: 0.00421 * 1.5
+      }
     }
   }
 
@@ -39,6 +47,14 @@ class HomeScreen extends Component {
             address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
             coords: res[0].position
           }
+          this.setState({
+            mapRegion: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              latitudeDelta: 0.00922 * 1.5,
+              longitudeDelta: 0.00421 * 1.5
+            }
+          })
           this.props.onChangeLocation(location)
         })
         .catch(err => console.log(err))
@@ -72,7 +88,6 @@ class HomeScreen extends Component {
   render() {
     const { authenticated, user } = this.props.auth
     if (!authenticated) {
-      Navigation.dismissAllModals()
       Navigation.setRoot({
         root: {
           component: {
@@ -82,7 +97,7 @@ class HomeScreen extends Component {
       })
       return <View />
     }
-    const { showOptions } = this.state
+    const { showOptions, mapRegion } = this.state
     const { options: { vehicle, userLocation } } = this.props
     return (
       <View style={[styles.container]}>
@@ -94,7 +109,7 @@ class HomeScreen extends Component {
           style={{
             width: '100%',
             flexDirection: 'row',
-            justifyContent: 'flex-start',
+            justifyContent: 'space-between',
             padding: 18,
             borderBottomWidth: 1,
             borderColor: '#E9E9E9',
@@ -106,12 +121,30 @@ class HomeScreen extends Component {
             color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
             onPress={this.handleOpenSideMenu}
           />
+          <Text style={{ fontSize: 20, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{user?.displayName.toUpperCase()}</Text>
+          <View />
         </View>
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Text style={{ fontSize: 25, textAlign: "center" }}>{`Hi ${user.firstName},`}</Text>
-          <Text style={{ fontSize: 25, textAlign: "center", maxWidth: '90%', marginBottom: 20 }}>{`Bạn đang ở ${userLocation.address}`}</Text>
+        <View style={{ flex: 1 }}>
+          <MapView
+            style={[StyleSheet.absoluteFillObject, { marginTop: this.state.marginTop }]}
+            onMapReady={() => this.setState({ marginTop: 0 })}
+            region={mapRegion}
+            showsUserLocation={true}
+            showsMyLocationButton={true}
+            followUserLocation={true}
+          />
         </View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: "row", marginBottom: 1, borderColor: APP_COLOR, borderWidth: 1 }}>
+          <View style={{ padding: 10, borderRightWidth: 1, borderColor: APP_COLOR }}>
+            <Icon
+              type="entypo"
+              name="location"
+              color={APP_COLOR}
+            />
+          </View>
+          <Text numberOfLines={1} style={{ alignSelf: "center", padding: 10, fontSize: 16 }}>{userLocation.address}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
           <TouchableOpacity
             style={[styles.vehicle, vehicle === Vehicle.bike ? styles.active : styles.noneActive]}
             onPress={() => this.props.onChangeVehicle(Vehicle.bike)}

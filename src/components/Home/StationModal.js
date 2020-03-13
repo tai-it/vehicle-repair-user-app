@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Linking } from 'react-native'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { Icon } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation';
@@ -22,7 +22,12 @@ export default class StationModal extends Component {
           <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{station.name}</Text>
           <View />
         </View>
-        <Text>Station Modal</Text>
+        <TouchableOpacity
+          style={{ padding: 10, borderColor: APP_COLOR, borderWidth: 1, borderRadius: 3, marginTop: 20, alignItems: "center", maxWidth: 100, alignSelf: "center" }}
+          onPress={() => Linking.openURL(`google.navigation:q=${station.coords.latitude},${station.coords.longitude}`)}
+        >
+          <Text>Open Maps</Text>
+        </TouchableOpacity>
       </View>
     )
   }

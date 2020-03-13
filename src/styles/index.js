@@ -80,12 +80,14 @@ export const styles = StyleSheet.create({
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#e9e9e9',
+    borderColor: APP_COLOR,
     borderRadius: 3,
-    paddingVertical: 7,
-    paddingHorizontal: 12,
+    padding: 10,
     marginTop: 5,
     marginBottom: 10,
+    fontSize: 20,
+    color: '#111',
+    textAlign: "center"
   },
   formControl: {
     flexDirection: 'row',
@@ -101,13 +103,10 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
   btn: {
-    marginRight: 10,
-    paddingVertical: 13,
-    paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: APP_COLOR,
-    borderRadius: 2,
-    padding: 8,
+    borderRadius: 3,
+    padding: 15,
     minWidth: 100,
   },
   btnBlue: {

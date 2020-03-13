@@ -1,4 +1,4 @@
-import { LOGIN_SUCCEEDED, SIGNUP_SUCCEEDED, LOGOUT } from "./types";
+import { LOGIN_SUCCEEDED, SIGNUP_SUCCEEDED, LOGOUT, UPDATE_PROFILE_SUCCEEDED } from "./types";
 
 export const loginSucceeded = user => {
   return {
@@ -15,6 +15,12 @@ export const signupSucceeded = user => {
 }
 
 export const logout = () => {
-  console.log('Logging out');
   return { type: LOGOUT }
+}
+
+export const updateProfileSucceeded = user => {
+  return {
+    type: UPDATE_PROFILE_SUCCEEDED,
+    payload: user
+  }
 }
