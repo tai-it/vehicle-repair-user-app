@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { View, ActivityIndicator, StatusBar, Text } from 'react-native'
+import { styles } from '../styles';
 
 export default class Loading extends Component {
   render() {
@@ -18,7 +19,7 @@ export default class Loading extends Component {
           size={size || 'large'}
           color={color || '#5DC5DD'}
         />
-        <Text>{message || ''}</Text>
+        <Text style={styles.label}>{message || ''}</Text>
         <StatusBar barStyle="default" />
       </View>
     );

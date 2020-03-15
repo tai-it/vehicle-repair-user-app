@@ -21,6 +21,7 @@ import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.database.RNFirebaseDatabasePackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 import com.airbnb.android.react.maps.MapsPackage;
 import com.devfd.RNGeocoder.RNGeocoderPackage;
@@ -28,6 +29,12 @@ import com.devfd.RNGeocoder.RNGeocoderPackage;
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 
 public class MainApplication extends NavigationApplication {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, /* native exopackage */ false);
+    }
 
     @Override
     protected ReactGateway createReactGateway() {
@@ -53,6 +60,7 @@ public class MainApplication extends NavigationApplication {
             new RNFirebaseDatabasePackage(),
             new RNFirebaseAuthPackage(),
             new RNFirebaseMessagingPackage(),
+            new RNFirebaseNotificationsPackage(),
             new MapsPackage(),
             new RNFusedLocationPackage(),
             new RNGeocoderPackage()

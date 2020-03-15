@@ -11,6 +11,8 @@ import Geocoder from 'react-native-geocoder'
 import Geolocation from 'react-native-geolocation-service'
 import Vehicle from '../constants/vehicle'
 import MapView, { Marker } from 'react-native-maps'
+import firebase from 'react-native-firebase'
+import type { RemoteMessage, Notification } from 'react-native-firebase'
 
 class HomeScreen extends Component {
 
@@ -61,7 +63,32 @@ class HomeScreen extends Component {
     }, error => {
       console.log(error)
     })
+    firebase.messaging().hasPermission()
+      .then(async enabled => {
+        if (enabled) {
+          this.messageListener = firebase.messaging().onMessage((message: RemoteMessage) => {
+            console.log("HomeScreen -> componentDidMount -> message", message)
+          });
+          this.removeNotificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
+            console.log("HomeScreen -> componentDidMount -> notification", notification)
+          });
+          this.removeNotificationListener = firebase.notifications().onNotification((notification: Notification) => {
+            console.log("HomeScreen -> componentDidMount -> notification", notification)
+          });
+        } else {
+          try {
+            await firebase.messaging().requestPermission()
+          } catch (error) {
+            console.log("HomeScreen -> componentDidMount -> error", error)
+          }
+        }
+      })
+  }
 
+  componentWillUnmount() {
+    if (this.messageListener) this.messageListener()
+    if (this.removeNotificationDisplayedListener) this.removeNotificationDisplayedListener();
+    if (this.removeNotificationListener) this.removeNotificationListener();
   }
 
   askLocationPermission = async () => {
@@ -121,7 +148,7 @@ class HomeScreen extends Component {
             color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
             onPress={this.handleOpenSideMenu}
           />
-          <Text style={{ fontSize: 20, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{user?.displayName.toUpperCase()}</Text>
+          <Text style={{ fontSize: 20, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{user?.fullName.toUpperCase()}</Text>
           <View />
         </View>
         <View style={{ flex: 1 }}>

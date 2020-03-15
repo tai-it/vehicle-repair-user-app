@@ -1,5 +1,6 @@
 import React from 'react'
 import { Navigation } from "react-native-navigation"
+import { AppRegistry } from 'react-native'
 
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -7,21 +8,19 @@ import { store, persistor } from './src/redux/store'
 import Loading from './src/components/Loading'
 
 import SideMenu from './src/components/Menu/SideMenu'
+import BackgroundMessaging from './src/configs/BackgroundMessaging'
 
 import SplashScreen from "./src/screens/SplashScreen"
-import AuthScreen from './src/screens/AuthScreen'
 import HomeScreen from "./src/screens/HomeScreen"
+import AuthScreen from './src/screens/AuthScreen'
 
 import StationList from './src/components/Home/StationList'
 import StationModal from './src/components/Home/StationModal'
 import UpdateProfile from './src/components/Profile/UpdateProfile'
 
-// Screens
-Navigation.registerComponent("SplashScreen", () => SplashScreen)
-Navigation.registerComponent("AuthScreen", () => AuthScreen)
-Navigation.registerComponent("HomeScreen", () => HomeScreen)
-
 console.disableYellowBox = true;
+
+AppRegistry.registerHeadlessTask('RNFirebaseBackgroundMessage', () => BackgroundMessaging)
 
 ReduxProvider = Component => {
   return props => (
@@ -54,6 +53,7 @@ Navigation.registerComponent(
   () => ReduxProvider(AuthScreen),
   () => AuthScreen,
 );
+
 
 Navigation.registerComponent(
   'HomeScreen',
@@ -88,7 +88,7 @@ Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({
     root: {
       component: {
-        name: 'SplashScreen'
+        name: 'AuthScreen'
       }
     }
   });
