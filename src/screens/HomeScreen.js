@@ -64,31 +64,25 @@ class HomeScreen extends Component {
       console.log(error)
     })
     firebase.messaging().hasPermission()
-      .then(async enabled => {
+      .then(enabled => {
         if (enabled) {
           this.messageListener = firebase.messaging().onMessage((message: RemoteMessage) => {
             console.log("HomeScreen -> componentDidMount -> message", message)
-          });
+          })
           this.removeNotificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
             console.log("HomeScreen -> componentDidMount -> notification", notification)
-          });
+          })
           this.removeNotificationListener = firebase.notifications().onNotification((notification: Notification) => {
             console.log("HomeScreen -> componentDidMount -> notification", notification)
-          });
-        } else {
-          try {
-            await firebase.messaging().requestPermission()
-          } catch (error) {
-            console.log("HomeScreen -> componentDidMount -> error", error)
-          }
+          })
         }
       })
   }
 
   componentWillUnmount() {
     if (this.messageListener) this.messageListener()
-    if (this.removeNotificationDisplayedListener) this.removeNotificationDisplayedListener();
-    if (this.removeNotificationListener) this.removeNotificationListener();
+    if (this.removeNotificationDisplayedListener) this.removeNotificationDisplayedListener()
+    if (this.removeNotificationListener) this.removeNotificationListener()
   }
 
   askLocationPermission = async () => {

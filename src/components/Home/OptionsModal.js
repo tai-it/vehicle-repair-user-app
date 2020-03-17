@@ -8,6 +8,7 @@ import { Navigation } from 'react-native-navigation'
 import { Alert } from 'react-native'
 import { connect } from 'react-redux'
 import { changeService, changeAmbulatory } from '../../redux/optionsRedux/actions'
+import ToggleSwitch from 'toggle-switch-react-native'
 
 class OptionsModal extends Component {
 
@@ -16,7 +17,6 @@ class OptionsModal extends Component {
     this.state = {
       services: [],
       selectedService: '',
-      useAmbulatory: false
     }
   }
 
@@ -58,12 +58,15 @@ class OptionsModal extends Component {
           if (service.vehicle === vehicle) {
             stationIds.push(service.stationId)
           }
-        });
+        })
       })
     const stationRef = firebase.database().ref('stations')
     let stations = []
     for (const id of stationIds) {
-      await stationRef.child(id).once('value').then(snapshot => stations.push(snapshot.val()))
+      await stationRef.child(id).once('value').then(snapshot => {
+        // Add more condition here
+        stations.push(snapshot.val())
+      })
     }
     if (useAmbulatory) {
       stations = stations.filter(station => station.hasAmbulatory)
@@ -137,30 +140,34 @@ class OptionsModal extends Component {
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={false}
               >
-                <Text style={{ fontSize: 15 }}>{user?.fullName || 'Anonymous'}</Text>
-                <Text style={{ fontSize: 15 }}>Phương tiện: {vehicle || 'Unknown'}</Text>
-                <Text style={{ fontSize: 15 }}>SĐT: {user?.phoneNumber || 'Unknown'}</Text>
-                <Text style={{ fontSize: 15 }}>Vị trí: {userLocation.address}</Text>
-                {services.length > 0 ? <>
-                  <Text style={{ fontSize: 15 }}>Chọn loại dịch vụ:</Text>
-                  <Picker
-                    selectedValue={serviceName}
-                    style={{
-                      width: '100%',
-                    }}
-                    onValueChange={(serviceName, itemIndex) =>
-                      this.props.onChangeService(serviceName)
-                    }>
-                    {services.map((service, index) => <Picker.Item key={index} label={service.name} value={service.name} />)}
-                  </Picker>
-                </> : <Text style={{ fontSize: 15 }}>Đang cập nhật dịch vụ</Text>}
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                  <Text>Sử dụng lưu động</Text>
-                  <Switch
-                    value={useAmbulatory}
-                    onValueChange={() => this.props.onChangeAmbulatory(!useAmbulatory)}
-                  />
+                <View style={{ paddingHorizontal: 10 }}>
+                  <Text style={{ fontSize: 15 }}>{user?.fullName || 'Anonymous'}</Text>
+                  <Text style={{ fontSize: 15 }}>Phương tiện: {vehicle || 'Unknown'}</Text>
+                  <Text style={{ fontSize: 15 }}>SĐT: {user?.phoneNumber || 'Unknown'}</Text>
+                  <Text style={{ fontSize: 15 }}>Vị trí: {userLocation.address}</Text>
+                  {services.length > 0 ? <>
+                    <Text style={{ fontSize: 15 }}>Chọn loại dịch vụ:</Text>
+                    <Picker
+                      selectedValue={serviceName}
+                      style={{
+                        width: '100%',
+                      }}
+                      onValueChange={(serviceName, itemIndex) =>
+                        this.props.onChangeService(serviceName)
+                      }>
+                      {services.map((service, index) => <Picker.Item key={index} label={service.name} value={service.name} />)}
+                    </Picker>
+                  </> : <Text style={{ fontSize: 15 }}>Đang cập nhật dịch vụ</Text>}
                 </View>
+                <ToggleSwitch
+                  isOn={useAmbulatory}
+                  onColor="green"
+                  offColor="red"
+                  label="Sử dụng lưu động"
+                  labelStyle={{ flex: 1 }}
+                  size="medium"
+                  onToggle={() => this.props.onChangeAmbulatory(!useAmbulatory)}
+                />
               </ScrollView>
               <TouchableOpacity
                 style={{

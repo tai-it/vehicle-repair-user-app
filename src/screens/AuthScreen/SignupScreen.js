@@ -51,11 +51,7 @@ class SignupScreen extends Component {
     firebase.messaging().getToken()
       .then(deviceToken => {
         if (deviceToken) {
-          console.log("SignupScreen -> componentDidMount -> deviceToken", deviceToken)
           this.setState({ deviceToken })
-        } else {
-          // user doesn't have a device token yet
-          console.log('Không có')
         }
       })
     this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
@@ -110,9 +106,9 @@ class SignupScreen extends Component {
         .then(confirmResult => {
           this.setState({
             confirmResult,
-            message: 'Mã đã được gửi. Vui lòng kiểm tra tin nhắn của bạn. Nếu bạn không nhận được mã vui lòng đợi 30 giây để lấy mã mới'
+            message: 'Mã đã được gửi. Vui lòng kiểm tra tin nhắn của bạn. Nếu bạn không nhận được mã vui lòng đợi 1 phút để lấy mã mới'
           })
-          setTimeout(() => this.setState({ showResendCode: true }), 30000)
+          setTimeout(() => this.setState({ showResendCode: true }), 60000)
         })
         .catch(error => this.setState({ message: `Đăng nhập thất bại: ${error.message}` }));
     } else {

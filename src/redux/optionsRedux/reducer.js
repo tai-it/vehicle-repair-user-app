@@ -2,7 +2,7 @@ import * as Types from './types'
 import vehicle from '../../constants/vehicle'
 
 const initState = {
-  vehicle: vehicle.bike,
+  vehicle: vehicle.motobike,
   userLocation: {
     address: '...',
     coords: { // Da Nang, Viet Nam
