@@ -185,13 +185,15 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':react-native-navigation')
     implementation project(':react-native-vector-icons')
+    implementation project(':react-native-push-notification')
     compile project(':react-native-geocoder')
 
     // Firebase dependencies
-    implementation "com.google.firebase:firebase-core:16.0.9"
-    implementation "com.google.firebase:firebase-database:17.0.0"
-    implementation "com.google.firebase:firebase-auth:17.0.0"
-    implementation "com.google.firebase:firebase-messaging:20.1.2"
+    // implementation "com.google.firebase:firebase-core:16.0.9"
+    // implementation "com.google.firebase:firebase-database:17.0.0"
+    // implementation "com.google.firebase:firebase-auth:17.0.0"
+    // implementation "com.google.firebase:firebase-messaging:20.1.2"
+    // implementation 'com.google.firebase:firebase-analytics:17.3.0'
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

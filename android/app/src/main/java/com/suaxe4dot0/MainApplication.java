@@ -17,11 +17,14 @@ import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.reactnativenavigation.react.ReactGateway;
 
 // Firebase
-import io.invertase.firebase.RNFirebasePackage;
-import io.invertase.firebase.database.RNFirebaseDatabasePackage;
-import io.invertase.firebase.auth.RNFirebaseAuthPackage;
-import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
-import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+// import io.invertase.firebase.RNFirebasePackage;
+// import io.invertase.firebase.database.RNFirebaseDatabasePackage;
+// import io.invertase.firebase.auth.RNFirebaseAuthPackage;
+// import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+// import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 
 import com.airbnb.android.react.maps.MapsPackage;
 import com.devfd.RNGeocoder.RNGeocoderPackage;
@@ -56,14 +59,17 @@ public class MainApplication extends NavigationApplication {
         // Add additional packages you require here
         // No need to add RnnPackage and MainReactPackage
         return Arrays.<ReactPackage>asList(
-            new RNFirebasePackage(),
-            new RNFirebaseDatabasePackage(),
-            new RNFirebaseAuthPackage(),
-            new RNFirebaseMessagingPackage(),
-            new RNFirebaseNotificationsPackage(),
-            new MapsPackage(),
-            new RNFusedLocationPackage(),
-            new RNGeocoderPackage()
+            // new RNFirebasePackage(),
+            // new RNFirebaseDatabasePackage(),
+            // new RNFirebaseAuthPackage(),
+            // new RNFirebaseMessagingPackage(),
+            // new RNFirebaseNotificationsPackage(),
+            // new MapsPackage(),
+            // new RNFusedLocationPackage(),
+            // new RNGeocoderPackage(),
+            new ReactNativeFirebaseAppPackage(),
+            new ReactNativeFirebaseMessagingPackage(),
+            new ReactNativePushNotificationPackage()
         );
     }
 
