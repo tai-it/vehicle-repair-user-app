@@ -4,15 +4,13 @@ class LocalNotificationService {
 
   configure = (onOpenNotification) => {
     PushNotification.configure({
-      onRegister: function (token) {
+      onRegister: (token) => {
         console.log("LocalNotificationService -> configure -> token", token)
       },
-      onNotification: function (notification) {
-        if (!notification?.data) {
-          return
-        }
+      onNotification: (notification) => {
+        console.log("LocalNotificationService -> configure -> notification", notification)
         notification.userInteraction = true
-        onOpenNotification(notification.data)
+        onOpenNotification(notification)
       },
       popInitialNotification: true,
     })
@@ -24,29 +22,24 @@ class LocalNotificationService {
 
   showNotification = (id, title, message, data = {}, options = {}) => {
     PushNotification.localNotification({
-      ...this.buildAndroidNotification(id, title, message, data, options),
+      id: id,
       title: title || '',
       message: message || '',
-      playSound: options.playSound || false,
-      soundName: options.soundName || "default",
-      userInteraction: false
-    })
-  }
-
-  buildAndroidNotification = (id, title, message, data = {}, options = {}) => {
-    return {
-      id: id,
       autoCancel: true,
       largeIcon: options.largeIcon || 'ic_launcher',
       smallIcon: options.smallIcon || 'ic_notification',
       bigText: message || '',
       subText: title || '',
       vibrate: options.vibrate || true,
-      vibration: options.vibration || 300,
+      vibration: options.vibration || 2000,
+      playSound: options.playSound || false,
+      soundName: options.soundName || "default",
+      sound: options.soundName || "default",
       priority: options.priority || 'high',
       importance: options.importance || 'high',
-      data: data
-    }
+      data: data,
+      userInteraction: false
+    })
   }
 
   cancelAllLocalNotifications = () => {

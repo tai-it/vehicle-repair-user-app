@@ -7,16 +7,17 @@ export default function App() {
 
   useEffect(() => {
     fcmService.register(onRegister, onNotification, onOpenNotification)
-    localNotificationService.configure(onNotification)
+    localNotificationService.configure(onOpenNotification)
 
     function onRegister(token) {
       console.log("onRegister -> token", token)
     }
 
     function onNotification(notify) {
-      console.log("onNotification -> notify", notify)
+      console.log("App -> onNotification -> notify", notify)
       const options = {
-        playSound: true
+        playSound: true,
+        soundName: "notification_sound.mp3"
       }
       localNotificationService.showNotification(
         0,
@@ -28,8 +29,8 @@ export default function App() {
     }
 
     function onOpenNotification(notify) {
-      console.log("onOpenNotification -> notify", notify)
-      alert(notify.body)
+      console.log("App -> onOpenNotification -> notify", notify)
+      alert(notify?.message || notify.body)
     }
 
     return () => {
