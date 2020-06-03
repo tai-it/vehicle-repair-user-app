@@ -56,8 +56,7 @@ class FCMService {
     // When the app is running but in the background
     messaging().onNotificationOpenedApp(remoteMessage => {
       if (remoteMessage) {
-        console.log("FCMService -> createNotificationListeners -> message in background", remoteMessage.notification)
-        const notification = remoteMessage?.notification
+        const notification = remoteMessage.notification
         onOpenNotification(notification)
       }
     });
@@ -66,7 +65,6 @@ class FCMService {
     messaging().getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
-          console.log("FCMService -> createNotificationListeners -> message in a quit state", remoteMessage?.notification)
           const notification = remoteMessage.notification
           onOpenNotification(notification)
         }
@@ -75,7 +73,6 @@ class FCMService {
     // Foreground state messages
     this.messageListener = messaging().onMessage(async remoteMessage => {
       if (remoteMessage) {
-        console.log("FCMService -> createNotificationListeners -> message in foreground state", remoteMessage?.notification)
         const notification = remoteMessage.notification
         onNotification(notification)
       }

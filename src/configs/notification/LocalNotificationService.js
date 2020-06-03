@@ -4,13 +4,14 @@ class LocalNotificationService {
 
   configure = (onOpenNotification) => {
     PushNotification.configure({
-      onRegister: (token) => {
-        console.log("LocalNotificationService -> configure -> token", token)
-      },
+      onRegister: (token) => { },
       onNotification: (notification) => {
-        console.log("LocalNotificationService -> configure -> notification", notification)
+        // Foreground notification https://rnfirebase.io/messaging/usage#notifications
+        if (!notification?.data || Object.keys(notification?.data).length < 1) {
+          return
+        }
         notification.userInteraction = true
-        onOpenNotification(notification)
+        onOpenNotification(notification.data)
       },
       popInitialNotification: true,
     })
@@ -31,10 +32,10 @@ class LocalNotificationService {
       bigText: message || '',
       subText: title || '',
       vibrate: options.vibrate || true,
-      vibration: options.vibration || 2000,
+      vibration: options.vibration || 1000,
       playSound: options.playSound || false,
       soundName: options.soundName || "default",
-      sound: options.soundName || "default",
+      sound: "notification_sound",
       priority: options.priority || 'high',
       importance: options.importance || 'high',
       data: data,

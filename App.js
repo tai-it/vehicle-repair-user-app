@@ -10,13 +10,12 @@ export default function App() {
     localNotificationService.configure(onOpenNotification)
 
     function onRegister(token) {
-      console.log("onRegister -> token", token)
+      console.log("App -> onRegister -> token", token)
     }
 
     function onNotification(notify) {
-      console.log("App -> onNotification -> notify", notify)
       const options = {
-        playSound: true,
+        playSound: false,
         soundName: "notification_sound.mp3"
       }
       localNotificationService.showNotification(
@@ -30,7 +29,7 @@ export default function App() {
 
     function onOpenNotification(notify) {
       console.log("App -> onOpenNotification -> notify", notify)
-      alert(notify?.message || notify.body)
+      alert(notify?.body)
     }
 
     return () => {
