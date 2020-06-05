@@ -5,7 +5,7 @@ import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
-import firebase from 'react-native-firebase'
+import auth from '@react-native-firebase/auth'
 
 class SideMenu extends Component {
 
@@ -110,7 +110,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     onLogout: () => {
-      firebase.auth().signOut()
+      auth().signOut()
       dispatch(Actions.logout())
     }
   }

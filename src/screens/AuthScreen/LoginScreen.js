@@ -10,8 +10,8 @@ import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { styles } from '../../styles'
 import Loading from '../../components/Loading'
-import firebase from 'react-native-firebase'
 import { APP_COLOR } from '../../utils/AppSettings'
+import database from '@react-native-firebase/database'
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -33,7 +33,8 @@ class LoginScreen extends Component {
   onSubmit = async () => {
     this.setState({ loading: true })
     const { phoneNumber, password } = this.state.user
-    const userRef = firebase.database().ref('users')
+    const { deviceToken } = this.props.app
+    const userRef = database().ref('users')
     await userRef.orderByChild('phoneNumber')
       .equalTo(phoneNumber).once('value')
       .then(snapshot => {
@@ -41,6 +42,9 @@ class LoginScreen extends Component {
           const user = Object.values(snapshot.val())[0]
           if (user?.password === password) {
             this.setState({ message: '' })
+            if (user.deviceToken !== deviceToken) {
+              userRef.child(user.uid).update({ deviceToken })
+            }
             this.props.onLoginSucceeded(user)
           } else {
             this.setState({ message: 'Tên tài khoản hoặc mật khẩu không đúng' })
@@ -140,10 +144,16 @@ class LoginScreen extends Component {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+    app: state.app
+  }
+}
+
 const mapDispatchToProps = dispatch => {
   return {
     onLoginSucceeded: user => dispatch(Actions.loginSucceeded(user))
   }
 }
 
-export default connect(null, mapDispatchToProps)(LoginScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)

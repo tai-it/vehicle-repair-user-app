@@ -4,12 +4,12 @@ import { APP_COLOR } from '../../utils/AppSettings'
 import { Icon } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
-import firebase from 'react-native-firebase'
 import Vehicle from '../../constants/vehicle'
 import Loading from '../../components/Loading'
 import ToggleSwitch from 'toggle-switch-react-native'
 import { changeAmbulatory } from '../../redux/optionsRedux/actions'
 import { OrderStatus } from '../../constants/orderStatus'
+import database from "@react-native-firebase/database"
 
 class StationModal extends Component {
 
@@ -21,7 +21,7 @@ class StationModal extends Component {
       reviews: [],
       loading: true,
       totalServiceFee: 0,
-      ambulatoryFee: props.station.distance * 8
+      ambulatoryFee: props.options.useAmbulatory ? props.station.distance * 8 : 0
     }
   }
 
@@ -33,7 +33,7 @@ class StationModal extends Component {
 
   fetchServices = async () => {
     const { station: { id }, options: { serviceName } } = this.props
-    const serviceRef = firebase.database().ref('services')
+    const serviceRef = database().ref('services')
     await serviceRef.orderByChild('stationId')
       .equalTo(id)
       .once('value')
@@ -50,7 +50,7 @@ class StationModal extends Component {
 
   fetchReviews = async () => {
     const { station: { id } } = this.props
-    const reviewRef = firebase.database().ref('reviews')
+    const reviewRef = database().ref('reviews')
     await reviewRef.orderByChild('stationId')
       .equalTo(id)
       .once('value')
@@ -89,10 +89,20 @@ class StationModal extends Component {
     this.setState({ selectedServices }, () => this.totalSalcserviceFee())
   }
 
-  handleBookButtonPressed = () => {
+  handleChangeAmbulatoryOption = (useAmbulatory) => {
+    const { distance, hasAmbulatory } = this.props.station
+    console.log("StationModal -> handleChangeAmbulatoryOption -> this.props.station", this.props.station)
+    if (hasAmbulatory) {
+      this.setState({ ambulatoryFee: useAmbulatory ? distance * 8 : 0 }, () => this.props.onChangeAmbulatory(useAmbulatory))
+    } else {
+      alert("Rất tiếc, tiệm sửa xe này không có dịch vụ này!")
+    }
+  }
+
+  handleBooking = () => {
     const { selectedServices, totalServiceFee, ambulatoryFee } = this.state
     const { auth: { user }, options: { useAmbulatory, userLocation }, station } = this.props
-    const orderRef = firebase.database().ref('orders')
+    const orderRef = database().ref('orders')
     const key = orderRef.child(station.id).push().key
     const order = {
       id: key,
@@ -115,7 +125,7 @@ class StationModal extends Component {
       totalServiceFee,
       totalBill: totalServiceFee + ambulatoryFee,
       status: OrderStatus.waiting,
-      createdAt: firebase.database.ServerValue.TIMESTAMP
+      createdAt: database.ServerValue.TIMESTAMP
     }
     orderRef.child(key).update(order)
   }
@@ -201,7 +211,7 @@ class StationModal extends Component {
                 labelStyle={{ flex: 1, fontSize: 16 }}
                 size="medium"
                 onToggle={() => {
-                  this.props.onChangeAmbulatory(!useAmbulatory)
+                  this.handleChangeAmbulatoryOption(!useAmbulatory)
                   setTimeout(() => this.totalSalcserviceFee(), 1000)
                 }}
               />
@@ -216,7 +226,7 @@ class StationModal extends Component {
                 alignItems: "center",
                 marginTop: 1
               }}
-              onPress={this.handleBookButtonPressed}
+              onPress={this.handleBooking}
             >
               <Text style={{ fontSize: 18, color: '#fff' }}>{`Đặt dịch vụ`.toUpperCase()}</Text>
             </TouchableOpacity>

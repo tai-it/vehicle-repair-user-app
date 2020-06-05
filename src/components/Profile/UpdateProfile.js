@@ -7,12 +7,12 @@ import {
   TextInput,
 } from 'react-native'
 import { styles } from '../../styles'
-import firebase from 'react-native-firebase'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { Navigation } from 'react-native-navigation'
 import { sideMenu } from '../../configs/menu/sideMenu'
+import auth from '@react-native-firebase/auth'
 
 class UpdateProfile extends Component {
   constructor(props) {
@@ -31,8 +31,8 @@ class UpdateProfile extends Component {
   updateProfile = async () => {
     const { displayName } = this.state
     if (displayName) {
-      await firebase.auth().currentUser.updateProfile({ displayName })
-      this.props.onUpdateProfile(firebase.auth().currentUser)
+      await auth().currentUser.updateProfile({ displayName })
+      this.props.onUpdateProfile(auth().currentUser)
       Navigation.setRoot({
         root: {
           sideMenu
@@ -74,7 +74,7 @@ class UpdateProfile extends Component {
             <TextInput
               editable={false}
               style={[styles.textInput, { fontSize: 16, textAlign: "left", color: '#c8c8c8', paddingHorizontal: 20 }]}
-              value={firebase.auth().currentUser.phoneNumber}
+              value={auth().currentUser.phoneNumber}
             />
           </View>
         </ScrollView>

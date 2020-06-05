@@ -35,7 +35,6 @@ class LocalNotificationService {
       vibration: options.vibration || 1000,
       playSound: options.playSound || false,
       soundName: options.soundName || "default",
-      sound: "notification_sound",
       priority: options.priority || 'high',
       importance: options.importance || 'high',
       data: data,

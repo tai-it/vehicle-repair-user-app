@@ -10,12 +10,11 @@ import {
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { styles } from '../../styles'
-import firebase from 'react-native-firebase'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { countries } from '../../constants/country'
-import { Navigation } from 'react-native-navigation'
-import { sideMenu } from '../../configs/menu/sideMenu'
 import { ToastAndroid } from 'react-native'
+import database from '@react-native-firebase/database'
+import auth from '@react-native-firebase/auth'
 
 class SignupScreen extends Component {
   constructor(props) {
@@ -42,19 +41,12 @@ class SignupScreen extends Component {
       callingCode: countries[0].callingCode,
       phoneNumber: '',
       confirmResult: null,
-      showResendCode: false,
-      deviceToken: ''
+      showResendCode: false
     }
   }
 
   componentDidMount() {
-    firebase.messaging().getToken()
-      .then(deviceToken => {
-        if (deviceToken) {
-          this.setState({ deviceToken })
-        }
-      })
-    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    this.unsubscribe = auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({
           user: user.toJSON(),
@@ -83,8 +75,7 @@ class SignupScreen extends Component {
           callingCode: countries[0].callingCode,
           phoneNumber: '',
           confirmResult: null,
-          showResendCode: false,
-          deviceToken: ''
+          showResendCode: false
         });
       }
     });
@@ -102,7 +93,7 @@ class SignupScreen extends Component {
     }
     if (phoneNumber.length >= 9) {
       this.setState({ message: 'Đang gửi mã...' });
-      firebase.auth().signInWithPhoneNumber(callingCode + phoneNumber)
+      auth().signInWithPhoneNumber(callingCode + phoneNumber)
         .then(confirmResult => {
           this.setState({
             confirmResult,
@@ -130,7 +121,8 @@ class SignupScreen extends Component {
   }
 
   addUser = () => {
-    const { user: { uid, phoneNumber }, newUser: { firstName, lastName, password }, deviceToken } = this.state
+    const { user: { uid, phoneNumber }, newUser: { firstName, lastName, password } } = this.state
+    const { deviceToken } = this.props.app
     let pendingUser = {
       uid,
       firstName,
@@ -140,7 +132,7 @@ class SignupScreen extends Component {
       password,
       deviceToken
     }
-    firebase.database().ref('users')
+    database().ref('users')
       .child(uid)
       .set(pendingUser)
       .then(() => this.props.onSignupSucceeded(pendingUser))
@@ -158,7 +150,7 @@ class SignupScreen extends Component {
   checkIfPhoneExists = async () => {
     let result = false
     const { callingCode, newUser: { phoneNumber } } = this.state
-    const userRef = firebase.database().ref('users')
+    const userRef = database().ref('users')
     await userRef.orderByChild('phoneNumber')
       .equalTo(callingCode + phoneNumber).once('value')
       .then(snapshot => {
@@ -393,7 +385,8 @@ class SignupScreen extends Component {
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth
+    auth: state.auth,
+    app: state.app
   }
 }
 

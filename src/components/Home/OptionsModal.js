@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, TouchableWithoutFeedback, Modal, ScrollView, TouchableOpacity, Picker, Switch } from 'react-native'
 import { Icon } from 'react-native-elements'
-import firebase from 'react-native-firebase'
+import database from '@react-native-firebase/database';
 import _ from 'lodash'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
@@ -31,7 +31,7 @@ class OptionsModal extends Component {
   }
 
   fetchServices = () => {
-    const serviceRef = firebase.database().ref('services')
+    const serviceRef = database().ref('services')
     const { vehicle } = this.props.options
     serviceRef.orderByChild('vehicle')
       .equalTo(vehicle)
@@ -47,7 +47,7 @@ class OptionsModal extends Component {
 
   handleSubmit = async () => {
     const { options: { vehicle, serviceName, useAmbulatory } } = this.props
-    const serviceRef = firebase.database().ref('services')
+    const serviceRef = database().ref('services')
     let stationIds = []
     await serviceRef.orderByChild('name')
       .equalTo(serviceName)
@@ -60,7 +60,7 @@ class OptionsModal extends Component {
           }
         })
       })
-    const stationRef = firebase.database().ref('stations')
+    const stationRef = database().ref('stations')
     let stations = []
     for (const id of stationIds) {
       await stationRef.child(id).once('value').then(snapshot => {

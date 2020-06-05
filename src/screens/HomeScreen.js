@@ -11,8 +11,6 @@ import Geocoder from 'react-native-geocoder'
 import Geolocation from 'react-native-geolocation-service'
 import Vehicle from '../constants/vehicle'
 import MapView, { Marker } from 'react-native-maps'
-import firebase from 'react-native-firebase'
-import type { RemoteMessage, Notification } from 'react-native-firebase'
 
 class HomeScreen extends Component {
 
@@ -33,12 +31,13 @@ class HomeScreen extends Component {
   componentDidMount = async () => {
     let locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
     if (!locationPermission) {
-      locationPermission = await this.askLocationPermission()
+      locationPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
       if (locationPermission !== 'granted') {
         Alert.alert('Message', 'We need to access your location!')
-        setTimeout(() => BackHandler.exitApp(), 1000)
+        setTimeout(() => BackHandler.exitApp(), 700)
       }
     }
+
     Geolocation.getCurrentPosition(position => {
       Geocoder.geocodePosition({
         lat: position.coords.latitude,
@@ -63,31 +62,6 @@ class HomeScreen extends Component {
     }, error => {
       console.log(error)
     })
-    firebase.messaging().hasPermission()
-      .then(enabled => {
-        if (enabled) {
-          this.messageListener = firebase.messaging().onMessage((message: RemoteMessage) => {
-            console.log("HomeScreen -> componentDidMount -> message", message)
-          })
-          this.removeNotificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
-            console.log("HomeScreen -> componentDidMount -> notification", notification)
-          })
-          this.removeNotificationListener = firebase.notifications().onNotification((notification: Notification) => {
-            console.log("HomeScreen -> componentDidMount -> notification", notification)
-          })
-        }
-      })
-  }
-
-  componentWillUnmount() {
-    if (this.messageListener) this.messageListener()
-    if (this.removeNotificationDisplayedListener) this.removeNotificationDisplayedListener()
-    if (this.removeNotificationListener) this.removeNotificationListener()
-  }
-
-  askLocationPermission = async () => {
-    const result = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    return result
   }
 
   onRegionChange = (mapRegion, lastLatitude, lastLongitude) => {
