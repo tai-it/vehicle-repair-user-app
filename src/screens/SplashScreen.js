@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { fcmService } from '../configs/notification/FCMService'
 import { localNotificationService } from '../configs/notification/LocalNotificationService'
 import * as Actions from '../redux/appRedux/actions'
+import { CLEAR_ERROR_STATE } from '../redux/authRedux/types'
 
 class SplashScreen extends Component {
 
@@ -31,10 +32,14 @@ class SplashScreen extends Component {
         }
       });
     }
+
+    // Clear error state for app redux
+    this.props.onClearErrortate()
   }
 
   // NOTIFICATION SETUP
   onRegister = (token) => {
+    console.log("SplashScreen -> onRegister -> token", token)
     const { deviceToken } = this.props.app
     if (deviceToken !== token) {
       this.props.onChangeDeviceToken(token)
@@ -82,7 +87,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onChangeDeviceToken: token => dispatch(Actions.changeDeviceToken(token))
+    onChangeDeviceToken: token => dispatch(Actions.changeDeviceToken(token)),
+    onClearErrortate: () => dispatch({ type: CLEAR_ERROR_STATE })
   }
 }
 

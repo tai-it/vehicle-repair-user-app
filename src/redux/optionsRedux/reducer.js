@@ -3,6 +3,7 @@ import vehicle from '../../constants/vehicle'
 
 const initState = {
   vehicle: vehicle.motobike,
+  services: [],
   userLocation: {
     address: '...',
     coords: { // Da Nang, Viet Nam

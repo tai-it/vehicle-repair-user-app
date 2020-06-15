@@ -116,7 +116,7 @@ class HomeScreen extends Component {
             color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
             onPress={this.handleOpenSideMenu}
           />
-          <Text style={{ fontSize: 20, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{user?.fullName.toUpperCase()}</Text>
+          <Text style={{ fontSize: 20, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{user?.name.toUpperCase()}</Text>
           <View />
         </View>
         <View style={{ flex: 1 }}>
