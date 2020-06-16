@@ -13,10 +13,6 @@ import SplashScreen from "./src/screens/SplashScreen"
 import HomeScreen from "./src/screens/HomeScreen"
 import AuthScreen from './src/screens/AuthScreen'
 
-// TEST SCREENS
-import FixerOrderList from './src/screens/Test/FixerOrderList'
-// 
-
 import StationList from './src/components/Home/StationList'
 import StationModal from './src/components/Home/StationModal'
 import UpdateProfile from './src/components/Profile/UpdateProfile'
@@ -82,11 +78,6 @@ Navigation.registerComponent(
   () => StationModal,
 );
 //
-
-//  TEST SCREENS
-Navigation.registerComponent('FixerOrderList', () => FixerOrderList);
-
-// 
 
 console.disableYellowBox = true;
 

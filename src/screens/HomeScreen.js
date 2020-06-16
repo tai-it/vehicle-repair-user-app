@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
 import OptionsModal from '../components/Home/OptionsModal'
 import { changeVehicle, changeLocation } from '../redux/optionsRedux/actions'
+import { updateDeviceTokenRequest } from '../redux/authRedux/actions'
 import Geocoder from 'react-native-geocoder'
 import Geolocation from 'react-native-geolocation-service'
 import Vehicle from '../constants/vehicle'
@@ -29,6 +30,12 @@ class HomeScreen extends Component {
   }
 
   componentDidMount = async () => {
+    await this.checkLocationPermission()
+    this.getCurrentPosition()
+    this.checkDeviceToken()
+  }
+
+  checkLocationPermission = async () => {
     let locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
     if (!locationPermission) {
       locationPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
@@ -37,7 +44,9 @@ class HomeScreen extends Component {
         setTimeout(() => BackHandler.exitApp(), 700)
       }
     }
+  }
 
+  getCurrentPosition = () => {
     Geolocation.getCurrentPosition(position => {
       Geocoder.geocodePosition({
         lat: position.coords.latitude,
@@ -64,6 +73,14 @@ class HomeScreen extends Component {
     })
   }
 
+  checkDeviceToken = () => {
+    const { deviceToken } = this.props.app
+    const { user } = this.props.auth
+    if (deviceToken !== user.deviceToken) {
+      this.props.onUpdateDeviceToken()
+    }
+  }
+
   onRegionChange = (mapRegion, lastLatitude, lastLongitude) => {
     if (this.state.mapRegion !== mapRegion || this.state.lastLatitude !== lastLatitude || this.state.lastLongtitude !== lastLongitude) {
       this.setState({ mapRegion, lastLatitude, lastLongitude });
@@ -82,6 +99,7 @@ class HomeScreen extends Component {
 
   render() {
     const { authenticated, user } = this.props.auth
+    console.log("HomeScreen -> render -> this.props.auth", this.props.auth)
     if (!authenticated) {
       Navigation.setRoot({
         root: {
@@ -221,7 +239,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     onChangeVehicle: vehicle => dispatch(changeVehicle(vehicle)),
-    onChangeLocation: location => dispatch(changeLocation(location))
+    onChangeLocation: location => dispatch(changeLocation(location)),
+    onUpdateDeviceToken: () => dispatch(updateDeviceTokenRequest())
   }
 }
 

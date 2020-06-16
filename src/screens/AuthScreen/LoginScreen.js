@@ -11,6 +11,7 @@ import * as Actions from '../../redux/authRedux/actions'
 import { styles } from '../../styles'
 import Loading from '../../components/Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
+import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -19,7 +20,7 @@ class LoginScreen extends Component {
       loading: false,
       user: {
         phoneNumber: '0858222957',
-        password: 'Tai16031999@',
+        password: 'Tai16031999@@',
       },
       error: {
         phoneNumber: '',
@@ -27,6 +28,10 @@ class LoginScreen extends Component {
       },
       message: ''
     };
+  }
+
+  componentDidMount() {
+    this.props.onClearErrorState()
   }
 
   onSubmit = async () => {
@@ -47,6 +52,7 @@ class LoginScreen extends Component {
 
   render() {
     const { loading, user, message } = this.state
+    const loginError = this.props.auth.message
     if (loading) {
       return <Loading message='Đang xử lý...' />
     }
@@ -66,6 +72,7 @@ class LoginScreen extends Component {
           <Text style={styles.title}>Đăng nhập</Text>
         </View>
         <ScrollView style={styles.container}>
+          <Text style={{ flex: 1, paddingTop: 10, color: 'red' }}>{typeof (loginError) == typeof ("") ? loginError : ""}</Text>
           <Text style={{ color: 'red', paddingTop: 5, paddingBottom: 10, fontSize: 17 }}>{message}</Text>
           <View>
             <Text style={styles.label}>Số điện thoại *</Text>
@@ -126,12 +133,14 @@ class LoginScreen extends Component {
 
 const mapStateToProps = state => {
   return {
-    app: state.app
+    app: state.app,
+    auth: state.auth
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
+    onClearErrorState: () => dispatch({ type: CLEAR_ERROR_STATE }),
     onLoginRequest: user => dispatch(Actions.loginRequest(user))
   }
 }

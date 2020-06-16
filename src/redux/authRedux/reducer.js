@@ -5,7 +5,7 @@ const initState = {
   authenticated: false,
   user: null,
   token: "",
-  error: null,
+  errors: [],
   message: ""
 }
 
@@ -21,14 +21,13 @@ export default authReducer = (state = initState, action) => {
         ...initState,
         loading: false,
         authenticated: true,
-        user: action.payload.user,
         token: action.payload.token,
       };
     case Types.LOGIN_FAILED:
       return {
         ...initState,
         loading: false,
-        error: action.payload
+        message: action.payload.message
       };
     case Types.SIGNUP_REQUEST:
       return {
@@ -40,19 +39,44 @@ export default authReducer = (state = initState, action) => {
         ...initState,
         loading: false,
         authenticated: true,
-        user: action.payload.user,
         token: action.payload.token,
       };
     case Types.SIGNUP_FAILED:
       return {
         ...initState,
         loading: false,
-        error: action.payload
+        message: action.payload.message,
+        errors: action.payload.errors,
+      };
+    case Types.FETCH_PROFILE_REQUEST:
+      return {
+        ...state,
+        loading: true
+      };
+    case Types.FETCH_PROFILE_SUCCEEDED:
+      return {
+        ...state,
+        loading: false,
+        user: action.payload.user,
+      };
+    case Types.FETCH_PROFILE_FAILED:
+      return {
+        ...initState,
+        message: "Phiên đã hết hạn, vui lòng đăng nhập lại"
       };
     case Types.CLEAR_ERROR_STATE:
       return {
         ...state,
-        error: null
+        errors: [],
+        message: ""
+      };
+    case Types.UPDATE_DEVICE_TOKEN_SUCCEEDED:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          deviceToken: action.payload.deviceToken
+        }
       };
     case Types.LOGOUT:
       return {

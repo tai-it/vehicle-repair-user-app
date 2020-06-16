@@ -12,6 +12,7 @@ import * as Actions from '../../redux/authRedux/actions'
 import { styles } from '../../styles'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { countries } from '../../constants/country'
+import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
 
 class SignupScreen extends Component {
   constructor(props) {
@@ -19,11 +20,11 @@ class SignupScreen extends Component {
     this.unsubscribe = null;
     this.state = {
       user: {
-        name: "",
-        phoneNumber: "",
+        name: "Trần Văn Tài",
+        phoneNumber: "0858222957",
         email: "",
-        password: "",
-        confirmPassword: ""
+        password: "Tai16031999@@",
+        confirmPassword: "Tai16031999@@"
       },
       message: '',
       codeInput: '',
@@ -32,6 +33,10 @@ class SignupScreen extends Component {
       confirmResult: null,
       showResendCode: false
     }
+  }
+
+  componentDidMount() {
+    this.props.onClearErrorState()
   }
 
   onChangeText = (key, value) => {
@@ -55,7 +60,7 @@ class SignupScreen extends Component {
 
   render() {
     const { user, callingCode } = this.state
-    const { error } = this.props.auth
+    const { errors, message } = this.props.auth
     return (
       <>
         <View
@@ -73,6 +78,7 @@ class SignupScreen extends Component {
         </View>
 
         <ScrollView style={styles.container}>
+          <Text style={{ flex: 1, paddingTop: 10, color: 'red' }}>{message || ""}</Text>
           <Text style={[styles.label, { paddingVertical: 5 }]}>Quốc gia</Text>
           <View style={{ width: '100%', borderWidth: 1, borderColor: APP_COLOR, borderRadius: 3, paddingLeft: 10 }}>
             <Picker
@@ -89,7 +95,7 @@ class SignupScreen extends Component {
             <View style={{ flexDirection: 'row' }}>
               <Text style={[styles.label, { paddingTop: 10 }]}>SĐT *</Text>
               <Text numberOfLines={1} style={{ textAlign: "right", flex: 1, paddingTop: 10, color: 'red' }}>
-                {error?.find(x => x.propertyName == "PhoneNumber")?.errorMessage.split(";")[0] || ""}
+                {errors?.find(x => x.propertyName == "PhoneNumber")?.errorMessage.split(";")[0] || ""}
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>
@@ -114,7 +120,7 @@ class SignupScreen extends Component {
             <View style={{ flexDirection: 'row' }}>
               <Text style={styles.label}>Họ và Tên*</Text>
               <Text numberOfLines={1} style={{ textAlign: "right", flex: 1, color: 'red' }}>
-                {error?.find(x => x.propertyName == "Name")?.errorMessage.split(";")[0] || ""}
+                {errors?.find(x => x.propertyName == "Name")?.errorMessage.split(";")[0] || ""}
               </Text>
             </View>
             <TextInput
@@ -132,7 +138,7 @@ class SignupScreen extends Component {
             <View style={{ flexDirection: 'row' }}>
               <Text style={styles.label}>Mật khẩu *</Text>
               <Text numberOfLines={1} style={{ textAlign: "right", flex: 1, color: 'red' }}>
-                {error?.find(x => x.propertyName == "Password")?.errorMessage.split(";")[0] || ""}
+                {errors?.find(x => x.propertyName == "Password")?.errorMessage.split(";")[0] || ""}
               </Text>
             </View>
             <TextInput
@@ -151,7 +157,7 @@ class SignupScreen extends Component {
             <View style={{ flexDirection: 'row' }}>
               <Text style={styles.label}>Xác nhận mật khẩu *</Text>
               <Text numberOfLines={1} style={{ textAlign: "right", flex: 1, color: 'red' }}>
-                
+
               </Text>
             </View>
             <TextInput
@@ -211,6 +217,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    onClearErrorState: () => dispatch({ type: CLEAR_ERROR_STATE }),
     onSignupRequest: user => dispatch(Actions.signupRequest(user)),
     onPhoneNumberConfirmed: () => dispatch(Actions.phoneConfirmed())
   }

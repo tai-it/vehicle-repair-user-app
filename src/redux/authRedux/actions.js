@@ -14,6 +14,12 @@ export const signupRequest = user => {
   }
 }
 
+export const updateDeviceTokenRequest = () => {
+  return {
+    type: Types.UPDATE_DEVICE_TOKEN_REQUEST
+  }
+}
+
 export const phoneConfirmed = () => {
   return {
     type: Types.PHONE_CONFIRMED
@@ -27,27 +33,6 @@ export const fetchProfileRequest = token => {
   }
 }
 
-// export const loginSucceeded = user => {
-//   return {
-//     type: Types.LOGIN_SUCCEEDED,
-//     payload: user
-//   }
-// }
-
-// export const signupSucceeded = user => {
-//   return {
-//     type: Types.SIGNUP_SUCCEEDED,
-//     payload: user
-//   }
-// }
-
 export const logout = () => {
   return { type: Types.LOGOUT }
 }
-
-// export const updateProfileSucceeded = user => {
-//   return {
-//     type: Types.UPDATE_PROFILE_SUCCEEDED,
-//     payload: user
-//   }
-// }
