@@ -21,6 +21,12 @@ export const changeAmbulatory = option => {
   }
 }
 
+export const fetchLocation = () => {
+  return {
+    type: Types.FETCH_LOCATION
+  }
+}
+
 export const changeLocation = location => {
   return {
     type: Types.CHANGE_LOCATION,

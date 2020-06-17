@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { PermissionsAndroid, BackHandler, View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import { Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
@@ -20,35 +19,23 @@ class HomeScreen extends Component {
     this.state = {
       marginTop: 0,
       showOptions: false,
-      mapRegion: {
-        latitude: props.options.userLocation.coords.lat,
-        longitude: props.options.userLocation.coords.lng,
-        latitudeDelta: 0.00922 * 1.5,
-        longitudeDelta: 0.00421 * 1.5
+      region: {
+        latitude: 16.06778,
+        longitude: 108.22083,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005
       }
     }
   }
 
   componentDidMount = async () => {
-    await this.checkLocationPermission()
-    this.getCurrentPosition()
+    await this.getCurrentPosition()
     this.checkDeviceToken()
   }
 
-  checkLocationPermission = async () => {
-    let locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    if (!locationPermission) {
-      locationPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-      if (locationPermission !== 'granted') {
-        Alert.alert('Message', 'We need to access your location!')
-        setTimeout(() => BackHandler.exitApp(), 700)
-      }
-    }
-  }
-
-  getCurrentPosition = () => {
-    Geolocation.getCurrentPosition(position => {
-      Geocoder.geocodePosition({
+  getCurrentPosition = async () => {
+    Geolocation.getCurrentPosition(async position => {
+      await Geocoder.geocodePosition({
         lat: position.coords.latitude,
         lng: position.coords.longitude
       })
@@ -58,11 +45,11 @@ class HomeScreen extends Component {
             coords: res[0].position
           }
           this.setState({
-            mapRegion: {
+            region: {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
-              latitudeDelta: 0.00922 * 1.5,
-              longitudeDelta: 0.00421 * 1.5
+              latitudeDelta: 0.005,
+              longitudeDelta: 0.005
             }
           })
           this.props.onChangeLocation(location)
@@ -81,10 +68,8 @@ class HomeScreen extends Component {
     }
   }
 
-  onRegionChange = (mapRegion, lastLatitude, lastLongitude) => {
-    if (this.state.mapRegion !== mapRegion || this.state.lastLatitude !== lastLatitude || this.state.lastLongtitude !== lastLongitude) {
-      this.setState({ mapRegion, lastLatitude, lastLongitude });
-    }
+  onRegionChangeComplete = region => {
+    console.log("HomeScreen -> region", region)
   }
 
   handleOpenSideMenu = () => {
@@ -99,7 +84,6 @@ class HomeScreen extends Component {
 
   render() {
     const { authenticated, user } = this.props.auth
-    console.log("HomeScreen -> render -> this.props.auth", this.props.auth)
     if (!authenticated) {
       Navigation.setRoot({
         root: {
@@ -110,7 +94,7 @@ class HomeScreen extends Component {
       })
       return <View />
     }
-    const { showOptions, mapRegion } = this.state
+    const { showOptions, region } = this.state
     const { options: { vehicle, userLocation } } = this.props
     return (
       <View style={[styles.container]}>
@@ -141,10 +125,12 @@ class HomeScreen extends Component {
           <MapView
             style={[StyleSheet.absoluteFillObject, { marginTop: this.state.marginTop }]}
             onMapReady={() => this.setState({ marginTop: 0 })}
-            region={mapRegion}
+            region={region}
             showsUserLocation={true}
             showsMyLocationButton={true}
             followUserLocation={true}
+            showsCompass={true}
+            onRegionChangeComplete={(region) => this.onRegionChangeComplete(region)}
           />
         </View>
         <View style={{ flexDirection: "row", marginBottom: 1, borderColor: APP_COLOR, borderWidth: 1 }}>

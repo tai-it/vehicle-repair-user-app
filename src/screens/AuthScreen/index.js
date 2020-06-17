@@ -14,9 +14,9 @@ class AuthScreen extends Component {
   }
 
   render() {
+    console.log("Vô auth");
     const { showLoginScreen } = this.state
     const { authenticated } = this.props.auth
-    console.log("AuthScreen -> render -> this.props.auth", this.props.auth)
     if (authenticated) {
       Navigation.setRoot({
         root: {

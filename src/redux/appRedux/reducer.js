@@ -2,7 +2,8 @@ import * as Types from './types'
 
 const initState = {
   color: '#ff6666',
-  deviceToken: ""
+  deviceToken: "",
+  isStarted: false
 }
 
 export default appReducer = (state = initState, action) => {
@@ -16,6 +17,11 @@ export default appReducer = (state = initState, action) => {
       return {
         ...initState,
         deviceToken: action.payload
+      };
+    case Types.GET_STARTED:
+      return {
+        ...initState,
+        isStarted: true
       };
     default:
       return state;

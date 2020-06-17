@@ -10,6 +10,7 @@ import Loading from './src/components/Loading'
 import SideMenu from './src/components/Menu/SideMenu'
 
 import SplashScreen from "./src/screens/SplashScreen"
+import GetStartedScreen from './src/screens/GetStartedScreen'
 import HomeScreen from "./src/screens/HomeScreen"
 import AuthScreen from './src/screens/AuthScreen'
 
@@ -41,7 +42,12 @@ Navigation.registerComponent(
   () => ReduxProvider(SplashScreen),
   () => SplashScreen,
 );
-// 
+
+Navigation.registerComponent(
+  'GetStartedScreen',
+  () => ReduxProvider(GetStartedScreen),
+  () => GetStartedScreen,
+);
 
 Navigation.registerComponent(
   'AuthScreen',

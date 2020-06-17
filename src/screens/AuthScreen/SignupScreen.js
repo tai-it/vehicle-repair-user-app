@@ -7,6 +7,7 @@ import {
   Picker,
   ScrollView
 } from 'react-native'
+import Loading from '../../components/Loading'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { styles } from '../../styles'
@@ -25,13 +26,7 @@ class SignupScreen extends Component {
         email: "",
         password: "Tai16031999@@",
         confirmPassword: "Tai16031999@@"
-      },
-      message: '',
-      codeInput: '',
-      callingCode: countries[0].callingCode,
-      phoneNumber: '',
-      confirmResult: null,
-      showResendCode: false
+      }
     }
   }
 
@@ -59,8 +54,11 @@ class SignupScreen extends Component {
   }
 
   render() {
-    const { user, callingCode } = this.state
-    const { errors, message } = this.props.auth
+    const { user } = this.state
+    const { loading, errors, message } = this.props.auth
+    if (loading) {
+      return <Loading message='Đang xử lý...' />
+    }
     return (
       <>
         <View
@@ -79,18 +77,6 @@ class SignupScreen extends Component {
 
         <ScrollView style={styles.container}>
           <Text style={{ flex: 1, paddingTop: 10, color: 'red' }}>{message || ""}</Text>
-          <Text style={[styles.label, { paddingVertical: 5 }]}>Quốc gia</Text>
-          <View style={{ width: '100%', borderWidth: 1, borderColor: APP_COLOR, borderRadius: 3, paddingLeft: 10 }}>
-            <Picker
-              selectedValue={callingCode}
-              style={{
-                width: '100%', height: 45
-              }}
-              onValueChange={(callingCode, itemIndex) => this.setState({ callingCode })}>
-              {countries.map((country, index) => <Picker.Item key={index} label={`${country.region} (${country.callingCode})`} value={country.callingCode} />)}
-            </Picker>
-          </View>
-
           <View>
             <View style={{ flexDirection: 'row' }}>
               <Text style={[styles.label, { paddingTop: 10 }]}>SĐT *</Text>
@@ -100,16 +86,11 @@ class SignupScreen extends Component {
             </View>
             <View style={{ flexDirection: "row" }}>
               <TextInput
-                editable={false}
-                style={[styles.textInput, { minWidth: 50, marginRight: 5, color: '#111' }]}
-                value={callingCode}
-              />
-              <TextInput
                 style={[styles.textInput, { flex: 1 }]}
                 onChangeText={phoneNumber => this.onChangeText('phoneNumber', phoneNumber)}
                 onBlur={this.checkIfPhoneExists}
                 value={user.phoneNumber}
-                placeholder="987 654 321"
+                placeholder="0987 654 321"
                 keyboardType="phone-pad"
                 returnKeyType="next"
                 onSubmitEditing={() => this.refName.focus()}

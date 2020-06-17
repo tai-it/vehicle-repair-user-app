@@ -13,3 +13,9 @@ export const changeDeviceToken = token => {
     payload: token
   }
 }
+
+export const getStarted = () => {
+  return {
+    type: Types.GET_STARTED
+  }
+}

@@ -17,16 +17,10 @@ class LoginScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
       user: {
         phoneNumber: '0858222957',
         password: 'Tai16031999@@',
-      },
-      error: {
-        phoneNumber: '',
-        password: '',
-      },
-      message: ''
+      }
     };
   }
 
@@ -35,10 +29,8 @@ class LoginScreen extends Component {
   }
 
   onSubmit = async () => {
-    this.setState({ loading: true })
-    const { phoneNumber, password } = this.state.user
-    this.props.onLoginRequest({ phoneNumber, password })
-    this.setState({ loading: false })
+    const { user } = this.state
+    this.props.onLoginRequest(user)
   };
 
   onChangeText = (key, value) => {
@@ -51,8 +43,9 @@ class LoginScreen extends Component {
   };
 
   render() {
-    const { loading, user, message } = this.state
+    const { user, message } = this.state
     const loginError = this.props.auth.message
+    const { loading } = this.props.auth
     if (loading) {
       return <Loading message='Đang xử lý...' />
     }
