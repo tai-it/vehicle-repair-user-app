@@ -67,6 +67,7 @@ export default authReducer = (state = initState, action) => {
     case Types.CLEAR_ERROR_STATE:
       return {
         ...state,
+        loading: false,
         errors: [],
         message: ""
       };

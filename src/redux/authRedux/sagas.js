@@ -12,7 +12,6 @@ function* loginAsync(action) {
     yield put({ type: Types.LOGIN_SUCCEEDED, payload: { token } })
     yield put(Actions.fetchProfileRequest(token))
   } catch (error) {
-    console.log("function*loginAsync -> error", error?.response)
     let message = error?.response?.data || "Có lỗi xảy ra, vui lòng thử lại"
     yield put({ type: Types.LOGIN_FAILED, payload: { message } })
   }
@@ -45,7 +44,6 @@ function* fetchProfileAsync(action) {
     const user = response.data
     yield put({ type: Types.FETCH_PROFILE_SUCCEEDED, payload: { user } })
   } catch (error) {
-    console.log("function*fetchProfileAsync -> error", error?.response)
     yield put({ type: Types.FETCH_PROFILE_FAILED })
   }
 }
@@ -57,7 +55,6 @@ function* updateDeviceTokenAsync() {
       console.log("Không tìm thấy DeviceToken");
     }
     const token = store.getState().auth.token
-    console.log("function*updateProfileAsync -> deviceToken, token: ", deviceToken, token)
     yield callApi(`account/me`, 'PUT', { deviceToken }, token)
     yield put({ type: Types.UPDATE_DEVICE_TOKEN_SUCCEEDED, payload: { deviceToken } })
   } catch (error) {

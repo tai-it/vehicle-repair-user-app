@@ -5,8 +5,10 @@ import { connect } from 'react-redux'
 import { fcmService } from '../configs/notification/FCMService'
 import { localNotificationService } from '../configs/notification/LocalNotificationService'
 import * as Actions from '../redux/appRedux/actions'
-import { fetchLocation } from '../redux/optionsRedux/actions'
+import { changeLocation } from '../redux/optionsRedux/actions'
 import { PermissionsAndroid } from 'react-native'
+import Geolocation from 'react-native-geolocation-service'
+import Geocoder from 'react-native-geocoder'
 
 //
 import Swiper from 'react-native-web-swiper'
@@ -16,114 +18,129 @@ import { swipers } from '../data/swipers'
 
 class SplashScreen extends Component {
 
-  componentDidMount = async() => {
-  // Register FCM Service
-  fcmService.register(this.onRegister, this.onNotification, this.onOpenNotification)
-  // Configure notification options
-  localNotificationService.configure(this.onOpenNotification)
+  componentDidMount = async () => {
+    // Register FCM Service
+    fcmService.register(this.onRegister, this.onNotification, this.onOpenNotification)
+    // Configure notification options
+    localNotificationService.configure(this.onOpenNotification)
 
-  // Check permission: true/false
-  const locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-  if (locationPermission) {
-    // Get user's current location
-    this.props.fetchCurrentLocation()
-  }
-}
-
-checkLocationPermission = async () => {
-  let locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-  if (!locationPermission) {
-    locationPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    console.log("SplashScreen -> checkLocationPermission -> locationPermission", locationPermission)
-    if (locationPermission !== 'granted') {
-      alert('We need to access your location!')
+    // Check permission: true/false
+    const locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+    if (!locationPermission) {
+      await this.checkLocationPermission()
     }
-  } else {
-    return "granted"
+    await this.getCurrentLocation()
   }
-}
 
-// NOTIFICATION SETUP
-onRegister = (token) => {
-  const { deviceToken } = this.props.app
-  if (deviceToken !== token) {
+  getCurrentLocation = async () => {
+    await Geolocation.getCurrentPosition(async position => {
+      await Geocoder.geocodePosition({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      })
+        .then(res => {
+          const location = {
+            address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
+            coords: res[0].position
+          }
+          this.props.onChangeLocation(location)
+        })
+        .catch(err => console.log(err))
+    }, error => {
+      console.log(error)
+    })
+  }
+
+  checkLocationPermission = async () => {
+    let locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+    if (!locationPermission) {
+      locationPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+      if (locationPermission !== 'granted') {
+        alert('Vui lòng cho phép ứng dụng truy cập vị trí của bạn')
+        return false
+      }
+    }
+    return true
+  }
+
+  // NOTIFICATION SETUP
+  onRegister = (token) => {
     this.props.onChangeDeviceToken(token)
   }
-}
 
-onNotification = (notify) => {
-  const options = {
-    playSound: false
+  onNotification = (notify) => {
+    const options = {
+      playSound: false
+    }
+    localNotificationService.showNotification(
+      0,
+      notify.title,
+      notify.body,
+      notify,
+      options
+    )
   }
-  localNotificationService.showNotification(
-    0,
-    notify.title,
-    notify.body,
-    notify,
-    options
-  )
-}
 
-onOpenNotification = (notify) => {
-  // const order = JSON.parse(Object.values(notify)[0])
-  console.log("SplashScreen -> onOpenNotification -> notify", notify)
-  alert(notify?.body || "Hello, No Content")
-}
-// END NOTIFICATION SETUP
-
-componentWillUnmount() {
-  // fcmService.unregister()
-  // localNotificationService.unregister()
-}
-
-handleStartBtnPressed = async () => {
-  const granted = await this.checkLocationPermission()
-  if (granted === "granted") {
-    this.props.onGetStarted()
+  onOpenNotification = (notify) => {
+    // const order = JSON.parse(Object.values(notify)[0])
+    alert(notify?.body || "Hello, No Content")
   }
-}
+  // END NOTIFICATION SETUP
 
-render() {
-  const { authenticated } = this.props.auth
-  const { isStarted } = this.props.app
-  if (isStarted) {
-    if (authenticated) {
-      Navigation.setRoot({
-        root: {
-          sideMenu
-        }
-      });
-    } else {
-      Navigation.setRoot({
-        root: {
-          component: {
-            name: 'AuthScreen'
-          }
-        }
-      });
+  componentWillUnmount() {
+    // fcmService.unregister()
+    // localNotificationService.unregister()
+  }
+
+  handleStartBtnPressed = async () => {
+    const granted = await this.checkLocationPermission()
+    if (granted) {
+      await this.getCurrentLocation()
+      this.props.onGetStarted()
     }
   }
-  return (
-    <Swiper
-      controlsProps={{
-        prevPos: false,
-        nextPos: false,
-        dotsWrapperStyle: {
-          bottom: 130,
-        },
-      }}>
-      {swipers.map((item, index) => {
-        return (
-          <SwiperItem
-            key={index}
-            item={item}
-            onButtonStartPressed={this.handleStartBtnPressed}
-          />
-        );
-      })}
-    </Swiper>
-  )
-}
+
+  render() {
+    const { authenticated } = this.props.auth
+    const { isStarted } = this.props.app
+    if (isStarted) {
+      if (authenticated) {
+        Navigation.setRoot({
+          root: {
+            sideMenu
+          }
+        });
+      } else {
+        Navigation.setRoot({
+          root: {
+            component: {
+              name: 'AuthScreen'
+            }
+          }
+        });
+      }
+    }
+    return (
+      <Swiper
+        controlsProps={{
+          prevPos: false,
+          nextPos: false,
+          dotsWrapperStyle: {
+            bottom: 130,
+          },
+        }}>
+        {swipers.map((item, index) => {
+          return (
+            <SwiperItem
+              key={index}
+              item={item}
+              onButtonStartPressed={this.handleStartBtnPressed}
+            />
+          );
+        })}
+      </Swiper>
+    )
+  }
 }
 
 const mapStateToProps = state => {
@@ -136,7 +153,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchCurrentLocation: () => dispatch(fetchLocation()),
+    onChangeLocation: location => dispatch(changeLocation(location)),
     onChangeDeviceToken: token => dispatch(Actions.changeDeviceToken(token)),
     onGetStarted: () => dispatch(Actions.getStarted())
   }

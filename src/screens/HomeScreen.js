@@ -5,71 +5,78 @@ import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
 import OptionsModal from '../components/Home/OptionsModal'
+import Loading from '../components/Loading'
 import { changeVehicle, changeLocation } from '../redux/optionsRedux/actions'
 import { updateDeviceTokenRequest } from '../redux/authRedux/actions'
-import Geocoder from 'react-native-geocoder'
-import Geolocation from 'react-native-geolocation-service'
 import Vehicle from '../constants/vehicle'
 import MapView, { Marker } from 'react-native-maps'
+import Geocoder from 'react-native-geocoder'
 
 class HomeScreen extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      marginTop: 0,
+      marginTop: 1,
       showOptions: false,
+      address: props.options.userLocation.address,
       region: {
-        latitude: 16.06778,
-        longitude: 108.22083,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005
+        latitude: props.options.userLocation.coords.lat,
+        longitude: props.options.userLocation.coords.lng,
+        latitudeDelta: 0.003,
+        longitudeDelta: 0.003
       }
     }
   }
 
   componentDidMount = async () => {
-    await this.getCurrentPosition()
     this.checkDeviceToken()
   }
 
-  getCurrentPosition = async () => {
-    Geolocation.getCurrentPosition(async position => {
-      await Geocoder.geocodePosition({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      })
-        .then(res => {
-          let location = {
-            address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
-            coords: res[0].position
-          }
-          this.setState({
-            region: {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              latitudeDelta: 0.005,
-              longitudeDelta: 0.005
-            }
-          })
-          this.props.onChangeLocation(location)
-        })
-        .catch(err => console.log(err))
-    }, error => {
-      console.log(error)
-    })
+  componentDidUpdate(prevProps) {
+    const { lat, lng } = this.props.options.userLocation.coords
+    if (lat !== prevProps.options.userLocation.coords.lat || lng !== prevProps.options.userLocation.coords.lng) {
+      this.setState(prevState => ({
+        ...prevState,
+        region: {
+          ...prevState.region,
+          latitude: lat,
+          longitude: lng
+        }
+      }))
+    }
   }
 
   checkDeviceToken = () => {
     const { deviceToken } = this.props.app
     const { user } = this.props.auth
-    if (deviceToken !== user.deviceToken) {
-      this.props.onUpdateDeviceToken()
+    if (user) {
+      if (deviceToken !== user.deviceToken) {
+        this.props.onUpdateDeviceToken()
+      }
     }
   }
 
   onRegionChangeComplete = region => {
-    console.log("HomeScreen -> region", region)
+    this.setState({ region })
+    const { latitude, longitude } = region
+    Geocoder.geocodePosition({
+      lat: latitude,
+      lng: longitude
+    })
+      .then(res => {
+        const location = {
+          address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
+          coords: res[0].position
+        }
+        this.setState({ address: location.address })
+        // this.props.onChangeLocation(location)
+      })
+      .catch(err => console.log(err))
+  }
+
+  handleOpenSearchLocationModal = () => {
+    console.log("Open search location modal");
   }
 
   handleOpenSideMenu = () => {
@@ -83,7 +90,9 @@ class HomeScreen extends Component {
   };
 
   render() {
-    const { authenticated, user } = this.props.auth
+    const { authenticated, user, loading } = this.props.auth
+    const { showOptions, region, address } = this.state
+    const { vehicle } = this.props.options
     if (!authenticated) {
       Navigation.setRoot({
         root: {
@@ -94,8 +103,9 @@ class HomeScreen extends Component {
       })
       return <View />
     }
-    const { showOptions, region } = this.state
-    const { options: { vehicle, userLocation } } = this.props
+    if (loading) {
+      return <Loading message="Đang tải thông tin" />
+    }
     return (
       <View style={[styles.container]}>
         <OptionsModal
@@ -141,7 +151,7 @@ class HomeScreen extends Component {
               color={APP_COLOR}
             />
           </View>
-          <Text numberOfLines={1} style={{ alignSelf: "center", padding: 10, fontSize: 16 }}>{userLocation.address}</Text>
+          <Text numberOfLines={1} style={{ alignSelf: "center", padding: 10, fontSize: 16, overflow: "hidden" }} onPress={this.handleOpenSearchLocationModal} >{address}</Text>
         </View>
         <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
           <TouchableOpacity

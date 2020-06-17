@@ -10,17 +10,17 @@ export default appReducer = (state = initState, action) => {
   switch (action.type) {
     case Types.CHANGE_APP_COLOR:
       return {
-        ...initState,
+        ...state,
         color: action.payload
       };
     case Types.CHANGE_DEVICE_TOKEN:
       return {
-        ...initState,
+        ...state,
         deviceToken: action.payload
       };
     case Types.GET_STARTED:
       return {
-        ...initState,
+        ...state,
         isStarted: true
       };
     default:
