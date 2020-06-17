@@ -70,13 +70,25 @@ class HomeScreen extends Component {
           coords: res[0].position
         }
         this.setState({ address: location.address })
-        // this.props.onChangeLocation(location)
       })
       .catch(err => console.log(err))
   }
 
   handleOpenSearchLocationModal = () => {
     console.log("Open search location modal");
+  }
+
+  handleButtonSearchPressed = () => {
+    const { address, region: { latitude, longitude } } = this.state
+    const location = {
+      address,
+      coords: {
+        lat: latitude,
+        lng: longitude
+      }
+    }
+    this.props.onChangeLocation(location)
+    this.setState({ showOptions: true })
   }
 
   handleOpenSideMenu = () => {
@@ -142,6 +154,16 @@ class HomeScreen extends Component {
             showsCompass={true}
             onRegionChangeComplete={(region) => this.onRegionChangeComplete(region)}
           />
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <View style={{ marginBottom: 35 }}>
+              <Icon
+                type="material-community"
+                name="map-marker-outline"
+                color={APP_COLOR}
+                size={50}
+              />
+            </View>
+          </View>
         </View>
         <View style={{ flexDirection: "row", marginBottom: 1, borderColor: APP_COLOR, borderWidth: 1 }}>
           <View style={{ padding: 10, borderRightWidth: 1, borderColor: APP_COLOR }}>
@@ -154,17 +176,6 @@ class HomeScreen extends Component {
           <Text numberOfLines={1} style={{ alignSelf: "center", padding: 10, fontSize: 16, overflow: "hidden" }} onPress={this.handleOpenSearchLocationModal} >{address}</Text>
         </View>
         <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
-          <TouchableOpacity
-            style={[styles.vehicle, vehicle === Vehicle.bike ? styles.active : styles.noneActive]}
-            onPress={() => this.props.onChangeVehicle(Vehicle.bike)}
-          >
-            <Icon
-              type="material-community"
-              name="bike"
-              color={vehicle === Vehicle.bike ? 'white' : 'black'}
-            />
-            <Text style={{ fontSize: 15, color: vehicle === Vehicle.bike ? 'white' : 'black' }}>{Vehicle.bike}</Text>
-          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.vehicle, vehicle === Vehicle.motobike ? styles.active : styles.noneActive]}
             onPress={() => this.props.onChangeVehicle(Vehicle.motobike)}
@@ -197,11 +208,11 @@ class HomeScreen extends Component {
             alignItems: "center",
             marginTop: 1
           }}
-          onPress={() => this.setState({ showOptions: true })}
+          onPress={this.handleButtonSearchPressed}
         >
           <Text style={{ fontSize: 18, color: '#fff' }}>TÌM TIỆM SỬA XE</Text>
         </TouchableOpacity>
-      </View>
+      </View >
     )
   }
 }

@@ -17,6 +17,7 @@ import AuthScreen from './src/screens/AuthScreen'
 import StationList from './src/components/Home/StationList'
 import StationModal from './src/components/Home/StationModal'
 import UpdateProfile from './src/components/Profile/UpdateProfile'
+import SearchLocationModal from './src/components/Home/SearchLocationModal'
 
 ReduxProvider = Component => {
   return props => (
@@ -82,6 +83,12 @@ Navigation.registerComponent(
   'StationModal',
   () => ReduxProvider(StationModal),
   () => StationModal,
+);
+
+Navigation.registerComponent(
+  'SearchLocationModal',
+  () => ReduxProvider(SearchLocationModal),
+  () => SearchLocationModal,
 );
 //
 

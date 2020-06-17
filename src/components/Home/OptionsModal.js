@@ -141,7 +141,7 @@ class OptionsModal extends Component {
                 showsVerticalScrollIndicator={false}
               >
                 <View style={{ paddingHorizontal: 10 }}>
-                  <Text style={{ fontSize: 15 }}>{user?.fullName || 'Anonymous'}</Text>
+                  <Text style={{ fontSize: 15 }}>{user?.name || 'Anonymous'}</Text>
                   <Text style={{ fontSize: 15 }}>Phương tiện: {vehicle || 'Unknown'}</Text>
                   <Text style={{ fontSize: 15 }}>SĐT: {user?.phoneNumber || 'Unknown'}</Text>
                   <Text style={{ fontSize: 15 }}>Vị trí: {userLocation.address}</Text>

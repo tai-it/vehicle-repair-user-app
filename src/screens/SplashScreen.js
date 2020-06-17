@@ -26,7 +26,8 @@ class SplashScreen extends Component {
 
     // Check permission: true/false
     const locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    if (!locationPermission) {
+    const { isStarted } = this.props.app
+    if (!locationPermission && isStarted) {
       await this.checkLocationPermission()
     }
     await this.getCurrentLocation()
