@@ -2,17 +2,22 @@ import * as Types from './types'
 import vehicle from '../../constants/vehicle'
 
 const initState = {
+  fetchingServices: false,
+  fetchingStations: false,
+  error: '',
   vehicle: vehicle.motobike,
-  services: [],
+  services: [], // string
+  stations: [],
+  selectedServices: [], // string
+  serviceName: 'Chọn loại dịch vụ',
+  useAmbulatory: false,
   userLocation: {
     address: '',
     coords: {
       lat: 16.068,
       lng: 108.212
     }
-  },
-  serviceName: 'Chọn loại dịch vụ',
-  useAmbulatory: false
+  }
 }
 
 export default optionsReducer = (state = initState, action) => {
@@ -22,12 +27,12 @@ export default optionsReducer = (state = initState, action) => {
         ...state,
         vehicle: action.payload
       }
-    case Types.CHANGE_SERVICE:
+    case Types.CHANGE_SELECTED_SERVICES:
       return {
         ...state,
-        serviceName: action.payload
+        selectedServices: action.payload
       }
-    case Types.CHANGE_AMBULATORY:
+    case Types.CHANGE_AMBULATORY_STATUS:
       return {
         ...state,
         useAmbulatory: action.payload
@@ -37,15 +42,42 @@ export default optionsReducer = (state = initState, action) => {
         ...state,
         userLocation: action.payload
       }
-    case Types.FETCH_LOCATION_SUCCEEDED:
-      console.log("Fetch location success");
+    case Types.FETCH_SERVICES_REQUEST:
       return {
         ...state,
-        userLocation: action.payload.location
+        fetchingServices: true,
+        services: []
       }
-    case Types.FETCH_LOCATION_FAILED:
-      console.log("Fetch location failed");
-      return state;
+    case Types.FETCH_SERVICES_SUCCEEDED:
+      return {
+        ...state,
+        fetchingServices: false,
+        services: action.payload
+      }
+    case Types.FETCH_SERVICES_FAILED:
+      return {
+        ...state,
+        fetchingServices: false,
+        error: action.payload
+      }
+    case Types.FETCH_STATIONS_REQUEST:
+      return {
+        ...state,
+        fetchingStations: true,
+        stations: []
+      }
+    case Types.FETCH_STATIONS_SUCCEEDED:
+      return {
+        ...state,
+        fetchingStations: false,
+        stations: action.payload
+      }
+    case Types.FETCH_STATIONS_FAILED:
+      return {
+        ...state,
+        fetchingStations: false,
+        error: action.payload
+      }
     default:
       return state;
   }

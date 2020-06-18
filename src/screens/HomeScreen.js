@@ -1,16 +1,16 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
-import OptionsModal from '../components/Home/OptionsModal'
 import Loading from '../components/Loading'
-import { changeVehicle, changeLocation } from '../redux/optionsRedux/actions'
+import { changeVehicle, changeLocation, fetchServices } from '../redux/optionsRedux/actions'
 import { updateDeviceTokenRequest } from '../redux/authRedux/actions'
 import Vehicle from '../constants/vehicle'
-import MapView, { Marker } from 'react-native-maps'
+import MapView from 'react-native-maps'
 import Geocoder from 'react-native-geocoder'
+import { options } from '../configs/navigation'
 
 class HomeScreen extends Component {
 
@@ -18,7 +18,6 @@ class HomeScreen extends Component {
     super(props)
     this.state = {
       marginTop: 1,
-      showOptions: false,
       address: props.options.userLocation.address,
       region: {
         latitude: props.options.userLocation.coords.lat,
@@ -88,7 +87,14 @@ class HomeScreen extends Component {
       }
     }
     this.props.onChangeLocation(location)
-    this.setState({ showOptions: true })
+    this.props.onFetchService()
+    Navigation.showModal({
+      id: 'optionsModal',
+      component: {
+        name: 'OptionsModal',
+        options
+      }
+    })
   }
 
   handleOpenSideMenu = () => {
@@ -103,7 +109,7 @@ class HomeScreen extends Component {
 
   render() {
     const { authenticated, user, loading } = this.props.auth
-    const { showOptions, region, address } = this.state
+    const { region, address } = this.state
     const { vehicle } = this.props.options
     if (!authenticated) {
       Navigation.setRoot({
@@ -120,10 +126,6 @@ class HomeScreen extends Component {
     }
     return (
       <View style={[styles.container]}>
-        <OptionsModal
-          visible={showOptions}
-          onDismissModal={() => this.setState({ showOptions: false })}
-        />
         <View
           style={{
             width: '100%',
@@ -140,8 +142,25 @@ class HomeScreen extends Component {
             color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
             onPress={this.handleOpenSideMenu}
           />
-          <Text style={{ fontSize: 20, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{user?.name.toUpperCase()}</Text>
-          <View />
+          <Text
+            numberOfLines={1}
+            style={{
+              alignSelf: "center",
+              fontSize: 16,
+              paddingHorizontal: 5,
+              maxWidth: "80%",
+              color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'
+            }}
+            onPress={this.handleOpenSearchLocationModal}
+          >
+            {address}
+          </Text>
+          <Icon
+            type="antdesign"
+            name="search1"
+            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+            onPress={this.handleOpenSearchLocationModal}
+          />
         </View>
         <View style={{ flex: 1 }}>
           <MapView
@@ -159,21 +178,11 @@ class HomeScreen extends Component {
               <Icon
                 type="material-community"
                 name="map-marker-outline"
-                color={APP_COLOR}
+                color="red"
                 size={50}
               />
             </View>
           </View>
-        </View>
-        <View style={{ flexDirection: "row", marginBottom: 1, borderColor: APP_COLOR, borderWidth: 1 }}>
-          <View style={{ padding: 10, borderRightWidth: 1, borderColor: APP_COLOR }}>
-            <Icon
-              type="entypo"
-              name="location"
-              color={APP_COLOR}
-            />
-          </View>
-          <Text numberOfLines={1} style={{ alignSelf: "center", padding: 10, fontSize: 16, overflow: "hidden" }} onPress={this.handleOpenSearchLocationModal} >{address}</Text>
         </View>
         <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
           <TouchableOpacity
@@ -247,7 +256,8 @@ const mapDispatchToProps = dispatch => {
   return {
     onChangeVehicle: vehicle => dispatch(changeVehicle(vehicle)),
     onChangeLocation: location => dispatch(changeLocation(location)),
-    onUpdateDeviceToken: () => dispatch(updateDeviceTokenRequest())
+    onUpdateDeviceToken: () => dispatch(updateDeviceTokenRequest()),
+    onFetchService: () => dispatch(fetchServices())
   }
 }
 

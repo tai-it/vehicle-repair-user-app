@@ -1,35 +1,43 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import * as Types from './types';
-import * as Actions from './actions'
-import Geocoder from 'react-native-geocoder'
-import Geolocation from 'react-native-geolocation-service'
+import { store } from '../store'
+import callApi from '../../utils/apiCaller'
+import { getDistance } from 'geolib'
 
-function* fetchLocationAsync() {
+function* fetchServicesAsync() {
   try {
-    var userLocation = null
-    Geolocation.getCurrentPosition(position => {
-      Geocoder.geocodePosition({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      })
-        .then(res => {
-          userLocation = {
-            address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
-            coords: res[0].position
-          }
-          console.log("function*fetchLocationAsync -> userLocation", userLocation)
-        })
-        .catch(err => console.log(err))
-    }, error => {
-      console.log(error)
-    })
-    yield put({ type: Types.FETCH_LOCATION_SUCCEEDED, payload: { location: userLocation } })
+    const vehicle = store.getState().options.vehicle
+    const response = yield callApi(`services/vehicle=${vehicle}`)
+    const services = response.data
+    yield put({ type: Types.FETCH_SERVICES_SUCCEEDED, payload: services })
   } catch (error) {
-    console.log("function*fetchLocationAsync -> error", error)
-    yield put({ type: Types.FETCH_LOCATION_FAILED, payload: { error } })
+    yield put({ type: Types.FETCH_SERVICES_FAILED, payload: error?.message || error })
+  }
+}
+
+function* fetchStationsAsync() {
+  try {
+    const { vehicle, userLocation: { coords } } = store.getState().options
+    const response = yield callApi(`stations?vehicle=${vehicle}`)
+    const stations = response.data.sources
+    stations.forEach(station => {
+      Object.assign(station, {
+        distance: getDistance({
+          latitude: coords.lat,
+          longitude: coords.lng
+        }, {
+          latitude: station.latitude,
+          longitude: station.longitude
+        })
+      })
+    })
+    yield put({ type: Types.FETCH_STATIONS_SUCCEEDED, payload: stations })
+  } catch (error) {
+    yield put({ type: Types.FETCH_STATIONS_FAILED, payload: error?.message || error })
   }
 }
 
 export const watchOptionsSaga = [
-  takeLatest(Types.FETCH_LOCATION, fetchLocationAsync)
+  takeLatest(Types.FETCH_SERVICES_REQUEST, fetchServicesAsync),
+  takeLatest(Types.FETCH_STATIONS_REQUEST, fetchStationsAsync)
 ]

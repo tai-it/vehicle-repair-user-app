@@ -1,41 +1,14 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, FlatList, TouchableOpacity, Dimensions } from 'react-native'
+import { Text, View, StyleSheet, FlatList } from 'react-native'
 import { Icon, ListItem } from 'react-native-elements'
+import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
-import Geolocation from 'react-native-geolocation-service'
-import { getDistance } from 'geolib'
 import _ from 'lodash'
 import { connect } from 'react-redux'
+import { options } from '../../configs/navigation'
 
 class StationList extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      stations: props.stations
-    }
-  }
-
-  componentDidMount() {
-    Geolocation.getCurrentPosition(position => {
-      const { stations } = this.state
-      stations.forEach(station => {
-        Object.assign(station, { distance: getDistance(position.coords, station.coords) })
-      })
-      this.setState({ stations })
-    }, error => {
-      console.log(error)
-    })
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.stations !== this.props.stations) {
-      this.setState({
-        stations: this.props.stations
-      })
-    }
-  }
 
   handleCloseModal = () => {
     Navigation.dismissModal(this.props.componentId)
@@ -48,44 +21,39 @@ class StationList extends Component {
         name: 'StationModal',
         passProps: {
           station
-        }
+        },
+        options
       }
     })
   }
 
   render() {
-    const { stations } = this.state
+    const { stations, fetchingStations } = this.props.options
     return (
       <View>
         <View
           style={styles.header}
         >
           <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />
-          <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>Tiệm sửa xe quanh đây</Text>
+          <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>TIỆM XE QUANH ĐÂY</Text>
           <Icon type="antdesign" name="filter" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />
         </View>
-        <FlatList
-          data={_.orderBy(stations, ['distance'], ['asc'])}
-          // renderItem={({ item }) => <TouchableOpacity
-          //   style={styles.station}
-          //   onPress={() => this.handleStationPressed(item)}
-          // >
-          //   <View>
-          //     <Text style={{ fontSize: 16, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{item.name}</Text>
-          //     <Text style={{ color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{`Cách đây ${item.distance} mét`}</Text>
-          //   </View>
-          //   {/* <Icon type="antdesign" name='right' color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} /> */}
-          // </TouchableOpacity>}
-          renderItem={({ item }) => <ListItem
-            onPress={() => this.handleStationPressed(item)}
-            key={item.id}
-            title={item.name}
-            subtitle={`Cách đây ${item.distance} mét`}
-            bottomDivider
-            chevron
-          />}
-          ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
-        />
+        {fetchingStations && <Loading style={{ justifyContent: "center", alignItems: "center", height: '90%' }} message="Đang tìm cửa hàng" /> ||
+          <>
+            <FlatList
+              data={_.orderBy(stations, ['distance'], ['asc'])}
+              renderItem={({ item }) => <ListItem
+                onPress={() => this.handleStationPressed(item)}
+                key={item.id}
+                title={item.name}
+                subtitle={`Cách đây ${item.distance} mét`}
+                bottomDivider
+                chevron
+              />}
+              ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
+            />
+          </>
+        }
       </View>
     )
   }

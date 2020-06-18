@@ -14,6 +14,7 @@ import GetStartedScreen from './src/screens/GetStartedScreen'
 import HomeScreen from "./src/screens/HomeScreen"
 import AuthScreen from './src/screens/AuthScreen'
 
+import OptionsModal from './src/components/Home/OptionsModal'
 import StationList from './src/components/Home/StationList'
 import StationModal from './src/components/Home/StationModal'
 import UpdateProfile from './src/components/Profile/UpdateProfile'
@@ -73,6 +74,12 @@ Navigation.registerComponent(
 // 
 
 // Modals
+Navigation.registerComponent(
+  'OptionsModal',
+  () => ReduxProvider(OptionsModal),
+  () => OptionsModal,
+);
+
 Navigation.registerComponent(
   'StationListModal',
   () => ReduxProvider(StationList),

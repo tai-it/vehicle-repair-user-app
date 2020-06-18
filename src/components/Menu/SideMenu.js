@@ -31,6 +31,7 @@ class SideMenu extends Component {
   }
 
   render() {
+    const { user } = this.props.auth
     return (
       <View style={{ flex: 1, backgroundColor: '#FFF', width: '90%' }}>
         <View
@@ -45,7 +46,7 @@ class SideMenu extends Component {
             backgroundColor: APP_COLOR
           }}>
           <View />
-          <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>SỬA XE 4.0</Text>
+          <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{user?.name.toUpperCase() || ""}</Text>
           <Icon
             type="EvilIcons"
             name="close"
