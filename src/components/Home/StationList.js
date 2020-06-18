@@ -6,9 +6,14 @@ import { APP_COLOR } from '../../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
 import _ from 'lodash'
 import { connect } from 'react-redux'
+import { fetchServices, fetchStations } from '../../redux/optionsRedux/actions'
 import { options } from '../../configs/navigation'
 
 class StationList extends Component {
+
+  componentDidMount() {
+    this.props.onFetchStations()
+  }
 
   handleCloseModal = () => {
     Navigation.dismissModal(this.props.componentId)
@@ -65,7 +70,14 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps, null)(StationList)
+const mapDispatchToProps = dispatch => {
+  return {
+    onFetchService: () => dispatch(fetchServices()),
+    onFetchStations: () => dispatch(fetchStations())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(StationList)
 
 const styles = StyleSheet.create({
   header: {

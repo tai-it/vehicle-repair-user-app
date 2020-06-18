@@ -5,7 +5,7 @@ import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
 import Loading from '../components/Loading'
-import { changeVehicle, changeLocation, fetchServices } from '../redux/optionsRedux/actions'
+import { changeVehicle, changeLocation } from '../redux/optionsRedux/actions'
 import { updateDeviceTokenRequest } from '../redux/authRedux/actions'
 import Vehicle from '../constants/vehicle'
 import MapView from 'react-native-maps'
@@ -87,11 +87,10 @@ class HomeScreen extends Component {
       }
     }
     this.props.onChangeLocation(location)
-    this.props.onFetchService()
     Navigation.showModal({
-      id: 'optionsModal',
+      id: 'stationListModal',
       component: {
-        name: 'OptionsModal',
+        name: 'StationListModal',
         options
       }
     })
@@ -219,7 +218,7 @@ class HomeScreen extends Component {
           }}
           onPress={this.handleButtonSearchPressed}
         >
-          <Text style={{ fontSize: 18, color: '#fff' }}>TÌM TIỆM SỬA XE</Text>
+          <Text style={{ fontSize: 18, color: 'white' }}>TÌM TIỆM SỬA XE</Text>
         </TouchableOpacity>
       </View >
     )
@@ -256,8 +255,7 @@ const mapDispatchToProps = dispatch => {
   return {
     onChangeVehicle: vehicle => dispatch(changeVehicle(vehicle)),
     onChangeLocation: location => dispatch(changeLocation(location)),
-    onUpdateDeviceToken: () => dispatch(updateDeviceTokenRequest()),
-    onFetchService: () => dispatch(fetchServices())
+    onUpdateDeviceToken: () => dispatch(updateDeviceTokenRequest())
   }
 }
 

@@ -16,6 +16,7 @@ import AuthScreen from './src/screens/AuthScreen'
 
 import OptionsModal from './src/components/Home/OptionsModal'
 import StationList from './src/components/Home/StationList'
+import FilterServiceModal from './src/components/Home/FilterServiceModal'
 import StationModal from './src/components/Home/StationModal'
 import UpdateProfile from './src/components/Profile/UpdateProfile'
 import SearchLocationModal from './src/components/Home/SearchLocationModal'
@@ -84,6 +85,12 @@ Navigation.registerComponent(
   'StationListModal',
   () => ReduxProvider(StationList),
   () => StationList,
+);
+
+Navigation.registerComponent(
+  'FilterServiceModal',
+  () => ReduxProvider(FilterServiceModal),
+  () => FilterServiceModal,
 );
 
 Navigation.registerComponent(
