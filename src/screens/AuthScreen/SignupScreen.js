@@ -1,32 +1,21 @@
 import React, { Component } from 'react'
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  TextInput,
-  Picker,
-  ScrollView
-} from 'react-native'
-import Loading from '../../components/Loading'
+import { ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
-import { styles } from '../../styles'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { countries } from '../../constants/country'
 import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
+import { Header, Card, Input, Button } from 'react-native-elements'
 
 class SignupScreen extends Component {
   constructor(props) {
     super(props);
     this.unsubscribe = null;
     this.state = {
-      user: {
-        name: "Trần Văn Tài",
-        phoneNumber: "0858222957",
-        email: "",
-        password: "Tai16031999@@",
-        confirmPassword: "Tai16031999@@"
-      }
+      name: "",
+      phoneNumber: "",
+      email: "",
+      password: "",
+      confirmPassword: ""
     }
   }
 
@@ -35,155 +24,119 @@ class SignupScreen extends Component {
   }
 
   onChangeText = (key, value) => {
-    this.setState(prevState => ({
-      user: {
-        ...prevState.user,
-        [key]: value,
-      },
-    }));
+    this.setState({
+      [key]: value
+    });
   }
 
   onSignup = () => {
-    const { name, phoneNumber, email, password } = this.state.user
-    this.props.onSignupRequest({
-      name,
-      phoneNumber,
-      email: email || null,
-      password
-    })
+    const { name, phoneNumber, email, password, confirmPassword } = this.state
+    if (name && phoneNumber && password === confirmPassword) {
+      this.props.onSignupRequest({
+        name,
+        phoneNumber,
+        email: email || null,
+        password
+      })
+    }
   }
 
   render() {
-    const { user } = this.state
-    const { loading, errors, message } = this.props.auth
-    if (loading) {
-      return <Loading message='Đang xử lý...' />
-    }
+    const { name, phoneNumber, email, password, confirmPassword } = this.state
+    const { loading, errors } = this.props.auth
     return (
       <>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingVertical: 20,
-            paddingHorizontal: 20,
-            borderBottomWidth: 1,
-            borderColor: '#E9E9E9',
-            backgroundColor: APP_COLOR
-          }}>
-          <Text style={styles.title}>Đăng ký tài khoản</Text>
-        </View>
-
-        <ScrollView style={styles.container}>
-          <Text style={{ flex: 1, paddingTop: 10, color: 'red' }}>{message || ""}</Text>
-          <View>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={[styles.label, { paddingTop: 10 }]}>SĐT *</Text>
-              <Text numberOfLines={1} style={{ textAlign: "right", flex: 1, paddingTop: 10, color: 'red' }}>
-                {errors?.find(x => x.propertyName == "PhoneNumber")?.errorMessage.split(";")[0] || ""}
-              </Text>
-            </View>
-            <View style={{ flexDirection: "row" }}>
-              <TextInput
-                style={[styles.textInput, { flex: 1 }]}
-                onChangeText={phoneNumber => this.onChangeText('phoneNumber', phoneNumber)}
-                onBlur={this.checkIfPhoneExists}
-                value={user.phoneNumber}
-                placeholder="0987 654 321"
-                keyboardType="phone-pad"
-                returnKeyType="next"
-                onSubmitEditing={() => this.refName.focus()}
-                blurOnSubmit={false}
-              />
-            </View>
-
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.label}>Họ và Tên*</Text>
-              <Text numberOfLines={1} style={{ textAlign: "right", flex: 1, color: 'red' }}>
-                {errors?.find(x => x.propertyName == "Name")?.errorMessage.split(";")[0] || ""}
-              </Text>
-            </View>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={value => this.onChangeText('name', value)}
-              value={user.name}
-              placeholder="Họ và Tên"
-              autoCapitalize="words"
+        <Header
+          centerComponent={{ text: "ĐĂNG KÝ TÀI KHOẢN", style: { color: '#fff', fontSize: 18 } }}
+          backgroundColor={APP_COLOR}
+          containerStyle={{ paddingTop: 0, height: 60 }}
+        />
+        <Card containerStyle={{ flex: 1, marginBottom: 15 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          >
+            <Input
+              label="Họ và tên"
+              placeholder="Nguyễn Ngọc Hoàng"
               returnKeyType="next"
-              ref={r => this.refName = r}
+              onSubmitEditing={() => this.refPhoneNumber.focus()}
+              blurOnSubmit={false}
+              value={name}
+              autoCapitalize="words"
+              onChangeText={name => this.onChangeText("name", name)}
+              containerStyle={{ marginTop: 20 }}
+              inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}
+              leftIcon={{ type: 'feather', name: 'user', color: "#aaaaaa" }}
+              errorMessage={errors?.find(x => x.propertyName == "Name")?.errorMessage.split(";")[0] || ""}
+            />
+
+            <Input
+              label="Số điện thoại"
+              placeholder="0987 654 321"
+              keyboardType='phone-pad'
+              returnKeyType="next"
+              ref={r => (this.refPhoneNumber = r)}
               onSubmitEditing={() => this.refPassword.focus()}
               blurOnSubmit={false}
+              value={phoneNumber}
+              onChangeText={phoneNumber => this.onChangeText("phoneNumber", phoneNumber)}
+              containerStyle={{ marginTop: 20 }}
+              inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}
+              leftIcon={{ type: 'feather', name: 'phone', color: "#aaaaaa" }}
+              errorMessage={errors?.find(x => x.propertyName == "PhoneNumber")?.errorMessage.split(";")[0] || ""}
             />
 
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.label}>Mật khẩu *</Text>
-              <Text numberOfLines={1} style={{ textAlign: "right", flex: 1, color: 'red' }}>
-                {errors?.find(x => x.propertyName == "Password")?.errorMessage.split(";")[0] || ""}
-              </Text>
-            </View>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={value => this.onChangeText('password', value)}
-              value={user.password}
-              placeholder="********"
+            <Input
+              label="Mật khẩu"
+              placeholder="**************"
+              leftIcon={{ type: 'feather', name: 'lock', color: "#aaaaaa" }}
+              value={password}
               autoCapitalize="none"
-              secureTextEntry={true}
               returnKeyType="next"
-              ref={r => this.refPassword = r}
+              ref={r => (this.refPassword = r)}
               onSubmitEditing={() => this.refConfirmPassword.focus()}
-              blurOnSubmit={false}
-            />
-
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.label}>Xác nhận mật khẩu *</Text>
-              <Text numberOfLines={1} style={{ textAlign: "right", flex: 1, color: 'red' }}>
-
-              </Text>
-            </View>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={value =>
-                this.onChangeText('confirmPassword', value)
-              }
-              onBlur={this.validate}
-              value={user.confirmPassword}
-              placeholder="********"
-              autoCapitalize="none"
+              blurOnSubmit={true}
+              onChangeText={password => this.onChangeText("password", password)}
+              containerStyle={{ marginTop: 20 }}
+              inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}
               secureTextEntry={true}
-              returnKeyType="done"
-              ref={r => this.refConfirmPassword = r}
-              onSubmitEditing={this.signIn}
+              errorMessage={errors?.find(x => x.propertyName == "Password")?.errorMessage.split(";")[0] || ""}
             />
-          </View>
 
-          <View
-            style={[
-              styles.formControl,
-              styles.contentCenter,
-              styles.btnContainer,
-            ]}>
-            <TouchableOpacity
-              onPress={() => this.props.onNavigateToLogin()}
-              style={[styles.btn, styles.contentCenter]}>
-              <Text style={{ fontSize: 15 }}>Đăng nhập</Text>
-            </TouchableOpacity>
+            <Input
+              label="Xác nhận mật khẩu"
+              placeholder="**************"
+              leftIcon={{ type: 'feather', name: 'lock', color: "#aaaaaa" }}
+              value={confirmPassword}
+              autoCapitalize="none"
+              returnKeyType="done"
+              ref={r => (this.refConfirmPassword = r)}
+              onSubmitEditing={this.onSignup}
+              blurOnSubmit={true}
+              onChangeText={confirmPassword => this.onChangeText("confirmPassword", confirmPassword)}
+              containerStyle={{ marginTop: 20 }}
+              inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}
+              secureTextEntry={true}
+              errorMessage={password !== confirmPassword ? "Mật khẩu không khớp" : ""}
+            />
 
-            <TouchableOpacity
+            <Button
+              title="ĐĂNG KÝ"
+              loading={loading}
+              containerStyle={{ marginVertical: 8, marginTop: 30 }}
+              buttonStyle={{ paddingVertical: 15 }}
               onPress={this.onSignup}
-              style={[styles.btn, { backgroundColor: APP_COLOR }, styles.contentCenter]}>
-              <Text style={[{ fontSize: 15 }, styles.textWhite]}>Đăng ký</Text>
-            </TouchableOpacity>
-          </View>
+            />
 
-          <View style={styles.pavicy}>
-            <Text style={styles.textCenter}>
-              Bằng việc xác nhận tạo tài khoản, bạn đã đồng ý với các{' '}
-              <Text style={{ color: APP_COLOR }}>điều khoản quy định</Text> của
-              chúng tôi
-                </Text>
-          </View>
-        </ScrollView>
+            <Button
+              title="ĐĂNG NHẬP"
+              containerStyle={{ marginVertical: 8 }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: '#aaaaaa' }}
+              onPress={this.props.onNavigateToLogin}
+            />
+          </ScrollView>
+        </Card>
       </>
     );
   }

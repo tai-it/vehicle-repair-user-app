@@ -51,7 +51,7 @@ class StationListModal extends Component {
                 onPress={() => this.handleStationPressed(item)}
                 key={item.id}
                 title={item.name}
-                subtitle={`Cách đây ${item.distance} mét`}
+                subtitle={`Cách đây ${item.distance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} mét`}
                 bottomDivider
                 chevron
               />}

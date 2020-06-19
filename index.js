@@ -18,6 +18,7 @@ import OptionsModal from './src/components/Home/OptionsModal'
 import StationListModal from './src/components/Home/StationListModal'
 import FilterServiceModal from './src/components/Home/FilterServiceModal'
 import StationModal from './src/components/Home/StationModal'
+import OrderListModal from './src/components/Home/OrderListModal'
 import OrderDetailModal from './src/components/Home/OrderDetailModal'
 import UpdateProfile from './src/components/Profile/UpdateProfile'
 import SearchLocationModal from './src/components/Home/SearchLocationModal'
@@ -101,6 +102,12 @@ Navigation.registerComponent(
 );
 
 Navigation.registerComponent(
+  'OrderListModal',
+  () => ReduxProvider(OrderListModal),
+  () => OrderListModal,
+);
+
+Navigation.registerComponent(
   'OrderDetailModal',
   () => ReduxProvider(OrderDetailModal),
   () => OrderDetailModal,
@@ -123,7 +130,7 @@ Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({
     root: {
       component: {
-        name: 'OrderDetailModal',
+        name: 'SplashScreen',
       },
     },
   });

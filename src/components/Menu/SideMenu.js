@@ -5,6 +5,7 @@ import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
+import { options } from '../../configs/navigation'
 
 class SideMenu extends Component {
 
@@ -19,15 +20,22 @@ class SideMenu extends Component {
   };
 
   handleOpenProfile = () => {
-
+    this.handleCloseSideMenu()
   }
 
   handleOpenOrderHistory = () => {
-
+    this.handleCloseSideMenu()
+    Navigation.showModal({
+      id: 'orderListModal',
+      component: {
+        name: 'OrderListModal',
+        options
+      }
+    })
   }
 
   handleOpenSettings = () => {
-
+    this.handleCloseSideMenu()
   }
 
   render() {
