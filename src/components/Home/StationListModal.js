@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import { fetchServices, fetchStations } from '../../redux/optionsRedux/actions'
 import { options } from '../../configs/navigation'
 
-class StationList extends Component {
+class StationListModal extends Component {
 
   componentDidMount() {
     this.props.onFetchStations()
@@ -77,7 +77,7 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(StationList)
+export default connect(mapStateToProps, mapDispatchToProps)(StationListModal)
 
 const styles = StyleSheet.create({
   header: {

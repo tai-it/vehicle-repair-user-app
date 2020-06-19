@@ -1,4 +1,5 @@
 import PushNotification from 'react-native-push-notification'
+import { APP_COLOR } from '../../utils/AppSettings'
 
 class LocalNotificationService {
 
@@ -28,11 +29,12 @@ class LocalNotificationService {
       message: message || '',
       autoCancel: true,
       largeIcon: options.largeIcon || 'ic_launcher',
-      smallIcon: options.smallIcon || 'ic_notification',
+      smallIcon: options.smallIcon || 'ic_launcher',
       bigText: message || '',
       subText: title || '',
+      color: APP_COLOR,
       vibrate: options.vibrate || true,
-      vibration: options.vibration || 1000,
+      vibration: options.vibration || 2000,
       playSound: options.playSound || false,
       soundName: options.soundName || "default",
       priority: options.priority || 'high',

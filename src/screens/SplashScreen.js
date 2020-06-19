@@ -70,6 +70,7 @@ class SplashScreen extends Component {
   }
 
   onNotification = (notify) => {
+    console.log("SplashScreen -> onNotification -> notify", notify)
     const options = {
       playSound: false
     }

@@ -4,12 +4,11 @@ import { APP_COLOR } from '../../utils/AppSettings'
 import { Icon, CheckBox } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
-import Vehicle from '../../constants/vehicle'
 import Loading from '../../components/Loading'
 import ToggleSwitch from 'toggle-switch-react-native'
 import { changeAmbulatory } from '../../redux/optionsRedux/actions'
-import { OrderStatus } from '../../constants/orderStatus'
 import callApi from '../../utils/apiCaller'
+import { options } from '../../configs/navigation'
 
 class StationModal extends Component {
 
@@ -17,7 +16,7 @@ class StationModal extends Component {
     super(props);
     this.state = {
       station: null,
-      selectedServices: [], // List of ids
+      selectedServices: [],
       reviews: [],
       loading: true,
       totalServiceFee: 0,
@@ -42,9 +41,13 @@ class StationModal extends Component {
 
   fetchStationDetail = async () => {
     const { id } = this.props.station
-    const station = await callApi(`stations/${id}`)
+    const response = await callApi(`stations/${id}`)
+    const station = response.data
+    if (!station.hasAmbulatory) {
+      this.props.onChangeAmbulatory(false)
+    }
     this.setState({
-      station: station.data,
+      station,
       loading: false
     })
   }
@@ -95,8 +98,22 @@ class StationModal extends Component {
         useAmbulatory,
         orderDetails
       }
-      const response = await callApi("orders", "POST", order, token)
-      console.log("handleBooking -> response", response)
+      try {
+        const response = await callApi("orders", "POST", order, token)
+        // OPEN ORDER DETAIL MODAL
+        Navigation.showModal({
+          id: 'orderDetailModal',
+          component: {
+            name: 'OrderDetailModal',
+            passProps: {
+              order: response?.data
+            },
+            options
+          }
+        })
+      } catch (error) {
+        alert(error?.response?.data);
+      }
     }
   }
 

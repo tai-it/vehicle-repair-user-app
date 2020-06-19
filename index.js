@@ -15,9 +15,10 @@ import HomeScreen from "./src/screens/HomeScreen"
 import AuthScreen from './src/screens/AuthScreen'
 
 import OptionsModal from './src/components/Home/OptionsModal'
-import StationList from './src/components/Home/StationList'
+import StationListModal from './src/components/Home/StationListModal'
 import FilterServiceModal from './src/components/Home/FilterServiceModal'
 import StationModal from './src/components/Home/StationModal'
+import OrderDetailModal from './src/components/Home/OrderDetailModal'
 import UpdateProfile from './src/components/Profile/UpdateProfile'
 import SearchLocationModal from './src/components/Home/SearchLocationModal'
 
@@ -83,8 +84,8 @@ Navigation.registerComponent(
 
 Navigation.registerComponent(
   'StationListModal',
-  () => ReduxProvider(StationList),
-  () => StationList,
+  () => ReduxProvider(StationListModal),
+  () => StationListModal,
 );
 
 Navigation.registerComponent(
@@ -97,6 +98,12 @@ Navigation.registerComponent(
   'StationModal',
   () => ReduxProvider(StationModal),
   () => StationModal,
+);
+
+Navigation.registerComponent(
+  'OrderDetailModal',
+  () => ReduxProvider(OrderDetailModal),
+  () => OrderDetailModal,
 );
 
 Navigation.registerComponent(
@@ -116,7 +123,7 @@ Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({
     root: {
       component: {
-        name: 'SplashScreen',
+        name: 'OrderDetailModal',
       },
     },
   });
