@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
-import { Icon } from 'react-native-elements'
+import { Icon, Header, Button, Card } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
@@ -52,6 +52,7 @@ class HomeScreen extends Component {
     if (user) {
       if (deviceToken !== user.deviceToken) {
         this.props.onUpdateDeviceToken()
+        console.log("Token Changed");
       }
     }
   }
@@ -125,42 +126,29 @@ class HomeScreen extends Component {
     }
     return (
       <View style={[styles.container]}>
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            padding: 18,
-            borderBottomWidth: 1,
-            borderColor: '#E9E9E9',
-            backgroundColor: APP_COLOR
-          }}>
-          <Icon
+        {/* HEADER */}
+        <Header
+          leftComponent={<Icon
             type="MaterialCommunityIcons"
             name="menu"
             color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
             onPress={this.handleOpenSideMenu}
-          />
-          <Text
-            numberOfLines={1}
-            style={{
-              alignSelf: "center",
-              fontSize: 16,
-              paddingHorizontal: 5,
-              maxWidth: "80%",
-              color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'
-            }}
-            onPress={this.handleOpenSearchLocationModal}
-          >
-            {address}
-          </Text>
-          <Icon
+          />}
+          centerComponent={{ text: address, style: { color: '#fff', fontSize: 16, marginHorizontal: -30 } }}
+          rightComponent={<Icon
             type="antdesign"
             name="search1"
             color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
             onPress={this.handleOpenSearchLocationModal}
-          />
-        </View>
+          />}
+          backgroundColor={APP_COLOR}
+          containerStyle={{
+            paddingTop: 0,
+            paddingHorizontal: 18,
+            height: 60
+          }}
+        />
+        {/* MAP VIEW */}
         <View style={{ flex: 1 }}>
           <MapView
             style={[StyleSheet.absoluteFillObject, { marginTop: this.state.marginTop }]}
@@ -183,43 +171,39 @@ class HomeScreen extends Component {
             </View>
           </View>
         </View>
-        <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
-          <TouchableOpacity
-            style={[styles.vehicle, vehicle === Vehicle.motobike ? styles.active : styles.noneActive]}
-            onPress={() => this.props.onChangeVehicle(Vehicle.motobike)}
-          >
-            <Icon
-              type="material-community"
-              name="motorbike"
-              color={vehicle === Vehicle.motobike ? 'white' : 'black'}
-              size={30}
-            />
-            <Text style={{ fontSize: 15, color: vehicle === Vehicle.motobike ? 'white' : 'black' }}>{Vehicle.motobike}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.vehicle, vehicle === Vehicle.car ? styles.active : styles.noneActive]}
-            onPress={() => this.props.onChangeVehicle(Vehicle.car)}
-          >
-            <Icon
-              type="material-community"
-              name="car"
-              color={vehicle === Vehicle.car ? 'white' : 'black'}
-            />
-            <Text style={{ fontSize: 15, color: vehicle === Vehicle.car ? 'white' : 'black' }}>{Vehicle.car}</Text>
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity
-          style={{
-            paddingVertical: 18,
-            backgroundColor: APP_COLOR,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 1
-          }}
-          onPress={this.handleButtonSearchPressed}
-        >
-          <Text style={{ fontSize: 18, color: 'white' }}>TÌM TIỆM SỬA XE</Text>
-        </TouchableOpacity>
+        {/* CARD VEHICLES */}
+        <Card containerStyle={{ margin: 0 }}>
+          <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
+            <TouchableOpacity
+              style={[styles.vehicle, vehicle === Vehicle.motobike ? styles.active : styles.noneActive]}
+              onPress={() => this.props.onChangeVehicle(Vehicle.motobike)}
+            >
+              <Icon
+                type="material-community"
+                name="motorbike"
+                color={vehicle === Vehicle.motobike ? 'white' : 'black'}
+                size={30}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.vehicle, vehicle === Vehicle.car ? styles.active : styles.noneActive]}
+              onPress={() => this.props.onChangeVehicle(Vehicle.car)}
+            >
+              <Icon
+                type="material-community"
+                name="car"
+                color={vehicle === Vehicle.car ? 'white' : 'black'}
+              />
+            </TouchableOpacity>
+          </View>
+          <Button
+            title="TÌM TIỆM SỬA XE"
+            loading={loading}
+            containerStyle={{ marginTop: 5 }}
+            buttonStyle={{ paddingVertical: 15 }}
+            onPress={this.handleButtonSearchPressed}
+          />
+        </Card>
       </View >
     )
   }
@@ -231,7 +215,7 @@ const styles = StyleSheet.create({
   },
   vehicle: {
     flex: 1,
-    paddingVertical: 5,
+    paddingVertical: 10,
     justifyContent: "center",
     alignItems: "center"
   },

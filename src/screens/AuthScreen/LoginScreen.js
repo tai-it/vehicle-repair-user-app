@@ -114,6 +114,7 @@ class LoginScreen extends Component {
 
             <Button
               title="ĐĂNG KÝ"
+              disabled={loading}
               containerStyle={{ marginVertical: 8 }}
               buttonStyle={{ paddingVertical: 15, backgroundColor: '#aaaaaa' }}
               onPress={this.props.onNavigateToSignup}

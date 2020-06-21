@@ -25,7 +25,7 @@ class OrderListModal extends Component {
   fetchOrders = async () => {
     const { token } = this.props.auth
     try {
-      const response = await callApi('orders/me', 'GET', null, token)
+      const response = await callApi('orders/me?isDesc=true', 'GET', null, token)
       const orders = response?.data?.sources
       this.setState({
         loading: false,
@@ -61,7 +61,11 @@ class OrderListModal extends Component {
           leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
           centerComponent={{ text: "LỊCH SỬ HOẠT ĐỘNG", style: { color: '#fff', fontSize: 18 } }}
           backgroundColor={APP_COLOR}
-          containerStyle={{ paddingTop: 0, height: 70 }}
+          containerStyle={{
+            paddingTop: 0,
+            paddingHorizontal: 18,
+            height: 60
+          }}
         />
         {loading ? <Loading
           style={{

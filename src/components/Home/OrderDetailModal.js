@@ -88,7 +88,11 @@ class OrderDetailModal extends Component {
           centerComponent={{ text: station?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 18 } }}
           rightComponent={<Icon type="material-community" name="directions" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.openOnGoogleMaps} />}
           backgroundColor={APP_COLOR}
-          containerStyle={{ paddingTop: 0, height: 70 }}
+          containerStyle={{
+            paddingTop: 0,
+            paddingHorizontal: 18,
+            height: 60
+          }}
         />
         {loading ? <Loading
           style={{

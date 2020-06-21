@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { Icon } from 'react-native-elements'
+import { Icon, Header } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
@@ -42,26 +42,17 @@ class SideMenu extends Component {
     const { user } = this.props.auth
     return (
       <View style={{ flex: 1, backgroundColor: '#FFF', width: '90%' }}>
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            alignItems: "center",
-            justifyContent: 'space-between',
-            padding: 18,
-            borderBottomWidth: 1,
-            borderColor: '#E9E9E9',
-            backgroundColor: APP_COLOR
-          }}>
-          <View />
-          <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{user?.name.toUpperCase() || ""}</Text>
-          <Icon
+        <Header
+          centerComponent={{ text: user?.name.toUpperCase() || "", style: { color: '#fff', fontSize: 16, marginHorizontal: -30 } }}
+          rightComponent={<Icon
             type="EvilIcons"
             name="close"
             color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
             onPress={this.handleCloseSideMenu}
-          />
-        </View>
+          />}
+          backgroundColor={APP_COLOR}
+          containerStyle={{ paddingTop: 0, paddingHorizontal: 18, height: 60 }}
+        />
         <View>
           <TouchableOpacity
             style={styles.menu}

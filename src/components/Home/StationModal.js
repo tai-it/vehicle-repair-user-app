@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, Linking, FlatList } from 'react-native'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { Icon, CheckBox } from 'react-native-elements'
+import { Icon, CheckBox, Header, Card, Button } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import Loading from '../../components/Loading'
@@ -19,6 +19,7 @@ class StationModal extends Component {
       selectedServices: [],
       reviews: [],
       loading: true,
+      booking: false,
       totalServiceFee: 0,
       ambulatoryFee: props.options.useAmbulatory ? props.station.distance * 8 : 0
     }
@@ -83,6 +84,7 @@ class StationModal extends Component {
   handleBooking = async () => {
     const { selectedServices } = this.state
     if (selectedServices.length > 0) {
+      this.setState({ booking: true })
       const { station: { id, distance }, options: { userLocation: { address, coords }, useAmbulatory }, auth: { token } } = this.props
       const orderDetails = selectedServices.map(service => {
         return {
@@ -114,6 +116,7 @@ class StationModal extends Component {
       } catch (error) {
         alert(error?.response?.data);
       }
+      this.setState({ booking: false })
     }
   }
 
@@ -127,16 +130,21 @@ class StationModal extends Component {
 
   render() {
     const { options: { useAmbulatory } } = this.props
-    const { loading, station, selectedServices, totalServiceFee, ambulatoryFee } = this.state
+    const { loading, booking, station, selectedServices, totalServiceFee, ambulatoryFee } = this.state
     return (
       <View style={{ flex: 1 }}>
-        <View
-          style={styles.header}
-        >
-          <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />
-          <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>{station?.name?.toUpperCase() || ""}</Text>
-          <Icon type="material-community" name="directions" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.openOnGoogleMaps} />
-        </View>
+        {/* HEADER */}
+        <Header
+          leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
+          centerComponent={{ text: station?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 16, marginHorizontal: -30 } }}
+          rightComponent={<Icon type="material-community" name="directions" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.openOnGoogleMaps} />}
+          backgroundColor={APP_COLOR}
+          containerStyle={{
+            paddingTop: 0,
+            paddingHorizontal: 18,
+            height: 60
+          }}
+        />
         {loading ? <Loading message='Đang tải thông tin...' /> :
           <>
             <View style={{ flex: 1 }}>
@@ -156,7 +164,7 @@ class StationModal extends Component {
                 ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
               />
             </View>
-            <View style={{ padding: 10, paddingRight: 20, backgroundColor: '#e9ebee' }}>
+            <Card containerStyle={{ margin: 0 }}>
               <ToggleSwitch
                 isOn={useAmbulatory}
                 onColor="green"
@@ -167,20 +175,14 @@ class StationModal extends Component {
                 onToggle={() => this.handleChangeAmbulatoryOption(!useAmbulatory)}
               />
               <Text style={{ fontSize: 16, paddingHorizontal: 10 }}>Tổng cộng: {(totalServiceFee + (useAmbulatory && selectedServices.length > 0 ? ambulatoryFee : 0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ</Text>
-            </View>
-            <TouchableOpacity
-              disabled={selectedServices.length > 0 ? false : true}
-              style={{
-                paddingVertical: 18,
-                backgroundColor: APP_COLOR,
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 1
-              }}
-              onPress={this.handleBooking}
-            >
-              <Text style={{ fontSize: 18, color: '#fff' }}>{`Đặt dịch vụ`.toUpperCase()}</Text>
-            </TouchableOpacity>
+              <Button
+                title="ĐẶT DỊCH VỤ"
+                loading={booking}
+                containerStyle={{ marginTop: 10 }}
+                buttonStyle={{ paddingVertical: 15 }}
+                onPress={this.handleBooking}
+              />
+            </Card>
           </>
         }
       </View>

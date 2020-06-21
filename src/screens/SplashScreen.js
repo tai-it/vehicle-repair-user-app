@@ -9,6 +9,7 @@ import { changeLocation } from '../redux/optionsRedux/actions'
 import { PermissionsAndroid } from 'react-native'
 import Geolocation from 'react-native-geolocation-service'
 import Geocoder from 'react-native-geocoder'
+import { options } from '../configs/navigation'
 
 //
 import Swiper from 'react-native-web-swiper'
@@ -83,9 +84,28 @@ class SplashScreen extends Component {
     )
   }
 
-  onOpenNotification = (notify) => {
-    // const order = JSON.parse(Object.values(notify)[0])
-    alert(notify?.body || "Hello, No Content")
+  onOpenNotification = (data) => {
+    const order = data?.order
+    if (order) {
+      Navigation.showModal({
+        id: 'orderDetailModal',
+        component: {
+          name: 'OrderDetailModal',
+          passProps: {
+            order
+          },
+          options
+        }
+      })
+    } else {
+      Navigation.showModal({
+        id: 'orderListModal',
+        component: {
+          name: 'OrderListModal',
+          options
+        }
+      })
+    }
   }
   // END NOTIFICATION SETUP
 

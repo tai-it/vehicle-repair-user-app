@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, FlatList } from 'react-native'
-import { Icon, ListItem } from 'react-native-elements'
+import { Icon, ListItem, Header } from 'react-native-elements'
 import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
@@ -36,13 +36,18 @@ class StationListModal extends Component {
     const { stations, fetchingStations } = this.props.options
     return (
       <View>
-        <View
-          style={styles.header}
-        >
-          <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />
-          <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>TIỆM XE QUANH ĐÂY</Text>
-          <Icon type="antdesign" name="filter" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />
-        </View>
+        {/* HEADER */}
+        <Header
+          leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
+          centerComponent={{ text: "TIỆM XE QUANH ĐÂY", style: { color: '#fff', fontSize: 16, marginHorizontal: -30 } }}
+          rightComponent={<Icon type="antdesign" name="filter" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
+          backgroundColor={APP_COLOR}
+          containerStyle={{
+            paddingTop: 0,
+            paddingHorizontal: 18,
+            height: 60
+          }}
+        />
         {fetchingStations && <Loading style={{ justifyContent: "center", alignItems: "center", height: '90%' }} message="Đang tìm cửa hàng" /> ||
           <>
             <FlatList
