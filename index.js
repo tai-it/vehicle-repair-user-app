@@ -13,6 +13,7 @@ import SplashScreen from "./src/screens/SplashScreen"
 import GetStartedScreen from './src/screens/GetStartedScreen'
 import HomeScreen from "./src/screens/HomeScreen"
 import AuthScreen from './src/screens/AuthScreen'
+import NotificationScreen from "./src/screens/NotificationScreen"
 
 import OptionsModal from './src/components/Home/OptionsModal'
 import StationListModal from './src/components/Home/StationListModal'
@@ -60,6 +61,11 @@ Navigation.registerComponent(
   () => AuthScreen,
 );
 
+Navigation.registerComponent(
+  'NotificationScreen',
+  () => ReduxProvider(NotificationScreen),
+  () => NotificationScreen,
+);
 
 Navigation.registerComponent(
   'HomeScreen',

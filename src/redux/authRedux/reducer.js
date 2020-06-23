@@ -19,7 +19,6 @@ export default authReducer = (state = initState, action) => {
     case Types.LOGIN_SUCCEEDED:
       return {
         ...initState,
-        loading: false,
         authenticated: true,
         token: action.payload.token,
       };
@@ -37,7 +36,6 @@ export default authReducer = (state = initState, action) => {
     case Types.SIGNUP_SUCCEEDED:
       return {
         ...initState,
-        loading: false,
         authenticated: true,
         token: action.payload.token,
       };

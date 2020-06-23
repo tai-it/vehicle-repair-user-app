@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
-import { Icon, Header, Button, Card } from 'react-native-elements'
+import { Icon, Header, Button, Card, Badge } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
 import Loading from '../components/Loading'
 import { changeVehicle, changeLocation } from '../redux/optionsRedux/actions'
-import { updateDeviceTokenRequest } from '../redux/authRedux/actions'
+import { updateDeviceTokenRequest, fetchProfileRequest } from '../redux/authRedux/actions'
 import Vehicle from '../constants/vehicle'
 import MapView from 'react-native-maps'
 import Geocoder from 'react-native-geocoder'
@@ -30,6 +30,7 @@ class HomeScreen extends Component {
 
   componentDidMount = async () => {
     this.checkDeviceToken()
+    this.props.onFetchProfile()
   }
 
   componentDidUpdate(prevProps) {
@@ -78,6 +79,16 @@ class HomeScreen extends Component {
     console.log("Open search location modal");
   }
 
+  handleOpenNotificationScreen = () => {
+    Navigation.showModal({
+      id: 'notificationScreen',
+      component: {
+        name: 'NotificationScreen',
+        options
+      }
+    })
+  }
+
   handleButtonSearchPressed = () => {
     const { address, region: { latitude, longitude } } = this.state
     const location = {
@@ -108,9 +119,9 @@ class HomeScreen extends Component {
   };
 
   render() {
-    const { authenticated, user, loading } = this.props.auth
+    const { auth: { authenticated, loading }, options: { vehicle }, notify: { notifications } } = this.props
+    const unreadNotify = notifications.filter(x => !x.isSeen)
     const { region, address } = this.state
-    const { vehicle } = this.props.options
     if (!authenticated) {
       Navigation.setRoot({
         root: {
@@ -135,12 +146,21 @@ class HomeScreen extends Component {
             onPress={this.handleOpenSideMenu}
           />}
           centerComponent={{ text: address, style: { color: '#fff', fontSize: 16, marginHorizontal: -30 } }}
-          rightComponent={<Icon
-            type="antdesign"
-            name="search1"
-            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
-            onPress={this.handleOpenSearchLocationModal}
-          />}
+          rightComponent={<View>
+            <Icon
+              type="antdesign"
+              name="bells"
+              color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+              onPress={this.handleOpenNotificationScreen}
+            />
+            {unreadNotify.length > 0 &&
+              <Badge
+                status="error"
+                value={unreadNotify.length}
+                containerStyle={{ position: 'absolute', top: -4, right: -4 }}
+              />
+            }
+          </View>}
           backgroundColor={APP_COLOR}
           containerStyle={{
             paddingTop: 0,
@@ -231,7 +251,8 @@ const mapStateToProps = state => {
   return {
     auth: state.auth,
     app: state.app,
-    options: state.options
+    options: state.options,
+    notify: state.notify
   }
 }
 
@@ -239,7 +260,8 @@ const mapDispatchToProps = dispatch => {
   return {
     onChangeVehicle: vehicle => dispatch(changeVehicle(vehicle)),
     onChangeLocation: location => dispatch(changeLocation(location)),
-    onUpdateDeviceToken: () => dispatch(updateDeviceTokenRequest())
+    onUpdateDeviceToken: () => dispatch(updateDeviceTokenRequest()),
+    onFetchProfile: () => dispatch(fetchProfileRequest())
   }
 }
 

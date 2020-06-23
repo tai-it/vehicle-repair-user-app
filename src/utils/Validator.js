@@ -1,14 +1,3 @@
-export default class Validator {
-  static validate = (fieldName, value) => {
-    if (!value) {
-      return {
-        status: false,
-        message: 'Required'
-      }
-    } else {
-      if (fieldName === 'name') {
-        
-      }
-    }
-  }
+export const isPasswordValidated = password => {
+  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(password)
 }

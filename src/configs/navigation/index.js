@@ -4,7 +4,7 @@ export const options = {
       x: {
         from: 1000,
         to: 0,
-        duration: 300,
+        duration: 400,
       }
     },
     dismissModal: {

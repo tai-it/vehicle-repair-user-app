@@ -71,7 +71,6 @@ class SplashScreen extends Component {
   }
 
   onNotification = (notify) => {
-    console.log("SplashScreen -> onNotification -> notify", notify)
     const options = {
       playSound: false
     }
@@ -85,23 +84,15 @@ class SplashScreen extends Component {
   }
 
   onOpenNotification = (data) => {
-    const order = data?.order
-    if (order) {
-      Navigation.showModal({
-        id: 'orderDetailModal',
-        component: {
-          name: 'OrderDetailModal',
-          passProps: {
-            order
-          },
-          options
-        }
-      })
+    const notifyId = data?.id
+    if (notifyId) {
+      console.log("SplashScreen -> onOpenNotification -> notifyId", notifyId)
+      // SHOW POP-UP HERE
     } else {
       Navigation.showModal({
-        id: 'orderListModal',
+        id: 'notificationScreen',
         component: {
-          name: 'OrderListModal',
+          name: 'NotificationScreen',
           options
         }
       })

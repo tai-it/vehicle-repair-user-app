@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ScrollView } from 'react-native'
+import { ScrollView, Text } from 'react-native'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
@@ -13,7 +13,6 @@ class SignupScreen extends Component {
     this.state = {
       name: "",
       phoneNumber: "",
-      email: "",
       password: "",
       confirmPassword: ""
     }
@@ -30,32 +29,44 @@ class SignupScreen extends Component {
   }
 
   onSignup = () => {
-    const { name, phoneNumber, email, password, confirmPassword } = this.state
+    const { name, phoneNumber, password, confirmPassword } = this.state
     if (name && phoneNumber && password === confirmPassword) {
       this.props.onSignupRequest({
         name,
         phoneNumber,
-        email: email || null,
         password
       })
     }
   }
 
   render() {
-    const { name, phoneNumber, email, password, confirmPassword } = this.state
-    const { loading, errors } = this.props.auth
+    const { name, phoneNumber, password, confirmPassword } = this.state
+    const { loading, errors, message } = this.props.auth
     return (
       <>
         <Header
           centerComponent={{ text: "ĐĂNG KÝ TÀI KHOẢN", style: { color: '#fff', fontSize: 18 } }}
           backgroundColor={APP_COLOR}
-          containerStyle={{ paddingTop: 0, height: 60 }}
+          containerStyle={{
+            paddingTop: 0,
+            paddingHorizontal: 18,
+            height: 60
+          }}
         />
         <Card containerStyle={{ flex: 1, marginBottom: 15 }}>
           <ScrollView
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
           >
+            <Text style={{
+              flex: 1,
+              paddingTop: 15,
+              paddingHorizontal: 10,
+              color: 'red'
+            }}>
+              {typeof (message) == typeof ("") ? message : ""}
+            </Text>
+
             <Input
               label="Họ và tên"
               placeholder="Nguyễn Ngọc Hoàng"
@@ -96,7 +107,7 @@ class SignupScreen extends Component {
               returnKeyType="next"
               ref={r => (this.refPassword = r)}
               onSubmitEditing={() => this.refConfirmPassword.focus()}
-              blurOnSubmit={true}
+              blurOnSubmit={false}
               onChangeText={password => this.onChangeText("password", password)}
               containerStyle={{ marginTop: 20 }}
               inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}

@@ -1,4 +1,4 @@
 export default Vehicle = {
-  motobike: 'Xe máy',
-  car: 'Ô tô'
+  motobike: 'Motobike',
+  car: 'Car'
 }

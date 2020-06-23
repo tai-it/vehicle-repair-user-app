@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, Linking, ScrollView } from 'react-native'
+import { StyleSheet, Linking, ScrollView } from 'react-native'
 import { Card, ListItem, Icon, Header, Button } from 'react-native-elements'
-import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
 import StepIndicator from 'react-native-step-indicator'
@@ -13,41 +12,8 @@ class OrderDetailModal extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      loading: true,
-      canceling: false,
-      order: null,
-      station: null
-    }
-  }
-
-  componentDidMount = async () => {
-    await this.fetchOrderDetail()
-  }
-
-  fetchOrderDetail = async () => {
-    const { id } = this.props.order
-    const { token } = this.props.auth
-    try {
-      const response = await callApi(`orders/${id}`, "GET", null, token)
-      const order = response.data
-      await this.fetchStationDetail(order.stationId)
-      this.setState({
-        order
-      })
-    } catch (e) {
-      console.log(e?.response);
-    }
-  }
-
-  fetchStationDetail = async (id) => {
-    try {
-      const response = await callApi(`stations/${id}`)
-      this.setState({
-        station: response.data,
-        loading: false
-      })
-    } catch (e) {
-      console.log(e?.response);
+      loading: false,
+      order: props.order
     }
   }
 
@@ -55,10 +21,10 @@ class OrderDetailModal extends Component {
     const { id } = this.state.order
     const { token } = this.props.auth
     try {
-      this.setState({ canceling: true })
-      const response = await callApi(`orders/${id}`, "PUT", { status: "Đã huỷ" }, token)
-      await this.fetchOrderDetail()
-      this.setState({ canceling: false })
+      this.setState({ loading: true })
+      await callApi(`orders/${id}`, "PUT", { status: "Đã huỷ" }, token)
+      this.setState({ loading: false })
+      Navigation.dismissModal(this.props.componentId)
     } catch (e) {
       alert(e?.response)
       console.log("OrderDetailModal -> handleCancelOrder -> e?.response", e?.response)
@@ -74,19 +40,28 @@ class OrderDetailModal extends Component {
     Linking.openURL(`google.navigation:q=${station?.latitude},${station?.longitude}`)
   }
 
-  onPageChange(position) {
-    this.setState({ currentPosition: position });
-  }
-
   render() {
-    const { order, station, loading, canceling } = this.state
+    const { order, loading } = this.state
     const labels = Object.values(orderStatus);
     return (
       <>
         <Header
-          leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
-          centerComponent={{ text: station?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 18 } }}
-          rightComponent={<Icon type="material-community" name="directions" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.openOnGoogleMaps} />}
+          leftComponent={<Icon
+            type="antdesign"
+            name="left"
+            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+            onPress={this.handleCloseModal}
+          />}
+          centerComponent={{
+            text: order.station?.name?.toUpperCase() || "",
+            style: { color: '#fff', fontSize: 18 }
+          }}
+          rightComponent={[orderStatus.accepted, orderStatus.fixing].find(x => x == order.status) ? <Icon
+            type="material-community"
+            name="directions"
+            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+            onPress={this.openOnGoogleMaps}
+          /> : {}}
           backgroundColor={APP_COLOR}
           containerStyle={{
             paddingTop: 0,
@@ -94,103 +69,106 @@ class OrderDetailModal extends Component {
             height: 60
           }}
         />
-        {loading ? <Loading
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            height: '90%'
-          }}
-          message="Đang tải thông tin" /> :
-          <ScrollView>
-            <Card
-              title="THÔNG TIN CUỐC XE"
-              titleStyle={{ fontSize: 16, color: APP_COLOR }}
-            >
-              <ListItem
-                title="Họ và Tên:"
-                rightTitle={order?.customerName}
-                rightTitleStyle={{ color: 'black' }}
-                containerStyle={{ paddingVertical: 5 }}
-                rightSubtitleStyle={{ textAlign: "left" }}
-              />
-              <ListItem
-                title="Số điện thoại:"
-                rightTitle={order?.customerPhone}
-                rightTitleStyle={{ color: 'black' }}
-                containerStyle={{ paddingVertical: 5 }}
-                rightSubtitleStyle={{ textAlign: "left" }}
-              />
-              <ListItem
-                title="Vị trí:"
-                rightTitle={order?.address}
-                rightTitleStyle={{ color: 'black' }}
-                containerStyle={{ paddingVertical: 5 }}
-                rightSubtitleStyle={{ textAlign: "left" }}
-              />
-              <ListItem
-                title="Sử dụng lưu động:"
-                rightTitle={order?.useAmbulatory ? "Có" : "Không"}
-                rightTitleStyle={{ color: 'black' }}
-                containerStyle={{ paddingVertical: 5 }}
-                rightSubtitleStyle={{ textAlign: "left" }}
-              />
-            </Card>
-            <Card
-              title="DỊCH VỤ"
-              titleStyle={{ fontSize: 16, color: APP_COLOR }}
-              dividerStyle={{ height: 1 }}
-            >
-              {
-                order?.services.map((service, i) => {
-                  return (
-                    <ListItem
-                      key={i}
-                      roundAvatar
-                      title={service.name}
-                      rightTitle={service.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ"}
-                    />
-                  );
-                })
-              }
-              <ListItem
-                roundAvatar
-                title="Tổng cộng:"
-                titleStyle={styles.totalPrice}
-                rightTitleStyle={[styles.totalPrice, { width: '100%' }]}
-                rightTitle={order?.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ"}
-              />
-            </Card>
-            <Card
-              title="TÌNH TRẠNG CUỐC XE"
-              titleStyle={{ fontSize: 16, color: APP_COLOR }}
-              containerStyle={{ marginBottom: 15 }}
-            >
-              {order?.status !== "Đã huỷ" ?
-                <>
-                  <StepIndicator
-                    customStyles={customStyles}
-                    stepCount={labels.length}
-                    currentPosition={labels.indexOf(order?.status)}
-                    labels={labels}
+        <ScrollView>
+          {/* ORDER INFORMATION */}
+          <Card
+            title="THÔNG TIN CUỐC XE"
+            titleStyle={{ fontSize: 16, color: APP_COLOR }}
+          >
+            <ListItem
+              title="Họ và Tên:"
+              rightTitle={order?.customerName}
+              rightTitleStyle={{ color: 'black' }}
+              containerStyle={{ paddingVertical: 5 }}
+              rightSubtitleStyle={{ textAlign: "left" }}
+            />
+            <ListItem
+              title="Số điện thoại:"
+              rightTitle={order?.customerPhone}
+              rightTitleStyle={{ color: 'black' }}
+              containerStyle={{ paddingVertical: 5 }}
+              rightSubtitleStyle={{ textAlign: "left" }}
+            />
+            <ListItem
+              title="Vị trí:"
+              rightTitle={order?.address}
+              rightTitleStyle={{ color: 'black' }}
+              containerStyle={{ paddingVertical: 5 }}
+              rightSubtitleStyle={{ textAlign: "left" }}
+            />
+            <ListItem
+              title="Sử dụng lưu động:"
+              rightTitle={order?.useAmbulatory ? "Có" : "Không"}
+              rightTitleStyle={{ color: 'black' }}
+              containerStyle={{ paddingVertical: 5 }}
+              rightSubtitleStyle={{ textAlign: "left" }}
+            />
+          </Card>
+          {/* SELECTED SERVICES */}
+          <Card
+            title="DỊCH VỤ ĐÃ CHỌN"
+            titleStyle={{ fontSize: 16, color: APP_COLOR }}
+            dividerStyle={{ height: 1 }}
+          >
+            {
+              order?.services.map((service, i) => {
+                return (
+                  <ListItem
+                    key={i}
+                    roundAvatar
+                    title={service.name}
+                    rightTitle={service.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ"}
                   />
-                  <Button
-                    title="HUỶ CUỐC XE"
-                    loading={canceling}
-                    containerStyle={{ marginTop: 10 }}
-                    buttonStyle={{ paddingVertical: 15 }}
-                    onPressOut={this.handleCancelOrder}
-                  />
-                </> :
+                );
+              })
+            }
+            <ListItem
+              roundAvatar
+              title="Tổng cộng:"
+              titleStyle={styles.totalPrice}
+              rightTitleStyle={[styles.totalPrice, { width: '100%' }]}
+              rightTitle={order?.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ"}
+            />
+          </Card>
+          {/* ORDER STATUS */}
+          <Card
+            title="TÌNH TRẠNG CUỐC XE"
+            titleStyle={{ fontSize: 16, color: APP_COLOR }}
+            containerStyle={{ marginBottom: 15 }}
+          >
+            {order?.status !== "Đã huỷ" ?
+              <>
                 <StepIndicator
                   customStyles={customStyles}
-                  stepCount={2}
-                  currentPosition={1}
-                  labels={["Đang chờ", "Đã huỷ"]}
+                  stepCount={labels.length}
+                  currentPosition={labels.indexOf(order?.status)}
+                  labels={labels}
                 />
-              }
-            </Card>
-          </ScrollView>
-        }
+                {
+                  order.status === "Đã hoàn thành" ? <Button
+                    title="ĐÁNH GIÁ"
+                    loading={loading}
+                    containerStyle={{ marginTop: 10 }}
+                    buttonStyle={{ paddingVertical: 15 }}
+                    onPressOut={this.handleReview}
+                  /> : <Button
+                      title="HUỶ CUỐC XE"
+                      loading={loading}
+                      containerStyle={{ marginTop: 10 }}
+                      buttonStyle={{ paddingVertical: 15 }}
+                      onPressOut={this.handleCancelOrder}
+                    />
+                }
+              </> :
+              <StepIndicator
+                customStyles={customStyles}
+                stepCount={2}
+                currentPosition={1}
+                labels={["Đang chờ", "Đã huỷ"]}
+              />
+            }
+          </Card>
+        </ScrollView>
       </>
     )
   }

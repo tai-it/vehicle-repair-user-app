@@ -39,7 +39,7 @@ class StationListModal extends Component {
         {/* HEADER */}
         <Header
           leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
-          centerComponent={{ text: "TIỆM XE QUANH ĐÂY", style: { color: '#fff', fontSize: 16, marginHorizontal: -30 } }}
+          centerComponent={{ text: "TIỆM XE QUANH ĐÂY", style: { color: '#fff', fontSize: 18, marginHorizontal: -30 } }}
           rightComponent={<Icon type="antdesign" name="filter" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
           backgroundColor={APP_COLOR}
           containerStyle={{

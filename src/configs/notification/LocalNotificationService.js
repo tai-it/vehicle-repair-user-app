@@ -34,7 +34,7 @@ class LocalNotificationService {
       subText: title || '',
       color: APP_COLOR,
       vibrate: options.vibrate || true,
-      vibration: options.vibration || 2000,
+      vibration: options.vibration || 1000,
       playSound: options.playSound || false,
       soundName: options.soundName || "default",
       priority: options.priority || 'high',

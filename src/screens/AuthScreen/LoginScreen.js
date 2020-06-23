@@ -46,7 +46,11 @@ class LoginScreen extends Component {
         <Header
           centerComponent={{ text: "ĐĂNG NHẬP", style: { color: '#fff', fontSize: 18 } }}
           backgroundColor={APP_COLOR}
-          containerStyle={{ paddingTop: 0, height: 60 }}
+          containerStyle={{
+            paddingTop: 0,
+            paddingHorizontal: 18,
+            height: 60
+          }}
         />
         <Card containerStyle={{ flex: 1, marginBottom: 15 }}>
           <ScrollView

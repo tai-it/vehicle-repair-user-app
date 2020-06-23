@@ -1,7 +1,7 @@
 export const orderStatus = {
   waiting: "Đang chờ",
-  accepted: "Đã xác nhận",
+  accepted: "Đã chấp nhận",
   fixing: "Đang sửa",
-  fixed: "Hoàn Thành",
+  fixed: "Đã hoàn thành",
   // canceled: "Đã huỷ",
 }

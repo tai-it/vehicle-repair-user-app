@@ -15,9 +15,9 @@ class StationModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      station: null,
+      station: props.station,
+      services: [],
       selectedServices: [],
-      reviews: [],
       loading: true,
       booking: false,
       totalServiceFee: 0,
@@ -25,8 +25,8 @@ class StationModal extends Component {
     }
   }
 
-  componentDidMount = () => {
-    this.fetchStationDetail()
+  componentDidMount = async () => {
+    await this.fetchStationServices()
   }
 
   handleServicePressed = service => {
@@ -40,15 +40,15 @@ class StationModal extends Component {
     this.totalSalcserviceFee(selectedServices)
   }
 
-  fetchStationDetail = async () => {
-    const { id } = this.props.station
-    const response = await callApi(`stations/${id}`)
-    const station = response.data
-    if (!station.hasAmbulatory) {
+  fetchStationServices = async () => {
+    const { id, hasAmbulatory } = this.props.station
+    if (!hasAmbulatory) {
       this.props.onChangeAmbulatory(false)
     }
+    const response = await callApi(`stations/${id}`)
+    const { services } = response.data
     this.setState({
-      station,
+      services,
       loading: false
     })
   }
@@ -130,7 +130,7 @@ class StationModal extends Component {
 
   render() {
     const { options: { useAmbulatory } } = this.props
-    const { loading, booking, station, selectedServices, totalServiceFee, ambulatoryFee } = this.state
+    const { loading, booking, station, services, selectedServices, totalServiceFee, ambulatoryFee } = this.state
     return (
       <View style={{ flex: 1 }}>
         {/* HEADER */}
@@ -145,11 +145,11 @@ class StationModal extends Component {
             height: 60
           }}
         />
-        {loading ? <Loading message='Đang tải thông tin...' /> :
+        {loading ? <Loading message='Đang tải dịch vụ...' /> :
           <>
             <View style={{ flex: 1 }}>
               <FlatList
-                data={station?.services}
+                data={services}
                 numColumns={1}
                 renderItem={({ item }) =>
                   <CheckBox

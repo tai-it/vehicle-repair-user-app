@@ -26,10 +26,9 @@ export const phoneConfirmed = () => {
   }
 }
 
-export const fetchProfileRequest = token => {
+export const fetchProfileRequest = () => {
   return {
-    type: Types.FETCH_PROFILE_REQUEST,
-    payload: token
+    type: Types.FETCH_PROFILE_REQUEST
   }
 }
 

@@ -3,46 +3,59 @@ import * as Types from './types';
 import callApi from '../../utils/apiCaller';
 import { store } from '../store'
 import { Roles } from '../../constants/roles';
-import * as Actions from './actions'
+import { isPasswordValidated } from '../../utils/Validator'
+import { fetchNotifications } from '../notifyRedux/actions'
 
 function* loginAsync(action) {
   try {
     const response = yield callApi(`account/login`, 'POST', action.payload)
     const token = response.data
     yield put({ type: Types.LOGIN_SUCCEEDED, payload: { token } })
-    yield put(Actions.fetchProfileRequest(token))
   } catch (error) {
     let message = error?.response?.data || "Có lỗi xảy ra, vui lòng thử lại"
     yield put({ type: Types.LOGIN_FAILED, payload: { message } })
   }
 }
 
-function* signupAsync(action) {
+function* signupAsync({ payload }) {
   try {
     const deviceToken = store.getState().app.deviceToken
     if (!deviceToken) {
       console.log("Không tìm thấy DeviceToken");
     }
-    const newUser = Object.assign(action.payload, {
+    const newUser = Object.assign(payload, {
       deviceToken,
       role: Roles.user
     })
+
+    if (!isPasswordValidated(newUser.password)) {
+      let errors = [{
+        propertyName: "Password",
+        errorMessage: "Mật khẩu phải chứa ít nhất một chữ hoa, chữ thường, số và kí tự đặc biệt"
+      }]
+      yield put({ type: Types.SIGNUP_FAILED, payload: { message: "", errors } })
+      return
+    }
+
     const response = yield callApi(`account/register`, 'POST', newUser)
     const token = response.data
     yield put({ type: Types.SIGNUP_SUCCEEDED, payload: { token } })
-    yield put(Actions.fetchProfileRequest(token))
   } catch (error) {
-    let message = typeof (error?.response) == typeof ("") ? error?.response : "Có lỗi xảy ra, vui lòng thử lại"
-    let errors = error?.response?.data || []
+    let message = typeof (error?.response) == typeof ("") ? error?.response : ""
+    let errors = typeof (error?.response?.data) == typeof ([]) ? error?.response?.data : []
     yield put({ type: Types.SIGNUP_FAILED, payload: { message, errors } })
   }
 }
 
-function* fetchProfileAsync(action) {
+function* fetchProfileAsync() {
   try {
-    const response = yield callApi(`account/me`, 'GET', null, action.payload)
-    const user = response.data
-    yield put({ type: Types.FETCH_PROFILE_SUCCEEDED, payload: { user } })
+    const { token, authenticated } = store.getState().auth
+    if (authenticated) {
+      const response = yield callApi(`account/me`, 'GET', null, token)
+      const user = response.data
+      yield put({ type: Types.FETCH_PROFILE_SUCCEEDED, payload: { user } })
+      yield put(fetchNotifications())
+    }
   } catch (error) {
     yield put({ type: Types.FETCH_PROFILE_FAILED })
   }
