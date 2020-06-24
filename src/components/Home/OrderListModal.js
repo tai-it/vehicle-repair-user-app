@@ -1,38 +1,20 @@
 import React, { Component } from 'react'
-import { FlatList } from 'react-native'
+import { FlatList, View } from 'react-native'
 import { connect } from 'react-redux'
 import { Navigation } from 'react-native-navigation'
-import { Icon, Header, ListItem } from 'react-native-elements'
+import { Icon, Header, ListItem, Card } from 'react-native-elements'
 import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { animatedMedium } from '../../configs/navigation'
-import callApi from '../../utils/apiCaller'
+import { fetchOrders } from '../../redux/orderRedux/actions'
+import { format } from 'date-fns'
 
 class OrderListModal extends Component {
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      loading: true,
-      orders: []
-    }
-  }
-
-  componentDidMount = async () => {
-    await this.fetchOrders()
-  }
-
-  fetchOrders = async () => {
-    const { token } = this.props.auth
-    try {
-      const response = await callApi('orders/me?isDesc=true', 'GET', null, token)
-      const orders = response?.data?.sources
-      this.setState({
-        loading: false,
-        orders
-      })
-    } catch (e) {
-      console.log(e?.response);
+  handleLoadMore = () => {
+    const { hasNextPage, pageIndex } = this.props.ordering
+    if (hasNextPage) {
+      this.props.onFetchOrders(pageIndex + 1)
     }
   }
 
@@ -54,7 +36,7 @@ class OrderListModal extends Component {
   }
 
   render() {
-    const { loading, orders } = this.state
+    const { loading, orders, hasNextPage } = this.props.ordering
     return (
       <>
         <Header
@@ -67,26 +49,36 @@ class OrderListModal extends Component {
             height: 60
           }}
         />
-        {loading ? <Loading
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            height: '90%'
-          }}
-          message="Đang tải thông tin" /> :
+        <Card containerStyle={{
+          flex: 1,
+          margin: 5,
+          marginBottom: 5,
+          paddingVertical: 0
+        }}>
           <FlatList
             data={orders}
             renderItem={({ item }) =>
               <ListItem
                 key={item.id}
                 title={item.address}
-                rightSubtitle={item.status}
+                subtitle={format(new Date(item.createdOn), "dd-MM-yyyy H:mma")}
+                rightTitle={item.status}
                 bottomDivider
                 onPress={() => this.handleOnOrderPressed(item)}
               />
             }
+            keyExtractor={item => item.id}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            onEndReachedThreshold={0.05}
+            onEndReached={this.handleLoadMore}
+            onRefresh={this.props.onFetchOrders}
+            refreshing={orders.length > 0 ? false : loading}
+            ListFooterComponent={() => {
+              return hasNextPage && <Loading /> || null
+            }}
           />
-        }
+        </Card>
       </>
     )
   }
@@ -94,8 +86,15 @@ class OrderListModal extends Component {
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth
+    auth: state.auth,
+    ordering: state.ordering
   }
 }
 
-export default connect(mapStateToProps, null)(OrderListModal)
+const mapDispatchToProps = dispatch => {
+  return {
+    onFetchOrders: pageIndex => dispatch(fetchOrders(pageIndex))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(OrderListModal)

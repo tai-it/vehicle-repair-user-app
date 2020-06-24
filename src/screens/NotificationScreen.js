@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { Text, View, FlatList } from 'react-native'
 import { connect } from 'react-redux'
-import * as Actions from '../redux/notifyRedux/actions'
+import { fetchNotifications } from '../redux/notifyRedux/actions'
 import callApi from '../utils/apiCaller'
 import { Header, Icon, Card, ListItem, Badge } from 'react-native-elements'
 import { APP_COLOR } from '../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
-import { animateFast } from '../configs/navigation'
+import { animatedSlow } from '../configs/navigation'
+import Loading from '../components/Loading'
+import { format } from 'date-fns'
 
 class NotificationScreen extends Component {
 
@@ -15,6 +17,13 @@ class NotificationScreen extends Component {
     if (notifications.filter(x => !x.isSeen).length) {
       await callApi(`notifications`, 'PUT', null, token)
       this.props.onFetchNotifications()
+    }
+  }
+
+  handleLoadMore = () => {
+    const { hasNextPage, pageIndex } = this.props.notify
+    if (hasNextPage) {
+      this.props.onFetchNotifications(pageIndex + 1)
     }
   }
 
@@ -27,7 +36,7 @@ class NotificationScreen extends Component {
         passProps: {
           order
         },
-        options: animateFast
+        options: animatedSlow
       }
     })
   }
@@ -37,7 +46,7 @@ class NotificationScreen extends Component {
   }
 
   render() {
-    const { loading, notifications } = this.props.notify
+    const { loading, hasNextPage, notifications } = this.props.notify
     return (
       <>
         <Header
@@ -51,14 +60,17 @@ class NotificationScreen extends Component {
             height: 60
           }}
         />
-        <Card containerStyle={{ flex: 1, marginBottom: 15 }}>
+        <Card containerStyle={{
+          flex: 1,
+          margin: 5,
+          marginBottom: 5,
+          paddingVertical: 0
+        }}>
           <FlatList
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
             data={notifications}
             renderItem={({ item }) => <ListItem
               title={item.title}
-              subtitle={item.body}
+              subtitle={`${item.body}\n\n${format(new Date(item.createdOn), "dd-MM-yyyy H:mma")}`}
               rightIcon={!item.isSeen ? <Badge
                 status="success"
               /> : {}}
@@ -66,8 +78,15 @@ class NotificationScreen extends Component {
               onPress={() => this.handleNotificationPressed(item)}
             />}
             keyExtractor={item => item.id}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            onEndReachedThreshold={0.05}
+            onEndReached={this.handleLoadMore}
             onRefresh={this.props.onFetchNotifications}
-            refreshing={loading}
+            refreshing={notifications.length > 0 ? false : loading}
+            ListFooterComponent={() => {
+              return hasNextPage && <Loading /> || null
+            }}
           />
         </Card>
       </>
@@ -84,7 +103,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onFetchNotifications: () => dispatch(Actions.fetchNotifications())
+    onFetchNotifications: pageIndex => dispatch(fetchNotifications(pageIndex))
   }
 }
 

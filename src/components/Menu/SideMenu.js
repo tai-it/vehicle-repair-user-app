@@ -5,7 +5,7 @@ import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { animatedMedium } from '../../configs/navigation'
+import { animatedSlow } from '../../configs/navigation'
 
 class SideMenu extends Component {
 
@@ -29,7 +29,7 @@ class SideMenu extends Component {
       id: 'orderListModal',
       component: {
         name: 'OrderListModal',
-        options: animatedMedium
+        options: animatedSlow
       }
     })
   }
@@ -43,7 +43,7 @@ class SideMenu extends Component {
     return (
       <View style={{ flex: 1, backgroundColor: '#FFF', width: '90%' }}>
         <Header
-          centerComponent={{ text: user?.name.toUpperCase() || "", style: { color: '#fff', fontSize: 16, marginHorizontal: -30 } }}
+          centerComponent={{ text: user?.name.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginHorizontal: -30 } }}
           rightComponent={<Icon
             type="EvilIcons"
             name="close"

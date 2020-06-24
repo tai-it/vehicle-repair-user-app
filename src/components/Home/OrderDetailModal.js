@@ -4,31 +4,15 @@ import { Card, ListItem, Icon, Header, Button } from 'react-native-elements'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
 import StepIndicator from 'react-native-step-indicator'
-import { orderStatus } from '../../constants/orderStatus'
+import { orderStatus, orderUncompletedLabels, orderCanceledLabels } from '../../constants/orderStatus'
 import { connect } from 'react-redux'
+import { cancelOrder } from '../../redux/orderRedux/actions'
 
 class OrderDetailModal extends Component {
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      loading: false,
-      order: props.order
-    }
-  }
-
-  handleCancelOrder = async () => {
-    const { id } = this.state.order
-    const { token } = this.props.auth
-    try {
-      this.setState({ loading: true })
-      await callApi(`orders/${id}`, "PUT", { status: "Đã huỷ" }, token)
-      this.setState({ loading: false })
-      Navigation.dismissModal(this.props.componentId)
-    } catch (e) {
-      alert(e?.response)
-      console.log("OrderDetailModal -> handleCancelOrder -> e?.response", e?.response)
-    }
+  handleCancelOrder = () => {
+    const { id } = this.props.order
+    this.props.onCancelOrder(id)
   }
 
   handleCloseModal = () => {
@@ -36,13 +20,13 @@ class OrderDetailModal extends Component {
   }
 
   openOnGoogleMaps = () => {
-    const { station } = this.props
+    const { station } = this.props.order
     Linking.openURL(`google.navigation:q=${station?.latitude},${station?.longitude}`)
   }
 
   render() {
-    const { order, loading } = this.state
-    const labels = Object.values(orderStatus);
+    const { order, ordering: { canceling } } = this.props
+    const labels = Object.values(order.status == orderStatus.canceled ? orderCanceledLabels : orderUncompletedLabels);
     return (
       <>
         <Header
@@ -136,37 +120,27 @@ class OrderDetailModal extends Component {
             titleStyle={{ fontSize: 16, color: APP_COLOR }}
             containerStyle={{ marginBottom: 15 }}
           >
-            {order?.status !== "Đã huỷ" ?
-              <>
-                <StepIndicator
-                  customStyles={customStyles}
-                  stepCount={labels.length}
-                  currentPosition={labels.indexOf(order?.status)}
-                  labels={labels}
-                />
-                {
-                  order.status === "Đã hoàn thành" ? <Button
-                    title="ĐÁNH GIÁ"
-                    loading={loading}
-                    containerStyle={{ marginTop: 10 }}
-                    buttonStyle={{ paddingVertical: 15 }}
-                    onPressOut={this.handleReview}
-                  /> : <Button
-                      title="HUỶ CUỐC XE"
-                      loading={loading}
-                      containerStyle={{ marginTop: 10 }}
-                      buttonStyle={{ paddingVertical: 15 }}
-                      onPressOut={this.handleCancelOrder}
-                    />
-                }
-              </> :
-              <StepIndicator
-                customStyles={customStyles}
-                stepCount={2}
-                currentPosition={1}
-                labels={["Đang chờ", "Đã huỷ"]}
-              />
-            }
+            <StepIndicator
+              customStyles={customStyles}
+              stepCount={labels.length}
+              currentPosition={labels.indexOf(order?.status)}
+              labels={labels}
+            />
+            {order.status !== orderStatus.canceled && order.status === orderStatus.done && <Button
+              title="ĐÁNH GIÁ"
+              loading={false}
+              containerStyle={{ marginTop: 10 }}
+              buttonStyle={{ paddingVertical: 15 }}
+              onPressOut={this.handleReview}
+            />}
+
+            {order.status !== orderStatus.canceled && order.status !== orderStatus.done && <Button
+              title="HUỶ CUỐC XE"
+              loading={canceling}
+              containerStyle={{ marginTop: 10 }}
+              buttonStyle={{ paddingVertical: 15 }}
+              onPressOut={this.handleCancelOrder}
+            />}
           </Card>
         </ScrollView>
       </>
@@ -218,8 +192,15 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth
+    auth: state.auth,
+    ordering: state.ordering
   }
 }
 
-export default connect(mapStateToProps, null)(OrderDetailModal)
+const mapDispatchToProps = dispatch => {
+  return {
+    onCancelOrder: (id) => dispatch(cancelOrder(id))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(OrderDetailModal)

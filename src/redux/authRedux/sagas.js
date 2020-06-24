@@ -5,6 +5,7 @@ import { store } from '../store'
 import { Roles } from '../../constants/roles';
 import { isPasswordValidated } from '../../utils/Validator'
 import { fetchNotifications } from '../notifyRedux/actions'
+import { fetchOrders } from '../orderRedux/actions';
 
 function* loginAsync(action) {
   try {
@@ -55,6 +56,7 @@ function* fetchProfileAsync() {
       const user = response.data
       yield put({ type: Types.FETCH_PROFILE_SUCCEEDED, payload: { user } })
       yield put(fetchNotifications())
+      yield put(fetchOrders())
     }
   } catch (error) {
     yield put({ type: Types.FETCH_PROFILE_FAILED })

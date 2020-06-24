@@ -8,25 +8,17 @@ import Loading from '../../components/Loading'
 import ToggleSwitch from 'toggle-switch-react-native'
 import { changeAmbulatory } from '../../redux/optionsRedux/actions'
 import callApi from '../../utils/apiCaller'
-import { animatedMedium } from '../../configs/navigation'
+import { addOrder } from '../../redux/orderRedux/actions'
 
 class StationModal extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      station: props.station,
-      services: [],
       selectedServices: [],
-      loading: true,
-      booking: false,
       totalServiceFee: 0,
       ambulatoryFee: props.options.useAmbulatory ? props.station.distance * 8 : 0
     }
-  }
-
-  componentDidMount = async () => {
-    await this.fetchStationServices()
   }
 
   handleServicePressed = service => {
@@ -38,19 +30,6 @@ class StationModal extends Component {
       selectedServices.push(service)
     }
     this.totalSalcserviceFee(selectedServices)
-  }
-
-  fetchStationServices = async () => {
-    const { id, hasAmbulatory } = this.props.station
-    if (!hasAmbulatory) {
-      this.props.onChangeAmbulatory(false)
-    }
-    const response = await callApi(`stations/${id}`)
-    const { services } = response.data
-    this.setState({
-      services,
-      loading: false
-    })
   }
 
   totalSalcserviceFee = (selectedServices) => {
@@ -81,11 +60,10 @@ class StationModal extends Component {
     }
   }
 
-  handleBooking = async () => {
+  handleBooking = () => {
     const { selectedServices } = this.state
     if (selectedServices.length > 0) {
-      this.setState({ booking: true })
-      const { station: { id, distance }, options: { userLocation: { address, coords }, useAmbulatory }, auth: { token } } = this.props
+      const { station: { id, distance }, options: { userLocation: { address, coords }, useAmbulatory } } = this.props
       const orderDetails = selectedServices.map(service => {
         return {
           serviceId: service.id
@@ -100,23 +78,7 @@ class StationModal extends Component {
         useAmbulatory,
         orderDetails
       }
-      try {
-        const response = await callApi("orders", "POST", order, token)
-        // OPEN ORDER DETAIL MODAL
-        Navigation.showModal({
-          id: 'orderDetailModal',
-          component: {
-            name: 'OrderDetailModal',
-            passProps: {
-              order: response?.data
-            },
-            options: animatedMedium
-          }
-        })
-      } catch (error) {
-        alert(error?.response?.data);
-      }
-      this.setState({ booking: false })
+      this.props.onAddOrder(order)
     }
   }
 
@@ -129,8 +91,8 @@ class StationModal extends Component {
   }
 
   render() {
-    const { options: { useAmbulatory } } = this.props
-    const { loading, booking, station, services, selectedServices, totalServiceFee, ambulatoryFee } = this.state
+    const { options: { useAmbulatory }, ordering: { booking }, station } = this.props
+    const { selectedServices, totalServiceFee, ambulatoryFee } = this.state
     return (
       <View style={{ flex: 1 }}>
         {/* HEADER */}
@@ -145,46 +107,44 @@ class StationModal extends Component {
             height: 60
           }}
         />
-        {loading ? <Loading message='Đang tải dịch vụ...' /> :
-          <>
-            <View style={{ flex: 1 }}>
-              <FlatList
-                data={services}
-                numColumns={1}
-                renderItem={({ item }) =>
-                  <CheckBox
-                    containerStyle={{ flex: 1 }}
-                    textStyle={{ fontSize: 16, fontWeight: "normal" }}
-                    title={this.getServiceTitle(item)}
-                    onPress={() => this.handleServicePressed(item)}
-                    checked={selectedServices.indexOf(item) > -1 ? true : false}
-                  />
-                }
-                keyExtractor={item => item.id}
-                ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
-              />
-            </View>
-            <Card containerStyle={{ margin: 0 }}>
-              <ToggleSwitch
-                isOn={useAmbulatory}
-                onColor="green"
-                offColor="red"
-                label={`Sử dụng lưu động (${ambulatoryFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ)`}
-                labelStyle={{ flex: 1, fontSize: 16 }}
-                size="medium"
-                onToggle={() => this.handleChangeAmbulatoryOption(!useAmbulatory)}
-              />
-              <Text style={{ fontSize: 16, paddingHorizontal: 10 }}>Tổng cộng: {(totalServiceFee + (useAmbulatory && selectedServices.length > 0 ? ambulatoryFee : 0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ</Text>
-              <Button
-                title="ĐẶT DỊCH VỤ"
-                loading={booking}
-                containerStyle={{ marginTop: 10 }}
-                buttonStyle={{ paddingVertical: 15 }}
-                onPress={this.handleBooking}
-              />
-            </Card>
-          </>
-        }
+        <>
+          <View style={{ flex: 1 }}>
+            <FlatList
+              data={station?.services}
+              numColumns={1}
+              renderItem={({ item }) =>
+                <CheckBox
+                  containerStyle={{ flex: 1 }}
+                  textStyle={{ fontSize: 16, fontWeight: "normal" }}
+                  title={this.getServiceTitle(item)}
+                  onPress={() => this.handleServicePressed(item)}
+                  checked={selectedServices.indexOf(item) > -1 ? true : false}
+                />
+              }
+              keyExtractor={item => item.id}
+              ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
+            />
+          </View>
+          <Card containerStyle={{ margin: 0 }}>
+            <ToggleSwitch
+              isOn={useAmbulatory}
+              onColor="green"
+              offColor="red"
+              label={`Sử dụng lưu động (${ambulatoryFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ)`}
+              labelStyle={{ flex: 1, fontSize: 16 }}
+              size="medium"
+              onToggle={() => this.handleChangeAmbulatoryOption(!useAmbulatory)}
+            />
+            <Text style={{ fontSize: 16, paddingHorizontal: 10 }}>Tổng cộng: {(totalServiceFee + (useAmbulatory && selectedServices.length > 0 ? ambulatoryFee : 0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ</Text>
+            <Button
+              title="ĐẶT DỊCH VỤ"
+              loading={booking}
+              containerStyle={{ marginTop: 10 }}
+              buttonStyle={{ paddingVertical: 15 }}
+              onPress={this.handleBooking}
+            />
+          </Card>
+        </>
       </View>
     )
   }
@@ -192,14 +152,15 @@ class StationModal extends Component {
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth,
-    options: state.options
+    options: state.options,
+    ordering: state.ordering
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    onChangeAmbulatory: option => dispatch(changeAmbulatory(option))
+    onChangeAmbulatory: option => dispatch(changeAmbulatory(option)),
+    onAddOrder: order => dispatch(addOrder(order))
   }
 }
 
