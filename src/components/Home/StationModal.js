@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Linking, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Linking, FlatList } from 'react-native'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { Icon, CheckBox, Header, Card, Button } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
-import Loading from '../../components/Loading'
 import ToggleSwitch from 'toggle-switch-react-native'
 import { changeAmbulatory } from '../../redux/optionsRedux/actions'
-import callApi from '../../utils/apiCaller'
 import { addOrder } from '../../redux/orderRedux/actions'
 
 class StationModal extends Component {
@@ -108,23 +106,23 @@ class StationModal extends Component {
           }}
         />
         <>
-          <View style={{ flex: 1 }}>
-            <FlatList
-              data={station?.services}
-              numColumns={1}
-              renderItem={({ item }) =>
-                <CheckBox
-                  containerStyle={{ flex: 1 }}
-                  textStyle={{ fontSize: 16, fontWeight: "normal" }}
-                  title={this.getServiceTitle(item)}
-                  onPress={() => this.handleServicePressed(item)}
-                  checked={selectedServices.indexOf(item) > -1 ? true : false}
-                />
-              }
-              keyExtractor={item => item.id}
-              ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
-            />
-          </View>
+          <FlatList
+            data={station?.services}
+            numColumns={1}
+            renderItem={({ item }) =>
+              <CheckBox
+                containerStyle={{ flex: 1 }}
+                textStyle={{ fontSize: 16, fontWeight: "normal" }}
+                title={this.getServiceTitle(item)}
+                onPress={() => this.handleServicePressed(item)}
+                checked={selectedServices.indexOf(item) > -1 ? true : false}
+              />
+            }
+            keyExtractor={item => item.id}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
+          />
           <Card containerStyle={{ margin: 0 }}>
             <ToggleSwitch
               isOn={useAmbulatory}

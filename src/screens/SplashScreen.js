@@ -9,7 +9,9 @@ import { changeLocation } from '../redux/optionsRedux/actions'
 import { PermissionsAndroid } from 'react-native'
 import Geolocation from 'react-native-geolocation-service'
 import Geocoder from 'react-native-geocoder'
-import { animatedMedium } from '../configs/navigation'
+import { options } from '../configs/navigation'
+import { fetchNotifications } from '../redux/notifyRedux/actions'
+import { fetchOrders } from '../redux/orderRedux/actions'
 
 //
 import Swiper from 'react-native-web-swiper'
@@ -88,12 +90,15 @@ class SplashScreen extends Component {
     if (notifyId) {
       console.log("SplashScreen -> onOpenNotification -> notifyId", notifyId)
       // SHOW POP-UP HERE
+      this.props.onFetchOrders()
+      this.props.onFetchNotifications()
     } else {
+      Navigation.dismissAllModals()
       Navigation.showModal({
         id: 'notificationScreen',
         component: {
           name: 'NotificationScreen',
-          options: animatedMedium
+          options
         }
       })
     }
@@ -168,7 +173,9 @@ const mapDispatchToProps = dispatch => {
   return {
     onChangeLocation: location => dispatch(changeLocation(location)),
     onChangeDeviceToken: token => dispatch(Actions.changeDeviceToken(token)),
-    onGetStarted: () => dispatch(Actions.getStarted())
+    onGetStarted: () => dispatch(Actions.getStarted()),
+    onFetchNotifications: pageIndex => dispatch(fetchNotifications(pageIndex)),
+    onFetchOrders: pageIndex => dispatch(fetchOrders(pageIndex))
   }
 }
 

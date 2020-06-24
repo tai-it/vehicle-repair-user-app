@@ -6,7 +6,7 @@ import callApi from '../utils/apiCaller'
 import { Header, Icon, Card, ListItem, Badge } from 'react-native-elements'
 import { APP_COLOR } from '../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
-import { animatedSlow } from '../configs/navigation'
+import { options } from '../configs/navigation'
 import Loading from '../components/Loading'
 import { format } from 'date-fns'
 
@@ -36,7 +36,7 @@ class NotificationScreen extends Component {
         passProps: {
           order
         },
-        options: animatedSlow
+        options
       }
     })
   }
@@ -64,7 +64,7 @@ class NotificationScreen extends Component {
           flex: 1,
           margin: 5,
           marginBottom: 5,
-          paddingVertical: 0
+          padding: 0
         }}>
           <FlatList
             data={notifications}
@@ -74,9 +74,9 @@ class NotificationScreen extends Component {
               rightIcon={!item.isSeen ? <Badge
                 status="success"
               /> : {}}
-              bottomDivider
               onPress={() => this.handleNotificationPressed(item)}
             />}
+            ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#e8e8e8" }} />}
             keyExtractor={item => item.id}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
@@ -85,7 +85,7 @@ class NotificationScreen extends Component {
             onRefresh={this.props.onFetchNotifications}
             refreshing={notifications.length > 0 ? false : loading}
             ListFooterComponent={() => {
-              return hasNextPage && <Loading /> || null
+              return hasNextPage && <Loading /> || <View style={{ height: 1, backgroundColor: "#e8e8e8" }} />
             }}
           />
         </Card>

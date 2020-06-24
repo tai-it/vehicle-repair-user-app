@@ -5,7 +5,7 @@ import { Navigation } from 'react-native-navigation'
 import { Icon, Header, ListItem, Card } from 'react-native-elements'
 import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { animatedMedium } from '../../configs/navigation'
+import { options } from '../../configs/navigation'
 import { fetchOrders } from '../../redux/orderRedux/actions'
 import { format } from 'date-fns'
 
@@ -26,7 +26,7 @@ class OrderListModal extends Component {
         passProps: {
           order
         },
-        options: animatedMedium
+        options
       }
     })
   }
@@ -53,7 +53,7 @@ class OrderListModal extends Component {
           flex: 1,
           margin: 5,
           marginBottom: 5,
-          paddingVertical: 0
+          padding: 0
         }}>
           <FlatList
             data={orders}
@@ -63,10 +63,10 @@ class OrderListModal extends Component {
                 title={item.address}
                 subtitle={format(new Date(item.createdOn), "dd-MM-yyyy H:mma")}
                 rightTitle={item.status}
-                bottomDivider
                 onPress={() => this.handleOnOrderPressed(item)}
               />
             }
+            ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#e8e8e8" }} />}
             keyExtractor={item => item.id}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
@@ -75,7 +75,7 @@ class OrderListModal extends Component {
             onRefresh={this.props.onFetchOrders}
             refreshing={orders.length > 0 ? false : loading}
             ListFooterComponent={() => {
-              return hasNextPage && <Loading /> || null
+              return hasNextPage && <Loading /> || <View style={{ height: 1, backgroundColor: "#e8e8e8" }} />
             }}
           />
         </Card>

@@ -40,8 +40,9 @@ export const fetchServices = () => {
   }
 }
 
-export const fetchStations = () => {
+export const fetchStations = (pageIndex = 1) => {
   return {
-    type: Types.FETCH_STATIONS_REQUEST
+    type: Types.FETCH_STATIONS_REQUEST,
+    payload: pageIndex
   }
 }

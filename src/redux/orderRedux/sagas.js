@@ -3,7 +3,7 @@ import * as Types from './types'
 import { store } from '../store'
 import callApi from '../../utils/apiCaller'
 import { Navigation } from 'react-native-navigation'
-import { animatedMedium } from '../../configs/navigation'
+import { options } from '../../configs/navigation'
 import { fetchOrders } from './actions'
 import { fetchNotifications } from '../notifyRedux/actions'
 
@@ -34,7 +34,7 @@ function* addOrderAsync({ payload }) {
         passProps: {
           order
         },
-        options: animatedMedium
+        options
       }
     })
     yield put({ type: Types.ADD_ORDER_SUCCEEDED })
@@ -60,7 +60,7 @@ function* cancelOrderAsync({ payload }) {
         passProps: {
           order
         },
-        options: animatedMedium
+        options
       }
     })
     yield put({ type: Types.CANCEL_ORDER_SUCCEEDED })

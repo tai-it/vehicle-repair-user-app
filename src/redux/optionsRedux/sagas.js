@@ -15,12 +15,12 @@ function* fetchServicesAsync() {
   }
 }
 
-function* fetchStationsAsync() {
+function* fetchStationsAsync({ payload }) {
   try {
-    const { vehicle, userLocation: { coords } } = store.getState().options
-    const response = yield callApi(`stations?vehicle=${vehicle}`)
-    const stations = response.data.sources
-    stations.forEach(station => {
+    const { vehicle, stations, userLocation: { coords } } = store.getState().options
+    const response = yield callApi(`stations?vehicle=${vehicle}&limit=20&offset=${payload}`)
+    const data = response.data
+    data.sources.forEach(station => {
       Object.assign(station, {
         distance: getDistance({
           latitude: coords.lat,
@@ -31,7 +31,10 @@ function* fetchStationsAsync() {
         })
       })
     })
-    yield put({ type: Types.FETCH_STATIONS_SUCCEEDED, payload: stations })
+    if (payload > 1) {
+      data.sources.unshift(...stations)
+    }
+    yield put({ type: Types.FETCH_STATIONS_SUCCEEDED, payload: { data } })
   } catch (error) {
     yield put({ type: Types.FETCH_STATIONS_FAILED, payload: error?.message || error })
   }

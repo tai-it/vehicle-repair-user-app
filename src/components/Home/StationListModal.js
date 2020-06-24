@@ -1,18 +1,25 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, FlatList } from 'react-native'
-import { Icon, ListItem, Header } from 'react-native-elements'
+import { Icon, ListItem, Header, Card } from 'react-native-elements'
 import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
 import _ from 'lodash'
 import { connect } from 'react-redux'
 import { fetchServices, fetchStations } from '../../redux/optionsRedux/actions'
-import { animatedMedium } from '../../configs/navigation'
+import { options } from '../../configs/navigation'
 
 class StationListModal extends Component {
 
   componentDidMount() {
     this.props.onFetchStations()
+  }
+
+  handleLoadMore = () => {
+    const { hasNextPage, pageIndex } = this.props.options
+    if (hasNextPage) {
+      this.props.onFetchStations(pageIndex + 1)
+    }
   }
 
   handleCloseModal = () => {
@@ -27,15 +34,16 @@ class StationListModal extends Component {
         passProps: {
           station
         },
-        options: animatedMedium
+        options
       }
     })
   }
 
   render() {
-    const { stations, fetchingStations } = this.props.options
+    const { stations, hasNextPage, fetchingStations } = this.props.options
+    const list = _.orderBy(stations, ['distance'], ['asc'])
     return (
-      <View>
+      <>
         {/* HEADER */}
         <Header
           leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
@@ -49,22 +57,36 @@ class StationListModal extends Component {
           }}
         />
         {fetchingStations && <Loading style={{ justifyContent: "center", alignItems: "center", height: '90%' }} message="Đang tìm cửa hàng" /> ||
-          <>
+          <Card containerStyle={{
+            flex: 1,
+            margin: 5,
+            marginBottom: 5,
+            padding: 0
+          }}>
             <FlatList
-              data={_.orderBy(stations, ['distance'], ['asc'])}
+              data={list}
               renderItem={({ item }) => <ListItem
                 onPress={() => this.handleStationPressed(item)}
                 key={item.id}
                 title={item.name}
                 subtitle={`Cách đây ${item.distance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} mét`}
-                bottomDivider
                 chevron
               />}
-              ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
+              ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#e8e8e8" }} />}
+              keyExtractor={item => item.id}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              onEndReachedThreshold={0.05}
+              onEndReached={this.handleLoadMore}
+              onRefresh={this.props.onFetchStations}
+              refreshing={false}
+              ListFooterComponent={() => {
+                return hasNextPage && <Loading /> || <View style={{ height: 1, backgroundColor: "#e8e8e8" }} />
+              }}
             />
-          </>
+          </Card>
         }
-      </View>
+      </>
     )
   }
 }
@@ -78,7 +100,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     onFetchService: () => dispatch(fetchServices()),
-    onFetchStations: () => dispatch(fetchStations())
+    onFetchStations: pageIndex => dispatch(fetchStations(pageIndex))
   }
 }
 

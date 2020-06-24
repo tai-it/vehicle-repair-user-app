@@ -4,7 +4,6 @@ import callApi from '../../utils/apiCaller';
 import { store } from '../store'
 
 function* fetchNotificationsAsync({ payload }) {
-  console.log("function*fetchNotificationsAsync -> payload", payload)
   try {
     const { auth: { token }, notify: { notifications } } = store.getState()
     const response = yield callApi(`notifications?isDesc=true&limit=10&offset=${payload}`, 'GET', null, token)
@@ -12,7 +11,6 @@ function* fetchNotificationsAsync({ payload }) {
     if (payload > 1) {
       data.sources.unshift(...notifications)
     }
-    console.log(data.sources.length);
     yield put({ type: Types.FETCH_NOTIFICATIONS_SUCCEEDED, payload: { data } })
   } catch (error) {
     console.log(error);

@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { Icon, Header } from 'react-native-elements'
+import { Icon, Header, ListItem } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
-import * as Actions from '../../redux/authRedux/actions'
+import { logout } from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { animatedSlow } from '../../configs/navigation'
+import { options } from '../../configs/navigation'
 
 class SideMenu extends Component {
 
@@ -21,6 +21,7 @@ class SideMenu extends Component {
 
   handleOpenProfile = () => {
     this.handleCloseSideMenu()
+    alert("Chưa làm. OK")
   }
 
   handleOpenOrderHistory = () => {
@@ -29,13 +30,14 @@ class SideMenu extends Component {
       id: 'orderListModal',
       component: {
         name: 'OrderListModal',
-        options: animatedSlow
+        options
       }
     })
   }
 
   handleOpenSettings = () => {
     this.handleCloseSideMenu()
+    alert("Chưa làm. OK")
   }
 
   render() {
@@ -54,46 +56,42 @@ class SideMenu extends Component {
           containerStyle={{ paddingTop: 0, paddingHorizontal: 18, height: 60 }}
         />
         <View>
-          <TouchableOpacity
-            style={styles.menu}
+          <ListItem
+            leftIcon={<Icon
+              type="feather"
+              name="user"
+            />}
+            title="Trang cá nhân"
             onPress={this.handleOpenProfile}
-          >
-            <Icon
-              type="font-awesome"
-              name="user-circle"
-            />
-            <Text style={styles.menuTitle}>Trang cá nhân</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.menu}
+            bottomDivider
+          />
+          <ListItem
+            leftIcon={<Icon
+              type="feather"
+              name="list"
+            />}
+            title="Lịch sử cuốc xe"
             onPress={this.handleOpenOrderHistory}
-          >
-            <Icon
-              type="font-awesome"
-              name="list-alt"
-            />
-            <Text style={styles.menuTitle}>Lịch sử</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.menu}
-            onPress={this.handleOpenSettings}
-          >
-            <Icon
+            bottomDivider
+          />
+          <ListItem
+            leftIcon={<Icon
               type="feather"
               name="settings"
-            />
-            <Text style={styles.menuTitle}>Cài đặt</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.menu}
+            />}
+            title="Cài đặt"
+            onPress={this.handleOpenSettings}
+            bottomDivider
+          />
+          <ListItem
+            leftIcon={<Icon
+              type="feather"
+              name="log-out"
+            />}
+            title="Đăng xuất"
             onPress={this.props.onLogout}
-          >
-            <Icon
-              type="antdesign"
-              name="logout"
-            />
-            <Text style={styles.menuTitle}>Đăng xuất</Text>
-          </TouchableOpacity>
+            bottomDivider
+          />
         </View>
       </View>
     )
@@ -108,7 +106,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onLogout: () => dispatch(Actions.logout())
+    onLogout: () => dispatch(logout())
   }
 }
 

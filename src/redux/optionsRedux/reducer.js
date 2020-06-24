@@ -7,9 +7,10 @@ const initState = {
   error: '',
   vehicle: vehicle.motobike,
   services: [], // string
+  pageIndex: 1,
+  hasNextPage: false,
   stations: [],
   selectedServices: [], // string
-  serviceName: 'Chọn loại dịch vụ',
   useAmbulatory: false,
   userLocation: {
     address: '',
@@ -63,14 +64,15 @@ export default optionsReducer = (state = initState, action) => {
     case Types.FETCH_STATIONS_REQUEST:
       return {
         ...state,
-        fetchingStations: true,
-        stations: []
+        fetchingStations: true
       }
     case Types.FETCH_STATIONS_SUCCEEDED:
       return {
         ...state,
         fetchingStations: false,
-        stations: action.payload
+        pageIndex: action.payload.data.pageIndex,
+        hasNextPage: action.payload.data.hasNextPage,
+        stations: action.payload.data.sources
       }
     case Types.FETCH_STATIONS_FAILED:
       return {

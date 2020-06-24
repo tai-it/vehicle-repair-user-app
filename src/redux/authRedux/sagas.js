@@ -6,6 +6,7 @@ import { Roles } from '../../constants/roles';
 import { isPasswordValidated } from '../../utils/Validator'
 import { fetchNotifications } from '../notifyRedux/actions'
 import { fetchOrders } from '../orderRedux/actions';
+import { updateDeviceTokenRequest } from './actions';
 
 function* loginAsync(action) {
   try {
@@ -50,13 +51,16 @@ function* signupAsync({ payload }) {
 
 function* fetchProfileAsync() {
   try {
-    const { token, authenticated } = store.getState().auth
+    const { auth: { token, authenticated }, app: { deviceToken } } = store.getState()
     if (authenticated) {
       const response = yield callApi(`account/me`, 'GET', null, token)
       const user = response.data
       yield put({ type: Types.FETCH_PROFILE_SUCCEEDED, payload: { user } })
       yield put(fetchNotifications())
       yield put(fetchOrders())
+      if (user.deviceToken !== deviceToken) {
+        yield put(updateDeviceTokenRequest())
+      }
     }
   } catch (error) {
     yield put({ type: Types.FETCH_PROFILE_FAILED })
@@ -65,7 +69,7 @@ function* fetchProfileAsync() {
 
 function* updateDeviceTokenAsync() {
   try {
-    const deviceToken = store.getState().app.deviceToken
+    const { deviceToken } = store.getState().app
     if (!deviceToken) {
       console.log("Không tìm thấy DeviceToken");
     }

@@ -6,7 +6,7 @@ import { APP_COLOR } from '../../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { changeServices, changeAmbulatory, fetchStations } from '../../redux/optionsRedux/actions'
-import { animatedMedium } from '../../configs/navigation'
+import { options } from '../../configs/navigation'
 
 class OptionsModal extends Component {
 
@@ -35,7 +35,7 @@ class OptionsModal extends Component {
       id: 'stationListModal',
       component: {
         name: 'StationListModal',
-        options: animatedMedium
+        options
       }
     })
   }

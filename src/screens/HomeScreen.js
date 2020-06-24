@@ -6,11 +6,11 @@ import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
 import Loading from '../components/Loading'
 import { changeVehicle, changeLocation } from '../redux/optionsRedux/actions'
-import { updateDeviceTokenRequest, fetchProfileRequest } from '../redux/authRedux/actions'
+import { fetchProfileRequest } from '../redux/authRedux/actions'
 import Vehicle from '../constants/vehicle'
 import MapView from 'react-native-maps'
 import Geocoder from 'react-native-geocoder'
-import { animatedSlow } from '../configs/navigation'
+import { options } from '../configs/navigation'
 
 class HomeScreen extends Component {
 
@@ -28,8 +28,7 @@ class HomeScreen extends Component {
     }
   }
 
-  componentDidMount = async () => {
-    this.checkDeviceToken()
+  componentDidMount = () => {
     this.props.onFetchProfile()
   }
 
@@ -44,17 +43,6 @@ class HomeScreen extends Component {
           longitude: lng
         }
       }))
-    }
-  }
-
-  checkDeviceToken = () => {
-    const { deviceToken } = this.props.app
-    const { user } = this.props.auth
-    if (user) {
-      if (deviceToken !== user.deviceToken) {
-        this.props.onUpdateDeviceToken()
-        console.log("Token Changed");
-      }
     }
   }
 
@@ -84,12 +72,12 @@ class HomeScreen extends Component {
       id: 'notificationScreen',
       component: {
         name: 'NotificationScreen',
-        options: animatedSlow
+        options
       }
     })
   }
 
-  handleButtonSearchPressed = () => {
+  handleFindStations = () => {
     const { address, region: { latitude, longitude } } = this.state
     const location = {
       address,
@@ -103,7 +91,7 @@ class HomeScreen extends Component {
       id: 'stationListModal',
       component: {
         name: 'StationListModal',
-        options: animatedSlow
+        options
       }
     })
   }
@@ -221,7 +209,7 @@ class HomeScreen extends Component {
             loading={loading}
             containerStyle={{ marginTop: 5 }}
             buttonStyle={{ paddingVertical: 15 }}
-            onPress={this.handleButtonSearchPressed}
+            onPress={this.handleFindStations}
           />
         </Card>
       </View >
@@ -260,7 +248,6 @@ const mapDispatchToProps = dispatch => {
   return {
     onChangeVehicle: vehicle => dispatch(changeVehicle(vehicle)),
     onChangeLocation: location => dispatch(changeLocation(location)),
-    onUpdateDeviceToken: () => dispatch(updateDeviceTokenRequest()),
     onFetchProfile: () => dispatch(fetchProfileRequest())
   }
 }
