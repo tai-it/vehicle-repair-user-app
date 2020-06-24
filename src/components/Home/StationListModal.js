@@ -7,7 +7,7 @@ import { Navigation } from 'react-native-navigation'
 import _ from 'lodash'
 import { connect } from 'react-redux'
 import { fetchServices, fetchStations } from '../../redux/optionsRedux/actions'
-import { options } from '../../configs/navigation'
+import { animatedMedium } from '../../configs/navigation'
 
 class StationListModal extends Component {
 
@@ -27,7 +27,7 @@ class StationListModal extends Component {
         passProps: {
           station
         },
-        options
+        options: animatedMedium
       }
     })
   }

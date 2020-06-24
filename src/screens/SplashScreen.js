@@ -9,7 +9,7 @@ import { changeLocation } from '../redux/optionsRedux/actions'
 import { PermissionsAndroid } from 'react-native'
 import Geolocation from 'react-native-geolocation-service'
 import Geocoder from 'react-native-geocoder'
-import { options } from '../configs/navigation'
+import { animatedMedium } from '../configs/navigation'
 
 //
 import Swiper from 'react-native-web-swiper'
@@ -93,7 +93,7 @@ class SplashScreen extends Component {
         id: 'notificationScreen',
         component: {
           name: 'NotificationScreen',
-          options
+          options: animatedMedium
         }
       })
     }

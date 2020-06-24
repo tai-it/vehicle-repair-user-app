@@ -8,7 +8,7 @@ import Loading from '../../components/Loading'
 import ToggleSwitch from 'toggle-switch-react-native'
 import { changeAmbulatory } from '../../redux/optionsRedux/actions'
 import callApi from '../../utils/apiCaller'
-import { options } from '../../configs/navigation'
+import { animatedMedium } from '../../configs/navigation'
 
 class StationModal extends Component {
 
@@ -110,7 +110,7 @@ class StationModal extends Component {
             passProps: {
               order: response?.data
             },
-            options
+            options: animatedMedium
           }
         })
       } catch (error) {
@@ -136,7 +136,7 @@ class StationModal extends Component {
         {/* HEADER */}
         <Header
           leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
-          centerComponent={{ text: station?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 16, marginHorizontal: -30 } }}
+          centerComponent={{ text: station?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginHorizontal: -30 } }}
           rightComponent={<Icon type="material-community" name="directions" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.openOnGoogleMaps} />}
           backgroundColor={APP_COLOR}
           containerStyle={{

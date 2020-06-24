@@ -6,7 +6,7 @@ import callApi from '../utils/apiCaller'
 import { Header, Icon, Card, ListItem, Badge } from 'react-native-elements'
 import { APP_COLOR } from '../utils/AppSettings'
 import { Navigation } from 'react-native-navigation'
-import { options } from '../configs/navigation'
+import { animateFast } from '../configs/navigation'
 
 class NotificationScreen extends Component {
 
@@ -27,7 +27,7 @@ class NotificationScreen extends Component {
         passProps: {
           order
         },
-        options
+        options: animateFast
       }
     })
   }

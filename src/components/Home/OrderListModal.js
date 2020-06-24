@@ -5,7 +5,7 @@ import { Navigation } from 'react-native-navigation'
 import { Icon, Header, ListItem } from 'react-native-elements'
 import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { options } from '../../configs/navigation'
+import { animatedMedium } from '../../configs/navigation'
 import callApi from '../../utils/apiCaller'
 
 class OrderListModal extends Component {
@@ -44,7 +44,7 @@ class OrderListModal extends Component {
         passProps: {
           order
         },
-        options
+        options: animatedMedium
       }
     })
   }

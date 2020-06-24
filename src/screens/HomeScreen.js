@@ -10,7 +10,7 @@ import { updateDeviceTokenRequest, fetchProfileRequest } from '../redux/authRedu
 import Vehicle from '../constants/vehicle'
 import MapView from 'react-native-maps'
 import Geocoder from 'react-native-geocoder'
-import { options } from '../configs/navigation'
+import { animatedSlow } from '../configs/navigation'
 
 class HomeScreen extends Component {
 
@@ -84,7 +84,7 @@ class HomeScreen extends Component {
       id: 'notificationScreen',
       component: {
         name: 'NotificationScreen',
-        options
+        options: animatedSlow
       }
     })
   }
@@ -103,7 +103,7 @@ class HomeScreen extends Component {
       id: 'stationListModal',
       component: {
         name: 'StationListModal',
-        options
+        options: animatedSlow
       }
     })
   }
