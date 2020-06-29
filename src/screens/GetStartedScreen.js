@@ -42,7 +42,7 @@ class GetStartedScreen extends Component {
         </TouchableOpacity>
         <ToggleSwitch
           isOn={isOn}
-          onColor="green"
+          onColor={APP_COLOR}
           offColor="red"
           label="Sử dụng lưu động"
           size="medium"

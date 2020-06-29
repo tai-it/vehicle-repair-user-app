@@ -66,7 +66,7 @@ class NotificationScreen extends Component {
           marginBottom: 5,
           padding: 0
         }}>
-          <FlatList
+          {notifications.length > 0 ? <FlatList
             data={notifications}
             renderItem={({ item }) => <ListItem
               title={item.title}
@@ -87,7 +87,11 @@ class NotificationScreen extends Component {
             ListFooterComponent={() => {
               return hasNextPage && <Loading /> || <View style={{ height: 1, backgroundColor: "#e8e8e8" }} />
             }}
-          />
+          /> :
+            <View style={{ height: "100%", justifyContent: "center", alignItems: "center" }}>
+              <Text style={{ fontSize: 16 }}>Bạn không có thông báo nào</Text>
+            </View>
+          }
         </Card>
       </>
     )

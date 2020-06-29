@@ -97,7 +97,6 @@ class StationModal extends Component {
         <Header
           leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
           centerComponent={{ text: station?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginHorizontal: -30 } }}
-          rightComponent={<Icon type="material-community" name="directions" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.openOnGoogleMaps} />}
           backgroundColor={APP_COLOR}
           containerStyle={{
             paddingTop: 0,
@@ -107,8 +106,8 @@ class StationModal extends Component {
         />
         <>
           <FlatList
+            contentContainerStyle={{ paddingVertical: 5 }}
             data={station?.services}
-            numColumns={1}
             renderItem={({ item }) =>
               <CheckBox
                 containerStyle={{ flex: 1 }}
@@ -126,7 +125,7 @@ class StationModal extends Component {
           <Card containerStyle={{ margin: 0 }}>
             <ToggleSwitch
               isOn={useAmbulatory}
-              onColor="green"
+              onColor={APP_COLOR}
               offColor="red"
               label={`Sử dụng lưu động (${ambulatoryFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ)`}
               labelStyle={{ flex: 1, fontSize: 16 }}

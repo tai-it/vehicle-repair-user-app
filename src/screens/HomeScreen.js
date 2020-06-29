@@ -180,7 +180,7 @@ class HomeScreen extends Component {
           </View>
         </View>
         {/* CARD VEHICLES */}
-        <Card containerStyle={{ margin: 0 }}>
+        <Card containerStyle={{ margin: 0, padding: 10 }}>
           <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
             <TouchableOpacity
               style={[styles.vehicle, vehicle === Vehicle.motobike ? styles.active : styles.noneActive]}

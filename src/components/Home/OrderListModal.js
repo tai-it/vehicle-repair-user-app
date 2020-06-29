@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { FlatList, View } from 'react-native'
+import { FlatList, View, Text } from 'react-native'
 import { connect } from 'react-redux'
 import { Navigation } from 'react-native-navigation'
 import { Icon, Header, ListItem, Card } from 'react-native-elements'
@@ -55,7 +55,7 @@ class OrderListModal extends Component {
           marginBottom: 5,
           padding: 0
         }}>
-          <FlatList
+          {orders.length > 0 ? <FlatList
             data={orders}
             renderItem={({ item }) =>
               <ListItem
@@ -77,7 +77,11 @@ class OrderListModal extends Component {
             ListFooterComponent={() => {
               return hasNextPage && <Loading /> || <View style={{ height: 1, backgroundColor: "#e8e8e8" }} />
             }}
-          />
+          /> :
+            <View style={{ height: "100%", justifyContent: "center", alignItems: "center" }}>
+              <Text style={{ fontSize: 16 }}>Bạn chưa đặt cuốc xe nào</Text>
+            </View>
+          }
         </Card>
       </>
     )

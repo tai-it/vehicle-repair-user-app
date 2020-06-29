@@ -53,11 +53,18 @@ class OrderDetailModal extends Component {
             height: 60
           }}
         />
-        <ScrollView>
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+        >
           {/* ORDER INFORMATION */}
           <Card
             title="THÔNG TIN CUỐC XE"
-            titleStyle={{ fontSize: 16, color: APP_COLOR }}
+            titleStyle={styles.cardTitle}
+            containerStyle={{
+              flex: 1,
+              margin: 5
+            }}
           >
             <ListItem
               title="Họ và Tên:"
@@ -91,7 +98,11 @@ class OrderDetailModal extends Component {
           {/* SELECTED SERVICES */}
           <Card
             title="DỊCH VỤ ĐÃ CHỌN"
-            titleStyle={{ fontSize: 16, color: APP_COLOR }}
+            titleStyle={styles.cardTitle}
+            containerStyle={{
+              flex: 1,
+              margin: 5
+            }}
             dividerStyle={{ height: 1 }}
           >
             {
@@ -99,15 +110,19 @@ class OrderDetailModal extends Component {
                 return (
                   <ListItem
                     key={i}
-                    roundAvatar
                     title={service.name}
                     rightTitle={service.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ"}
+                    rightTitleStyle={{ color: 'black' }}
                   />
                 );
               })
             }
             <ListItem
-              roundAvatar
+              title="Phí lưu động"
+              rightTitle={order?.ambulatoryFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ"}
+              rightTitleStyle={{ color: 'black' }}
+            />
+            <ListItem
               title="Tổng cộng:"
               titleStyle={styles.totalPrice}
               rightTitleStyle={[styles.totalPrice, { width: '100%' }]}
@@ -117,8 +132,12 @@ class OrderDetailModal extends Component {
           {/* ORDER STATUS */}
           <Card
             title="TÌNH TRẠNG CUỐC XE"
-            titleStyle={{ fontSize: 16, color: APP_COLOR }}
-            containerStyle={{ marginBottom: 15 }}
+            titleStyle={styles.cardTitle}
+            containerStyle={{
+              flex: 1,
+              margin: 5,
+              marginBottom: 5
+            }}
           >
             <StepIndicator
               customStyles={customStyles}
@@ -182,6 +201,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#E9E9E9',
     backgroundColor: APP_COLOR
+  },
+  cardTitle: {
+    fontSize: 16,
+    marginBottom: 0,
+    paddingBottom: 15,
+    color: APP_COLOR
   },
   totalPrice: {
     fontSize: 16,
