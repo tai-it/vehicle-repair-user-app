@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { Icon, Header, ListItem } from 'react-native-elements'
 import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { logout } from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { options } from '../../configs/navigation'
+import CustomIcon from '../../components/CustomIcon'
 
 class SideMenu extends Component {
 
@@ -21,7 +22,13 @@ class SideMenu extends Component {
 
   handleOpenProfile = () => {
     this.handleCloseSideMenu()
-    alert("Chưa làm. OK")
+    Navigation.showModal({
+      id: 'profileScreen',
+      component: {
+        name: 'ProfileScreen',
+        options
+      }
+    })
   }
 
   handleOpenOrderHistory = () => {
@@ -45,15 +52,22 @@ class SideMenu extends Component {
     return (
       <View style={{ flex: 1, backgroundColor: '#FFF', width: '90%' }}>
         <Header
-          centerComponent={{ text: user?.name.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginHorizontal: -30 } }}
-          rightComponent={<Icon
-            type="EvilIcons"
-            name="close"
-            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
-            onPress={this.handleCloseSideMenu}
-          />}
+          centerComponent={{ text: user?.name.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginLeft: -30 } }}
+          rightComponent={
+            <CustomIcon onPress={this.handleCloseSideMenu}>
+              <Icon
+                type="evilicons"
+                name="close"
+                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+              />
+            </CustomIcon>
+          }
           backgroundColor={APP_COLOR}
-          containerStyle={{ paddingTop: 0, paddingHorizontal: 18, height: 60 }}
+          containerStyle={{
+            paddingHorizontal: 0,
+            paddingTop: 0,
+            height: 60
+          }}
         />
         <View>
           <ListItem

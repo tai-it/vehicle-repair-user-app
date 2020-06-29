@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import ToggleSwitch from 'toggle-switch-react-native'
 import { changeAmbulatory } from '../../redux/optionsRedux/actions'
 import { addOrder } from '../../redux/orderRedux/actions'
+import CustomIcon from '../CustomIcon'
 
 class StationModal extends Component {
 
@@ -61,22 +62,27 @@ class StationModal extends Component {
   handleBooking = () => {
     const { selectedServices } = this.state
     if (selectedServices.length > 0) {
-      const { station: { id, distance }, options: { userLocation: { address, coords }, useAmbulatory } } = this.props
-      const orderDetails = selectedServices.map(service => {
-        return {
-          serviceId: service.id
+      const { station: { id, distance, isAvailable }, options: { userLocation: { address, coords }, useAmbulatory } } = this.props
+      if (isAvailable) {
+        const orderDetails = selectedServices.map(service => {
+          return {
+            serviceId: service.id
+          }
+        })
+        const order = {
+          stationId: id,
+          address,
+          latitude: coords.lat,
+          longitude: coords.lng,
+          distance,
+          useAmbulatory,
+          orderDetails
         }
-      })
-      const order = {
-        stationId: id,
-        address,
-        latitude: coords.lat,
-        longitude: coords.lng,
-        distance,
-        useAmbulatory,
-        orderDetails
+        this.props.onAddOrder(order)
+      } else {
+        // SHOW OVERLAY
+        alert("Tiệm xe này hiện không khả dụng")
       }
-      this.props.onAddOrder(order)
     }
   }
 
@@ -95,12 +101,16 @@ class StationModal extends Component {
       <View style={{ flex: 1 }}>
         {/* HEADER */}
         <Header
-          leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
+          leftComponent={
+            <CustomIcon onPress={this.handleCloseModal}>
+              <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+            </CustomIcon>
+          }
           centerComponent={{ text: station?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginHorizontal: -30 } }}
           backgroundColor={APP_COLOR}
           containerStyle={{
+            paddingHorizontal: 0,
             paddingTop: 0,
-            paddingHorizontal: 18,
             height: 60
           }}
         />

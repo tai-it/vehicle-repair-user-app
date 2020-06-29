@@ -9,6 +9,7 @@ import { connect } from 'react-redux'
 import { fetchServices, fetchStations, changeAmbulatory } from '../../redux/optionsRedux/actions'
 import { options } from '../../configs/navigation'
 import ToggleSwitch from 'toggle-switch-react-native'
+import CustomIcon from '../CustomIcon'
 
 class StationListModal extends Component {
 
@@ -85,13 +86,21 @@ class StationListModal extends Component {
       <>
         {/* HEADER */}
         <Header
-          leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
-          centerComponent={{ text: "TIỆM XE QUANH ĐÂY", style: { color: '#fff', fontSize: 18, marginHorizontal: -30 } }}
-          rightComponent={<Icon type="antdesign" name="filter" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={() => this.setState({ isShowSortModal: true })} />}
+          leftComponent={
+            <CustomIcon onPress={this.handleCloseModal}>
+              <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+            </CustomIcon>
+          }
+          centerComponent={{ text: "TIỆM XE QUANH ĐÂY", style: { color: '#fff', fontSize: 18, marginHorizontal: -10 } }}
+          rightComponent={
+            <CustomIcon onPress={() => this.setState({ isShowSortModal: true })}>
+              <Icon type="antdesign" name="filter" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+            </CustomIcon>
+          }
           backgroundColor={APP_COLOR}
           containerStyle={{
+            paddingHorizontal: 0,
             paddingTop: 0,
-            paddingHorizontal: 18,
             height: 60
           }}
         />

@@ -14,6 +14,7 @@ import GetStartedScreen from './src/screens/GetStartedScreen'
 import HomeScreen from "./src/screens/HomeScreen"
 import AuthScreen from './src/screens/AuthScreen'
 import NotificationScreen from "./src/screens/NotificationScreen"
+import ProfileScreen from './src/screens/ProfileScreen'
 
 import OptionsModal from './src/components/Home/OptionsModal'
 import StationListModal from './src/components/Home/StationListModal'
@@ -21,7 +22,6 @@ import FilterServiceModal from './src/components/Home/FilterServiceModal'
 import StationModal from './src/components/Home/StationModal'
 import OrderListModal from './src/components/Home/OrderListModal'
 import OrderDetailModal from './src/components/Home/OrderDetailModal'
-import UpdateProfile from './src/components/Profile/UpdateProfile'
 import SearchLocationModal from './src/components/Home/SearchLocationModal'
 
 ReduxProvider = Component => {
@@ -72,13 +72,11 @@ Navigation.registerComponent(
   () => ReduxProvider(HomeScreen),
   () => HomeScreen,
 );
-// 
 
-// Addtional Component
 Navigation.registerComponent(
-  'UpdateProfile',
-  () => ReduxProvider(UpdateProfile),
-  () => UpdateProfile,
+  'ProfileScreen',
+  () => ReduxProvider(ProfileScreen),
+  () => ProfileScreen,
 );
 // 
 

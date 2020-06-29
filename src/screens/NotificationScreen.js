@@ -9,6 +9,7 @@ import { Navigation } from 'react-native-navigation'
 import { options } from '../configs/navigation'
 import Loading from '../components/Loading'
 import { format } from 'date-fns'
+import CustomIcon from '../components/CustomIcon'
 
 class NotificationScreen extends Component {
 
@@ -50,13 +51,21 @@ class NotificationScreen extends Component {
     return (
       <>
         <Header
-          leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
+          leftComponent={
+            <CustomIcon onPress={this.handleCloseModal}>
+              <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+            </CustomIcon>
+          }
           centerComponent={{ text: "THÔNG BÁO", style: { color: '#fff', fontSize: 18 } }}
-          rightComponent={<Icon type="entypo" name="unread" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleMarkAllAsRead} />}
+          rightComponent={
+            <CustomIcon onPress={this.handleMarkAllAsRead}>
+              <Icon type="entypo" name="unread" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+            </CustomIcon>
+          }
           backgroundColor={APP_COLOR}
           containerStyle={{
+            paddingHorizontal: 0,
             paddingTop: 0,
-            paddingHorizontal: 18,
             height: 60
           }}
         />

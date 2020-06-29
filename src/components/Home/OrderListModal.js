@@ -8,6 +8,7 @@ import { APP_COLOR } from '../../utils/AppSettings'
 import { options } from '../../configs/navigation'
 import { fetchOrders } from '../../redux/orderRedux/actions'
 import { format } from 'date-fns'
+import CustomIcon from '../CustomIcon'
 
 class OrderListModal extends Component {
 
@@ -40,12 +41,16 @@ class OrderListModal extends Component {
     return (
       <>
         <Header
-          leftComponent={<Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />}
+          leftComponent={
+            <CustomIcon onPress={this.handleCloseModal}>
+              <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+            </CustomIcon>
+          }
           centerComponent={{ text: "LỊCH SỬ HOẠT ĐỘNG", style: { color: '#fff', fontSize: 18 } }}
           backgroundColor={APP_COLOR}
           containerStyle={{
+            paddingHorizontal: 0,
             paddingTop: 0,
-            paddingHorizontal: 18,
             height: 60
           }}
         />

@@ -7,6 +7,7 @@ import StepIndicator from 'react-native-step-indicator'
 import { orderStatus, orderUncompletedLabels, orderCanceledLabels } from '../../constants/orderStatus'
 import { connect } from 'react-redux'
 import { cancelOrder } from '../../redux/orderRedux/actions'
+import CustomIcon from '../CustomIcon'
 
 class OrderDetailModal extends Component {
 
@@ -30,26 +31,37 @@ class OrderDetailModal extends Component {
     return (
       <>
         <Header
-          leftComponent={<Icon
-            type="antdesign"
-            name="left"
-            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
-            onPress={this.handleCloseModal}
-          />}
+          leftComponent={
+            <CustomIcon
+              onPress={this.handleCloseModal}
+            >
+              <Icon
+                type="antdesign"
+                name="left"
+                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+              />
+            </CustomIcon>
+          }
           centerComponent={{
             text: order.station?.name?.toUpperCase() || "",
             style: { color: '#fff', fontSize: 18 }
           }}
-          rightComponent={[orderStatus.accepted, orderStatus.fixing].find(x => x == order.status) ? <Icon
-            type="material-community"
-            name="directions"
-            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
-            onPress={this.openOnGoogleMaps}
-          /> : {}}
+          rightComponent={[orderStatus.accepted, orderStatus.fixing].find(x => x == order.status) ?
+            <CustomIcon
+              onPress={this.openOnGoogleMaps}
+            >
+              <Icon
+                type="material-community"
+                name="directions"
+                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+              />
+            </CustomIcon>
+            : {}
+          }
           backgroundColor={APP_COLOR}
           containerStyle={{
+            paddingHorizontal: 0,
             paddingTop: 0,
-            paddingHorizontal: 18,
             height: 60
           }}
         />

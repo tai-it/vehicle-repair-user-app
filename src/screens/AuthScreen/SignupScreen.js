@@ -53,7 +53,11 @@ class SignupScreen extends Component {
             height: 60
           }}
         />
-        <Card containerStyle={{ flex: 1, marginBottom: 15 }}>
+        <Card containerStyle={{
+          flex: 1,
+          margin: 5,
+          marginBottom: 5
+        }}>
           <ScrollView
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}

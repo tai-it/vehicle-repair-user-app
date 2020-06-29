@@ -11,6 +11,7 @@ import Vehicle from '../constants/vehicle'
 import MapView from 'react-native-maps'
 import Geocoder from 'react-native-geocoder'
 import { options } from '../configs/navigation'
+import CustomIcon from '../components/CustomIcon'
 
 class HomeScreen extends Component {
 
@@ -127,32 +128,42 @@ class HomeScreen extends Component {
       <View style={[styles.container]}>
         {/* HEADER */}
         <Header
-          leftComponent={<Icon
-            type="MaterialCommunityIcons"
-            name="menu"
-            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
-            onPress={this.handleOpenSideMenu}
-          />}
-          centerComponent={{ text: address, style: { color: '#fff', fontSize: 16, marginHorizontal: -30 } }}
-          rightComponent={<View>
-            <Icon
-              type="antdesign"
-              name="bells"
-              color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
-              onPress={this.handleOpenNotificationScreen}
-            />
-            {unreadNotify.length > 0 &&
-              <Badge
-                status="error"
-                value={unreadNotify.length}
-                containerStyle={{ position: 'absolute', top: -4, right: -4 }}
+          leftComponent={
+            <CustomIcon
+              onPress={this.handleOpenSideMenu}
+            >
+              <Icon
+                type="MaterialCommunityIcons"
+                name="menu"
+                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
               />
-            }
-          </View>}
+            </CustomIcon>
+          }
+          centerComponent={{ text: address, style: { color: '#fff', fontSize: 16, marginHorizontal: -15 } }}
+          rightComponent={
+            <CustomIcon
+              onPress={this.handleOpenNotificationScreen}
+            >
+              <View>
+                <Icon
+                  type="antdesign"
+                  name="bells"
+                  color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+                />
+                {unreadNotify.length > 0 &&
+                  <Badge
+                    status="error"
+                    value={unreadNotify.length}
+                    containerStyle={{ position: 'absolute', top: -4, right: -4 }}
+                  />
+                }
+              </View>
+            </CustomIcon>
+          }
           backgroundColor={APP_COLOR}
           containerStyle={{
+            paddingHorizontal: 0,
             paddingTop: 0,
-            paddingHorizontal: 18,
             height: 60
           }}
         />
