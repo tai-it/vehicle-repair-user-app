@@ -3,10 +3,9 @@ import { Text, View, TouchableOpacity, StyleSheet, FlatList } from 'react-native
 import { Icon, CheckBox } from 'react-native-elements'
 import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { changeServices, changeAmbulatory, fetchStations } from '../../redux/optionsRedux/actions'
-import { options } from '../../configs/navigation'
+import Navigator from '../../utils/Navigator'
 
 class OptionsModal extends Component {
 
@@ -31,17 +30,11 @@ class OptionsModal extends Component {
   handleButtonSearchPressed = () => {
     this.props.onChangeSelectedServices(this.state.selectedServices)
     this.props.onFetchStations()
-    Navigation.showModal({
-      id: 'stationListModal',
-      component: {
-        name: 'StationListModal',
-        options
-      }
-    })
+    Navigator.showModal('StationListModal')
   }
 
   handleCloseModal = () => {
-    Navigation.dismissModal(this.props.componentId)
+    Navigator.dismissModal(this.props.componentId)
   }
 
   render() {

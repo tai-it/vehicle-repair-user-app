@@ -17,6 +17,7 @@ import { fetchOrders } from '../redux/orderRedux/actions'
 import Swiper from 'react-native-web-swiper'
 import SwiperItem from '../components/Splash/SwiperItem'
 import { swipers } from '../data/swipers'
+import Navigator from '../utils/Navigator'
 //
 
 class SplashScreen extends Component {
@@ -60,7 +61,7 @@ class SplashScreen extends Component {
     if (!locationPermission) {
       locationPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
       if (locationPermission !== 'granted') {
-        alert('Vui lòng cho phép ứng dụng truy cập vị trí của bạn')
+        Navigator.showOverlay({ message: 'Để ứng dụng biết được vị trí chính xác, vui lòng cho phép ứng dụng truy cập vị trí của bạn' })
         return false
       }
     }
@@ -93,14 +94,8 @@ class SplashScreen extends Component {
       this.props.onFetchOrders()
       this.props.onFetchNotifications()
     } else {
-      Navigation.dismissAllModals()
-      Navigation.showModal({
-        id: 'notificationScreen',
-        component: {
-          name: 'NotificationScreen',
-          options
-        }
-      })
+      Navigator.dismissAllModals()
+      Navigator.showModal('NotificationScreen')
     }
   }
   // END NOTIFICATION SETUP
@@ -123,19 +118,15 @@ class SplashScreen extends Component {
     const { isStarted } = this.props.app
     if (isStarted) {
       if (authenticated) {
-        Navigation.setRoot({
-          root: {
-            sideMenu
-          }
-        });
+        Navigator.setRoot({
+          sideMenu
+        })
       } else {
-        Navigation.setRoot({
-          root: {
-            component: {
-              name: 'AuthScreen'
-            }
+        Navigator.setRoot({
+          component: {
+            name: 'AuthScreen'
           }
-        });
+        })
       }
     }
     return (

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
 import { Icon, Header, Button, Card, Badge } from 'react-native-elements'
-import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
 import Loading from '../components/Loading'
@@ -10,8 +9,8 @@ import { fetchProfileRequest } from '../redux/authRedux/actions'
 import Vehicle from '../constants/vehicle'
 import MapView from 'react-native-maps'
 import Geocoder from 'react-native-geocoder'
-import { options } from '../configs/navigation'
 import CustomIcon from '../components/CustomIcon'
+import Navigator from '../utils/Navigator'
 
 class HomeScreen extends Component {
 
@@ -69,13 +68,7 @@ class HomeScreen extends Component {
   }
 
   handleOpenNotificationScreen = () => {
-    Navigation.showModal({
-      id: 'notificationScreen',
-      component: {
-        name: 'NotificationScreen',
-        options
-      }
-    })
+    Navigator.showModal('NotificationScreen')
   }
 
   handleFindStations = () => {
@@ -88,35 +81,21 @@ class HomeScreen extends Component {
       }
     }
     this.props.onChangeLocation(location)
-    Navigation.showModal({
-      id: 'stationListModal',
-      component: {
-        name: 'StationListModal',
-        options
-      }
-    })
+    Navigator.showModal('StationListModal')
   }
 
   handleOpenSideMenu = () => {
-    Navigation.mergeOptions(this.props.componentId, {
-      sideMenu: {
-        left: {
-          visible: true,
-        },
-      },
-    });
-  };
+    Navigator.toggleSideMenu(this.props.componentId, true)
+  }
 
   render() {
     const { auth: { authenticated, loading }, options: { vehicle }, notify: { notifications } } = this.props
     const unreadNotify = notifications.filter(x => !x.isSeen)
     const { region, address } = this.state
     if (!authenticated) {
-      Navigation.setRoot({
-        root: {
-          component: {
-            name: 'AuthScreen'
-          }
+      Navigator.setRoot({
+        component: {
+          name: 'AuthScreen'
         }
       })
       return <View />
@@ -154,7 +133,7 @@ class HomeScreen extends Component {
                   <Badge
                     status="error"
                     value={unreadNotify.length}
-                    containerStyle={{ position: 'absolute', top: -4, right: -4 }}
+                    containerStyle={{ position: 'absolute', top: -4, right: 12 }}
                   />
                 }
               </View>

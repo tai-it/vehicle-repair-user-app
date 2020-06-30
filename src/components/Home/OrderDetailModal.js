@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import { StyleSheet, Linking, ScrollView } from 'react-native'
 import { Card, ListItem, Icon, Header, Button } from 'react-native-elements'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { Navigation } from 'react-native-navigation'
 import StepIndicator from 'react-native-step-indicator'
 import { orderStatus, orderUncompletedLabels, orderCanceledLabels } from '../../constants/orderStatus'
 import { connect } from 'react-redux'
 import { cancelOrder } from '../../redux/orderRedux/actions'
 import CustomIcon from '../CustomIcon'
+import Navigator from '../../utils/Navigator'
 
 class OrderDetailModal extends Component {
 
@@ -17,7 +17,7 @@ class OrderDetailModal extends Component {
   }
 
   handleCloseModal = () => {
-    Navigation.dismissModal(this.props.componentId)
+    Navigator.dismissModal(this.props.componentId)
   }
 
   openOnGoogleMaps = () => {
@@ -30,6 +30,7 @@ class OrderDetailModal extends Component {
     const labels = Object.values(order.status == orderStatus.canceled ? orderCanceledLabels : orderUncompletedLabels);
     return (
       <>
+        {/* HEADER */}
         <Header
           leftComponent={
             <CustomIcon

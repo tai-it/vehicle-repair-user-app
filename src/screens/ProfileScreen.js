@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
-import { Icon, Input, Card } from 'react-native-elements'
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { Icon, Input } from 'react-native-elements'
 import { APP_COLOR } from '../utils/AppSettings'
 import { connect } from 'react-redux'
-import { Navigation } from 'react-native-navigation'
+import Navigator from '../utils/Navigator'
 
 class ProfileScreen extends Component {
 
@@ -31,7 +31,7 @@ class ProfileScreen extends Component {
   }
 
   handleCloseModal = () => {
-    Navigation.dismissModal(this.props.componentId)
+    Navigator.dismissModal(this.props.componentId)
   }
 
   render() {

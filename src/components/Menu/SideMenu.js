@@ -1,45 +1,26 @@
 import React, { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Icon, Header, ListItem } from 'react-native-elements'
-import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import { logout } from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { options } from '../../configs/navigation'
 import CustomIcon from '../../components/CustomIcon'
+import Navigator from '../../utils/Navigator'
 
 class SideMenu extends Component {
 
   handleCloseSideMenu = () => {
-    Navigation.mergeOptions(this.props.componentId, {
-      sideMenu: {
-        left: {
-          visible: false,
-        },
-      },
-    });
+    Navigator.toggleSideMenu(this.props.componentId, false)
   };
 
   handleOpenProfile = () => {
     this.handleCloseSideMenu()
-    Navigation.showModal({
-      id: 'profileScreen',
-      component: {
-        name: 'ProfileScreen',
-        options
-      }
-    })
+    Navigator.showModal('ProfileScreen')
   }
 
   handleOpenOrderHistory = () => {
     this.handleCloseSideMenu()
-    Navigation.showModal({
-      id: 'orderListModal',
-      component: {
-        name: 'OrderListModal',
-        options
-      }
-    })
+    Navigator.showModal('OrderListModal')
   }
 
   handleOpenSettings = () => {

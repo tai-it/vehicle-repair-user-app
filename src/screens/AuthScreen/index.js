@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import LoginScreen from './LoginScreen'
 import SignupScreen from './SignupScreen'
 import { connect } from 'react-redux'
-import { Navigation } from 'react-native-navigation'
 import { sideMenu } from '../../configs/menu/sideMenu'
+import Navigator from '../../utils/Navigator'
 
 class AuthScreen extends Component {
   constructor(props) {
@@ -17,11 +17,9 @@ class AuthScreen extends Component {
     const { showLoginScreen } = this.state
     const { authenticated } = this.props.auth
     if (authenticated) {
-      Navigation.setRoot({
-        root: {
-          sideMenu
-        }
-      });
+      Navigator.setRoot({
+        sideMenu
+      })
       return <></>;
     }
     return (

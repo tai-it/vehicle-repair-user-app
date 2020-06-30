@@ -2,10 +2,9 @@ import { put, takeLatest } from 'redux-saga/effects'
 import * as Types from './types'
 import { store } from '../store'
 import callApi from '../../utils/apiCaller'
-import { Navigation } from 'react-native-navigation'
-import { options } from '../../configs/navigation'
 import { fetchOrders } from './actions'
 import { fetchNotifications } from '../notifyRedux/actions'
+import Navigator from '../../utils/Navigator'
 
 function* fetchOrdersAsync({ payload }) {
   try {
@@ -26,23 +25,13 @@ function* addOrderAsync({ payload }) {
     const { auth: { token } } = store.getState()
     const response = yield callApi(`orders`, 'POST', payload, token)
     const order = response?.data
-    Navigation.dismissAllModals()
-    Navigation.showModal({
-      id: 'orderDetailModal',
-      component: {
-        name: 'OrderDetailModal',
-        passProps: {
-          order
-        },
-        options
-      }
-    })
+    Navigator.dismissAllModals()
+    Navigator.showModal('OrderDetailModal', { order })
     yield put({ type: Types.ADD_ORDER_SUCCEEDED })
     yield put(fetchOrders())
     yield put(fetchNotifications())
   } catch (error) {
-    alert(error?.response?.data)
-    console.log(error?.response?.data)
+    Navigator.showOverlay({ btnShowOrders: true, message: error?.response?.data })
     yield put({ type: Types.ADD_ORDER_FAILED })
   }
 }
@@ -52,23 +41,13 @@ function* cancelOrderAsync({ payload }) {
     const { auth: { token } } = store.getState()
     const response = yield callApi(`orders/${payload}`, 'PUT', { status: "Đã huỷ" }, token)
     const order = response?.data
-    Navigation.dismissAllModals()
-    Navigation.showModal({
-      id: 'orderDetailModal',
-      component: {
-        name: 'OrderDetailModal',
-        passProps: {
-          order
-        },
-        options
-      }
-    })
+    Navigator.dismissAllModals()
+    Navigator.showModal('OrderDetailModal', { order })
     yield put({ type: Types.CANCEL_ORDER_SUCCEEDED })
     yield put(fetchOrders())
     yield put(fetchNotifications())
   } catch (error) {
-    alert(error?.response?.data)
-    console.log(error?.response?.data)
+    Navigator.showOverlay({ message: error?.response?.data })
     yield put({ type: Types.CANCEL_ORDER_FAILED })
   }
 }

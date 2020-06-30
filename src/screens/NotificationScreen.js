@@ -5,11 +5,10 @@ import { fetchNotifications } from '../redux/notifyRedux/actions'
 import callApi from '../utils/apiCaller'
 import { Header, Icon, Card, ListItem, Badge } from 'react-native-elements'
 import { APP_COLOR } from '../utils/AppSettings'
-import { Navigation } from 'react-native-navigation'
-import { options } from '../configs/navigation'
 import Loading from '../components/Loading'
 import { format } from 'date-fns'
 import CustomIcon from '../components/CustomIcon'
+import Navigator from '../utils/Navigator'
 
 class NotificationScreen extends Component {
 
@@ -30,20 +29,11 @@ class NotificationScreen extends Component {
 
   handleNotificationPressed = notify => {
     const { order } = notify
-    Navigation.showModal({
-      id: 'orderDetailModal',
-      component: {
-        name: 'OrderDetailModal',
-        passProps: {
-          order
-        },
-        options
-      }
-    })
+    Navigator.showModal('OrderDetailModal', {order})
   }
 
   handleCloseModal = () => {
-    Navigation.dismissModal(this.props.componentId)
+    Navigator.dismissModal(this.props.componentId)
   }
 
   render() {

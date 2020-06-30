@@ -1,14 +1,13 @@
 import React, { Component } from 'react'
 import { FlatList, View, Text } from 'react-native'
 import { connect } from 'react-redux'
-import { Navigation } from 'react-native-navigation'
 import { Icon, Header, ListItem, Card } from 'react-native-elements'
 import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { options } from '../../configs/navigation'
 import { fetchOrders } from '../../redux/orderRedux/actions'
 import { format } from 'date-fns'
 import CustomIcon from '../CustomIcon'
+import Navigator from '../../utils/Navigator'
 
 class OrderListModal extends Component {
 
@@ -20,20 +19,11 @@ class OrderListModal extends Component {
   }
 
   handleOnOrderPressed = order => {
-    Navigation.showModal({
-      id: 'orderDetailModal',
-      component: {
-        name: 'OrderDetailModal',
-        passProps: {
-          order
-        },
-        options
-      }
-    })
+    Navigator.showModal('OrderDetailModal', { order })
   }
 
   handleCloseModal = () => {
-    Navigation.dismissModal(this.props.componentId)
+    Navigator.dismissModal(this.props.componentId)
   }
 
   render() {

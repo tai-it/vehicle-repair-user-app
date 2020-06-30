@@ -3,13 +3,12 @@ import { Text, View, FlatList } from 'react-native'
 import { Icon, ListItem, Header, Card, Overlay, CheckBox, Button, Badge } from 'react-native-elements'
 import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { Navigation } from 'react-native-navigation'
 import _ from 'lodash'
 import { connect } from 'react-redux'
 import { fetchServices, fetchStations, changeAmbulatory } from '../../redux/optionsRedux/actions'
-import { options } from '../../configs/navigation'
 import ToggleSwitch from 'toggle-switch-react-native'
 import CustomIcon from '../CustomIcon'
+import Navigator from '../../utils/Navigator'
 
 class StationListModal extends Component {
 
@@ -34,20 +33,11 @@ class StationListModal extends Component {
   }
 
   handleCloseModal = () => {
-    Navigation.dismissModal(this.props.componentId)
+    Navigator.dismissModal(this.props.componentId)
   }
 
   handleStationPressed = station => {
-    Navigation.showModal({
-      id: 'stationModal',
-      component: {
-        name: 'StationModal',
-        passProps: {
-          station
-        },
-        options
-      }
-    })
+    Navigator.showModal('StationModal', { station })
   }
 
   handleServicePressed = service => {

@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import { StyleSheet, Text, View, Linking, FlatList } from 'react-native'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { Icon, CheckBox, Header, Card, Button } from 'react-native-elements'
-import { Navigation } from 'react-native-navigation'
 import { connect } from 'react-redux'
 import ToggleSwitch from 'toggle-switch-react-native'
 import { changeAmbulatory } from '../../redux/optionsRedux/actions'
 import { addOrder } from '../../redux/orderRedux/actions'
 import CustomIcon from '../CustomIcon'
+import Navigator from '../../utils/Navigator'
 
 class StationModal extends Component {
 
@@ -39,7 +39,7 @@ class StationModal extends Component {
   }
 
   handleCloseModal = () => {
-    Navigation.dismissModal(this.props.componentId)
+    Navigator.dismissModal(this.props.componentId)
   }
 
   openOnGoogleMaps = () => {
@@ -55,7 +55,7 @@ class StationModal extends Component {
         this.totalSalcserviceFee(this.state.selectedServices)
       })
     } else {
-      alert("Rất tiếc, tiệm sửa xe này không có dịch vụ này!")
+      Navigator.showOverlay({ message: 'Rất tiếc, tiệm sửa xe này không có dịch vụ này!' })
     }
   }
 
@@ -80,8 +80,7 @@ class StationModal extends Component {
         }
         this.props.onAddOrder(order)
       } else {
-        // SHOW OVERLAY
-        alert("Tiệm xe này hiện không khả dụng")
+        Navigator.showOverlay({ message: 'Tiệm xe này hiện không khả dụng' })
       }
     }
   }
