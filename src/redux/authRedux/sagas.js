@@ -38,7 +38,6 @@ function* signupAsync({ payload }) {
       yield put({ type: Types.SIGNUP_FAILED, payload: { message: "", errors } })
       return
     }
-
     const response = yield callApi(`account/register`, 'POST', newUser)
     const token = response.data
     yield put({ type: Types.SIGNUP_SUCCEEDED, payload: { token } })
@@ -67,6 +66,20 @@ function* fetchProfileAsync() {
   }
 }
 
+function* updateProfileAsync({ payload }) {
+  try {
+    const { auth: { token } } = store.getState()
+    const response = yield callApi('account/me', 'PUT', payload, token)
+    const user = response.data
+    console.log("function*updateProfileAsync -> user", user)
+    yield put({ type: Types.UPDATE_PROFILE_SUCCEEDED, payload: { user } })
+  } catch (error) {
+    let message = typeof (error?.response) == typeof ("") ? error?.response : ""
+    let errors = typeof (error?.response?.data) == typeof ([]) ? error?.response?.data : []
+    yield put({ type: Types.UPDATE_PROFILE_FAILED, payload: { message, errors } })
+  }
+}
+
 function* updateDeviceTokenAsync() {
   try {
     const { deviceToken } = store.getState().app
@@ -85,5 +98,6 @@ export const watchAuthSaga = [
   takeLatest(Types.LOGIN_REQUEST, loginAsync),
   takeLatest(Types.SIGNUP_REQUEST, signupAsync),
   takeLatest(Types.FETCH_PROFILE_REQUEST, fetchProfileAsync),
-  takeLatest(Types.UPDATE_DEVICE_TOKEN_REQUEST, updateDeviceTokenAsync),
+  takeLatest(Types.UPDATE_PROFILE_REQUEST, updateProfileAsync),
+  takeLatest(Types.UPDATE_DEVICE_TOKEN_REQUEST, updateDeviceTokenAsync)
 ]

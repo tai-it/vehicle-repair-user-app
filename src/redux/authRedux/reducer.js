@@ -2,6 +2,7 @@ import * as Types from './types'
 
 const initState = {
   loading: false,
+  updating: false,
   authenticated: false,
   user: null,
   token: "",
@@ -55,12 +56,30 @@ export default authReducer = (state = initState, action) => {
       return {
         ...state,
         loading: false,
-        user: action.payload.user,
+        user: action.payload.user
       };
     case Types.FETCH_PROFILE_FAILED:
       return {
         ...initState,
         message: "Phiên đã hết hạn, vui lòng đăng nhập lại"
+      };
+    case Types.UPDATE_PROFILE_REQUEST:
+      return {
+        ...state,
+        updating: true
+      };
+    case Types.UPDATE_PROFILE_SUCCEEDED:
+      return {
+        ...state,
+        updating: false,
+        user: action.payload.user
+      };
+    case Types.UPDATE_PROFILE_FAILED:
+      return {
+        ...state,
+        updating: false,
+        message: action.payload.message,
+        errors: action.payload.errors,
       };
     case Types.CLEAR_ERROR_STATE:
       return {

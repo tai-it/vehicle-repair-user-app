@@ -11,7 +11,7 @@ export default class CustomIcon extends Component {
           width: 60,
           justifyContent: "center"
         }}
-        activeOpacity={0}
+        activeOpacity={1}
         onPress={this.props.onPress}
       >
         <>

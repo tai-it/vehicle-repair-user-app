@@ -25,7 +25,7 @@ class SideMenu extends Component {
 
   handleOpenSettings = () => {
     this.handleCloseSideMenu()
-    alert("Chưa làm. OK")
+    Navigator.showOverlay({ title: 'Opps', message: 'Chức năng này đang được phát triển!' })
   }
 
   render() {

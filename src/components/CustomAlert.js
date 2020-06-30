@@ -23,6 +23,7 @@ export default class CustomAlert extends Component {
           isVisible={true}
           windowBackgroundColor="rgba(0, 0, 0, .5)"
           overlayBackgroundColor="white"
+          width="80%"
           height="auto"
           onBackdropPress={this.handleClose}
         >
@@ -30,8 +31,8 @@ export default class CustomAlert extends Component {
           <Text style={styles.message}>{message || ""}</Text>
           <View style={styles.btnContainer}>
             {btnShowOrders && <Button
-              title="Xem cuốc xe"
-              buttonStyle={[styles.btn, { width: 120 }]}
+              title="Kiểm tra"
+              buttonStyle={styles.btn}
               onPress={this.handleShowOrders}
             />}
             {btnOK && <Button
@@ -66,7 +67,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end"
   },
   btn: {
-    width: 90,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     margin: 5
   }
 })

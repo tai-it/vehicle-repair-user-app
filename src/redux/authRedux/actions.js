@@ -14,6 +14,13 @@ export const signupRequest = user => {
   }
 }
 
+export const updateProfileRequest = user => {
+  return {
+    type: Types.UPDATE_PROFILE_REQUEST,
+    payload: user
+  }
+}
+
 export const updateDeviceTokenRequest = () => {
   return {
     type: Types.UPDATE_DEVICE_TOKEN_REQUEST

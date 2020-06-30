@@ -29,6 +29,9 @@ import com.airbnb.android.react.maps.MapsPackage;
 import com.devfd.RNGeocoder.RNGeocoderPackage;
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 
+// Gradient
+import com.BV.LinearGradient.LinearGradientPackage;
+
 public class MainApplication extends NavigationApplication {
 
     @Override
@@ -63,7 +66,8 @@ public class MainApplication extends NavigationApplication {
             new ReactNativeFirebaseAppPackage(),
             new ReactNativeFirebaseAuthPackage(),
             new ReactNativeFirebaseMessagingPackage(),
-            new ReactNativePushNotificationPackage()
+            new ReactNativePushNotificationPackage(),
+            new LinearGradientPackage()
         );
     }
 
