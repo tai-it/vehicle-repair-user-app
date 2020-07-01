@@ -14,6 +14,7 @@ import HomeScreen from "./src/screens/HomeScreen"
 import AuthScreen from './src/screens/AuthScreen'
 import NotificationScreen from "./src/screens/NotificationScreen"
 import ProfileScreen from './src/screens/ProfileScreen'
+import SearchPlaceModal from './src/components/Modals/SearchPlaceModal'
 
 import OptionsModal from './src/components/Home/OptionsModal'
 import StationListModal from './src/components/Home/StationListModal'
@@ -21,7 +22,6 @@ import FilterServiceModal from './src/components/Home/FilterServiceModal'
 import StationModal from './src/components/Home/StationModal'
 import OrderListModal from './src/components/Home/OrderListModal'
 import OrderDetailModal from './src/components/Home/OrderDetailModal'
-import SearchLocationModal from './src/components/Home/SearchLocationModal'
 import CustomAlert from './src/components/CustomAlert'
 
 ReduxProvider = Component => {
@@ -112,9 +112,9 @@ Navigation.registerComponent(
 )
 
 Navigation.registerComponent(
-  'SearchLocationModal',
-  () => ReduxProvider(SearchLocationModal),
-  () => SearchLocationModal,
+  'SearchPlaceModal',
+  () => ReduxProvider(SearchPlaceModal),
+  () => SearchPlaceModal,
 )
 //
 
@@ -129,7 +129,7 @@ Navigation.registerComponent(
 console.disableYellowBox = true;
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  console.log("RemoteMessage handled in background: ", remoteMessage)
+  console.log("BRM: ", remoteMessage)
 })
 
 Navigation.events().registerAppLaunchedListener(() => {
@@ -137,6 +137,7 @@ Navigation.events().registerAppLaunchedListener(() => {
     root: {
       component: {
         name: 'SplashScreen'
+        // name: 'SearchPlaceModal'
       }
     }
   })
