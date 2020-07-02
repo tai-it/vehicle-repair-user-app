@@ -2,7 +2,8 @@ import * as Types from './types'
 
 const initState = {
   loading: false,
-  updating: false,
+  isUpdatingProfile: false,
+  isChangingPassword: false,
   authenticated: false,
   user: null,
   token: "",
@@ -66,18 +67,36 @@ export default authReducer = (state = initState, action) => {
     case Types.UPDATE_PROFILE_REQUEST:
       return {
         ...state,
-        updating: true
+        isUpdatingProfile: true
       };
     case Types.UPDATE_PROFILE_SUCCEEDED:
       return {
         ...state,
-        updating: false,
+        isUpdatingProfile: false,
         user: action.payload.user
       };
     case Types.UPDATE_PROFILE_FAILED:
       return {
         ...state,
-        updating: false,
+        isUpdatingProfile: false,
+        message: action.payload.message,
+        errors: action.payload.errors,
+      };
+    case Types.CHANGE_PASSWORD_REQUEST:
+      return {
+        ...state,
+        isChangingPassword: true
+      };
+    case Types.CHANGE_PASSWORD_SUCCEEDED:
+      return {
+        ...state,
+        isChangingPassword: false,
+        token: action.payload.token
+      };
+    case Types.CHANGE_PASSWORD_FAILED:
+      return {
+        ...state,
+        isChangingPassword: false,
         message: action.payload.message,
         errors: action.payload.errors,
       };

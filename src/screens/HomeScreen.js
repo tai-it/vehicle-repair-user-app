@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { Icon, Header, Button, Card, Badge } from 'react-native-elements'
 import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
@@ -18,6 +18,7 @@ class HomeScreen extends Component {
     super(props)
     this.state = {
       marginTop: 1,
+      isShowSearchModal: false,
       address: props.options.userLocation.address,
       region: {
         latitude: props.options.userLocation.coords.lat,
@@ -33,7 +34,7 @@ class HomeScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { lat, lng } = this.props.options.userLocation.coords
+    const { coords: { lat, lng } } = this.props.options.userLocation
     if (lat !== prevProps.options.userLocation.coords.lat || lng !== prevProps.options.userLocation.coords.lng) {
       this.setState(prevState => ({
         ...prevState,
@@ -63,10 +64,6 @@ class HomeScreen extends Component {
       .catch(err => console.log(err))
   }
 
-  handleOpenSearchLocationModal = () => {
-    console.log("Open search location modal");
-  }
-
   handleOpenNotificationScreen = () => {
     Navigator.showModal('NotificationScreen')
   }
@@ -82,6 +79,10 @@ class HomeScreen extends Component {
     }
     this.props.onChangeLocation(location)
     Navigator.showModal('StationListModal')
+  }
+
+  handleOpenSearchModal = () => {
+    Navigator.showModal('SearchPlaceModal')
   }
 
   handleOpenSideMenu = () => {
@@ -118,7 +119,17 @@ class HomeScreen extends Component {
               />
             </CustomIcon>
           }
-          centerComponent={{ text: address, style: { color: '#fff', fontSize: 16, marginHorizontal: -15 } }}
+          centerComponent={
+            <Text
+              numberOfLines={1}
+              style={{
+                color: '#fff',
+                fontSize: 16,
+                marginHorizontal: -15
+              }}
+              onPress={this.handleOpenSearchModal}
+            >{address || ""}</Text>
+          }
           rightComponent={
             <CustomIcon
               onPress={this.handleOpenNotificationScreen}
@@ -146,6 +157,7 @@ class HomeScreen extends Component {
             height: 60
           }}
         />
+
         {/* MAP VIEW */}
         <View style={{ flex: 1 }}>
           <MapView

@@ -1,51 +1,89 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text } from 'react-native'
-import { Icon, Input, Card, ListItem, Badge } from 'react-native-elements'
+import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Animated, Easing } from 'react-native'
+import { Icon, Card, ListItem, Badge, Header } from 'react-native-elements'
 import { connect } from 'react-redux'
 import Navigator from '../utils/Navigator'
-import LinearGradient from 'react-native-linear-gradient'
 import PhoneFormater from '../utils/PhoneFormater'
 import { format } from 'date-fns'
-import { updateProfileRequest } from '../redux/authRedux/actions'
-import { CLEAR_ERROR_STATE } from '../redux/authRedux/types'
+import { APP_COLOR } from '../utils/AppSettings'
+import CustomIcon from '../components/CustomIcon'
+import { orderStatus } from '../constants/orderStatus'
 
 class ProfileScreen extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      editable: false,
       name: props.auth.user.name || "",
       email: props.auth.user.email || "",
-      address: props.auth.user.address || ""
+      address: props.auth.user.address || "",
+      isReachedTop: true,
+      height: new Animated.Value(200),
+      bottomLeftRadius: new Animated.Value(50),
+      bottomRightRadius: new Animated.Value(185)
     }
   }
 
-  componentDidMount() {
-    this.props.onClearErrorState()
-  }
-
-  onChangeText = (key, value) => {
-    this.setState({
-      [key]: value
-    });
-  }
-
-  handleSaveChanges = () => {
-    this.props.onClearErrorState()
-    const { name, email, address } = this.state
-    const { auth: { user } } = this.props
-    if (name === user.name && email === user.email && address === user.address) {
-      this.setState({ editable: false })
-      return
+  componentDidUpdate(prevProps) {
+    const { email, name, address } = this.props.auth.user
+    if (prevProps.auth.user.name !== name || prevProps.auth.user.email !== email || prevProps.auth.user.address !== address) {
+      this.setState({ name, email, address })
     }
-    this.props.onUpdateProfile(email.length > 0 ? { name, email, address } : { name, address })
-    setTimeout(() => {
-      const { errors } = this.props.auth
-      if (errors.length == 0) {
-        this.setState({ editable: false })
-      }
-    }, 1000)
+  }
+
+  handleHideCover = () => {
+    Animated.timing(this.state.height, {
+      toValue: 60,
+      duration: 200,
+      easing: Easing.linear
+    }).start()
+    Animated.timing(this.state.bottomLeftRadius, {
+      toValue: 0,
+      duration: 100,
+      easing: Easing.linear
+    }).start()
+    Animated.timing(this.state.bottomRightRadius, {
+      toValue: 0,
+      duration: 100,
+      easing: Easing.linear
+    }).start()
+  }
+
+  handleShowCover = () => {
+    Animated.timing(this.state.height, {
+      toValue: 200,
+      duration: 200,
+      easing: Easing.linear
+    }).start()
+    Animated.timing(this.state.bottomLeftRadius, {
+      toValue: 50,
+      duration: 0,
+      easing: Easing.linear
+    }).start()
+    Animated.timing(this.state.bottomRightRadius, {
+      toValue: 185,
+      duration: 0,
+      easing: Easing.linear
+    }).start()
+  }
+
+  isScrollToTop = ({ contentOffset }) => {
+    const isReachedTop = contentOffset.y <= 0
+    this.setState({ isReachedTop })
+    // setTimeout(() => this.setState({ isReachedTop }), isReachedTop ? 300 : 0)
+    return isReachedTop
+  }
+
+  handleOpenSettings = () => {
+    console.log("Open settings")
+  }
+
+  handleOpenOrderListModal = () => {
+    Navigator.showModal("OrderListModal")
+  }
+
+  handleOpenProfileUpdateModal = () => {
+    Navigator.showModal("ProfileUpdateModal")
   }
 
   handleCloseModal = () => {
@@ -53,145 +91,123 @@ class ProfileScreen extends Component {
   }
 
   render() {
-    const { name, email, address, editable } = this.state
-    const { user: { phoneNumber, createdOn, isActive, phoneNumberConfirmed }, errors } = this.props.auth
+    const { name, email, address, isReachedTop, height, bottomLeftRadius, bottomRightRadius } = this.state
+    const { user: { phoneNumber, createdOn, isActive, phoneNumberConfirmed, roles } } = this.props.auth
+    const { orders } = this.props.ordering
     return (
       <View style={styles.container}>
-        {/* COVER */}
-        <LinearGradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          colors={['#191654', '#43C6AC']}
-          style={styles.cover}
+        <Animated.View
+          style={{
+            height: height,
+            width: "100%",
+            backgroundColor: APP_COLOR,
+            borderBottomLeftRadius: bottomLeftRadius,
+            borderBottomRightRadius: bottomRightRadius
+          }}
         >
-          <View style={styles.topContainer}>
-            <Text style={styles.name}>{name || ""}</Text>
-            <View style={styles.rowContainer}>
-              <Badge status={isActive ? "success" : "error"} />
-              <Text style={styles.status}>{isActive ? "Đang hoạt động" : "Đang tạm khoá"}</Text>
-            </View>
-            <View style={styles.rowContainer}>
-              <Icon
-                type="feather"
-                name="phone"
-                color="white"
-                size={16}
-              />
-              <Text style={styles.phoneNumber}>{PhoneFormater.normalize(phoneNumber) || ""}</Text>
-              <Icon
-                type="octicon"
-                name={phoneNumberConfirmed ? "verified" : "unverified"}
-                color="white"
-                size={16}
-              />
-            </View>
-          </View>
-        </LinearGradient>
+          {isReachedTop ?
+            <>
+              <View style={styles.topContainer}>
+                <Text style={styles.name}>{name || ""}</Text>
+                <View style={styles.rowContainer}>
+                  <Badge status={isActive ? "success" : "error"} />
+                  <Text style={styles.status}>{isActive ? "Đang hoạt động" : "Đang tạm khoá"}</Text>
+                </View>
+                <View style={styles.rowContainer}>
+                  <Icon
+                    type="feather"
+                    name="phone"
+                    color="white"
+                    size={16}
+                  />
+                  <Text style={styles.phoneNumber}>{PhoneFormater.normalize(phoneNumber) || ""}</Text>
+                  <Icon
+                    type="octicon"
+                    name={phoneNumberConfirmed ? "verified" : "unverified"}
+                    color="white"
+                    size={16}
+                  />
+                </View>
+              </View>
 
-        {/* BACK BUTTON */}
-        <TouchableOpacity
-          style={styles.btnBack}
-          onPress={this.handleCloseModal}
+              {/* BACK BUTTON */}
+              <TouchableOpacity
+                style={styles.btnBack}
+                onPress={this.handleCloseModal}
+              >
+                <Icon type="antdesign" name="left" color="white" />
+              </TouchableOpacity>
+
+              {/* SETTINGS BUTTON */}
+              <TouchableOpacity
+                style={styles.btnSettings}
+                onPress={this.handleOpenSettings}
+              >
+                <Icon type="antdesign" name="setting" color="white" />
+              </TouchableOpacity>
+            </> :
+            <Header
+              leftComponent={
+                <CustomIcon onPress={this.handleCloseModal}>
+                  <Icon type="antdesign" name="left" color='white' />
+                </CustomIcon>
+              }
+              centerComponent={{
+                text: name.toUpperCase() || "",
+                style: {
+                  color: '#fff',
+                  fontSize: 18,
+                  marginHorizontal: -30
+                }
+              }}
+              rightComponent={
+                <CustomIcon onPress={this.handleOpenSettings}>
+                  <Icon type="antdesign" name="setting" color="white" />
+                </CustomIcon>
+              }
+              backgroundColor={APP_COLOR}
+              containerStyle={{
+                paddingHorizontal: 0,
+                paddingTop: 0,
+                height: 60
+              }}
+            />
+          }
+        </Animated.View>
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          onScroll={({ nativeEvent }) => {
+            if (this.isScrollToTop(nativeEvent)) {
+              this.handleShowCover()
+            } else {
+              this.handleHideCover()
+            }
+          }}
         >
-          <Icon
-            type="antdesign"
-            name="left"
-            color="white"
-          />
-        </TouchableOpacity>
-
-        {/* EDIT/SAVE BUTTON */}
-        {editable || errors.length > 0 ?
-          <TouchableOpacity
-            style={styles.btnSave}
-            onPress={this.handleSaveChanges}
-            activeOpacity={1}
-          >
-            <Icon
-              type="feather"
-              name="save"
-              color="white"
-            />
-          </TouchableOpacity> :
-          <TouchableOpacity
-            style={styles.btnEdit}
-            onPress={() => this.setState({ editable: true })}
-            activeOpacity={1}
-          >
-            <Icon
-              type="simple-line-icon"
-              name="pencil"
-              color="white"
-            />
-          </TouchableOpacity>
-        }
-
-        {/* INFO */}
-        {editable || errors.length > 0 ?
-          <Card containerStyle={[styles.bodyContent, { paddingHorizontal: 20 }]}>
-            <ScrollView
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-            >
-              <Input
-                label="Họ và tên"
-                placeholder="Nguyễn Ngọc Hoàng"
-                returnKeyType="next"
-                onSubmitEditing={() => this.refEmail.focus()}
-                blurOnSubmit={false}
-                value={name}
-                autoCapitalize="words"
-                onChangeText={name => this.onChangeText("name", name)}
-                containerStyle={{ marginTop: 20 }}
-                inputStyle={styles.input}
-                leftIcon={{ type: 'feather', name: 'user', color: "#aaaaaa" }}
-                errorMessage={errors?.find(x => x.propertyName == "Name")?.errorMessage.split(";")[0] || ""}
-              />
-
-              <Input
-                label="Địa chỉ"
-                placeholder="6x Tên đường, Tên quận, Tên thành phố"
-                leftIcon={{ type: 'feather', name: 'map-pin', color: "#aaaaaa" }}
-                value={address}
-                autoCapitalize="none"
-                returnKeyType="done"
-                ref={r => (this.refAddress = r)}
-                onSubmitEditing={this.handleSaveChanges}
-                blurOnSubmit={true}
-                onChangeText={address => this.onChangeText("address", address)}
-                containerStyle={{ marginTop: 20 }}
-                inputStyle={styles.input}
-                errorMessage={errors?.find(x => x.propertyName == "Address")?.errorMessage.split(";")[0] || ""}
-              />
-
-              <Input
-                label="Email"
-                placeholder="user@example.com"
-                keyboardType='email-address'
-                returnKeyType="next"
-                autoCapitalize={false}
-                ref={r => (this.refEmail = r)}
-                onSubmitEditing={() => this.refAddress.focus()}
-                blurOnSubmit={false}
-                value={email}
-                onChangeText={email => this.onChangeText("email", email)}
-                containerStyle={{ marginTop: 20 }}
-                inputStyle={styles.input}
-                leftIcon={{ type: 'feather', name: 'mail', color: "#aaaaaa" }}
-                errorMessage={errors?.find(x => x.propertyName == "Email")?.errorMessage.split(";")[0] || ""}
-              />
-            </ScrollView>
-          </Card> :
-          <Card containerStyle={styles.bodyContent}>
-            <ScrollView
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-            >
+          {/* INFO */}
+          <>
+            <Card containerStyle={[styles.bodyContent, { marginBottom: 0 }]}>
               <ListItem
                 leftIcon={{ type: 'feather', name: 'user', color: "#aaaaaa" }}
                 title="Họ và tên"
                 titleStyle={styles.title}
                 subtitle={name}
+                subtitleStyle={styles.subtitle}
+                rightIcon={
+                  <TouchableOpacity
+                    onPress={this.handleOpenProfileUpdateModal}
+                  >
+                    <Icon type="antdesign" name="edit" color={APP_COLOR} />
+                  </TouchableOpacity>
+                }
+                bottomDivider
+              />
+              <ListItem
+                leftIcon={{ type: 'MaterialIcons', name: 'group', color: "#aaaaaa" }}
+                title="Vai trò"
+                titleStyle={styles.title}
+                subtitle={roles[0]}
                 subtitleStyle={styles.subtitle}
                 bottomDivider
               />
@@ -212,16 +228,47 @@ class ProfileScreen extends Component {
                 bottomDivider
               />
               <ListItem
-                leftIcon={{ type: 'feather', name: 'user-check', color: "#aaaaaa" }}
+                leftIcon={{ type: 'feather', name: 'user-plus', color: "#aaaaaa" }}
                 title="Đăng ký ngày"
                 titleStyle={styles.title}
-                subtitle={format(new Date(createdOn), "dd-MM-yyyy H:mma")}
+                subtitle={format(new Date(createdOn), "dd-MM-yyyy H:mm")}
+                subtitleStyle={styles.subtitle}
+              />
+            </Card>
+            <Card containerStyle={styles.bodyContent}>
+              <ListItem
+                leftIcon={{ type: 'antdesign', name: 'barchart', color: "#aaaaaa" }}
+                title="Đã đặt"
+                titleStyle={styles.title}
+                subtitle={`${orders.length || 0} cuốc`}
+                subtitleStyle={styles.subtitle}
+                rightIcon={
+                  <TouchableOpacity
+                    onPress={this.handleOpenOrderListModal}
+                  >
+                    <Icon type="antdesign" name="eye" color={APP_COLOR} />
+                  </TouchableOpacity>
+                }
+                bottomDivider
+              />
+              <ListItem
+                leftIcon={{ type: 'MaterialIcons', name: 'cancel', color: "#aaaaaa" }}
+                title="Đã huỷ"
+                titleStyle={styles.title}
+                subtitle={`${orders.filter(x => x.status === orderStatus.canceled).length || 0} cuốc`}
                 subtitleStyle={styles.subtitle}
                 bottomDivider
               />
-            </ScrollView>
-          </Card>
-        }
+              <ListItem
+                leftIcon={{ type: 'MaterialIcons', name: 'done', color: "#aaaaaa" }}
+                title="Hoàn thành"
+                titleStyle={styles.title}
+                subtitle={`${orders.filter(x => x.status === orderStatus.done || 0).length} cuốc`}
+                subtitleStyle={styles.subtitle}
+              />
+            </Card>
+          </>
+        </ScrollView>
       </View>
     )
   }
@@ -258,30 +305,6 @@ const styles = StyleSheet.create({
     color: "white",
     paddingHorizontal: 5
   },
-  btnEdit: {
-    zIndex: 1000,
-    position: "absolute",
-    height: 60,
-    width: 60,
-    top: 150,
-    right: 10,
-    backgroundColor: "rgb(254, 54, 97)",
-    justifyContent: "center",
-    alignContent: "center",
-    borderRadius: 60
-  },
-  btnSave: {
-    zIndex: 1000,
-    position: "absolute",
-    height: 60,
-    width: 60,
-    top: 150,
-    right: 10,
-    backgroundColor: "#00C851",
-    justifyContent: "center",
-    alignContent: "center",
-    borderRadius: 60
-  },
   btnBack: {
     zIndex: 1001,
     position: "absolute",
@@ -289,7 +312,17 @@ const styles = StyleSheet.create({
     width: 40,
     top: 10,
     left: 10,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    justifyContent: "center",
+    alignContent: "center",
+    borderRadius: 40
+  },
+  btnSettings: {
+    zIndex: 1001,
+    position: "absolute",
+    height: 40,
+    width: 40,
+    top: 10,
+    right: 10,
     justifyContent: "center",
     alignContent: "center",
     borderRadius: 40
@@ -314,15 +347,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth
+    auth: state.auth,
+    ordering: state.ordering
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onClearErrorState: () => dispatch({ type: CLEAR_ERROR_STATE }),
-    onUpdateProfile: user => dispatch(updateProfileRequest(user))
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen)
+export default connect(mapStateToProps, null)(ProfileScreen)

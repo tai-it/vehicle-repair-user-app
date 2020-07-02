@@ -56,7 +56,7 @@ class OrderListModal extends Component {
               <ListItem
                 key={item.id}
                 title={item.address}
-                subtitle={format(new Date(item.createdOn), "dd-MM-yyyy H:mma")}
+                subtitle={format(new Date(item.createdOn), "dd-MM-yyyy H:mm")}
                 rightTitle={item.status}
                 onPress={() => this.handleOnOrderPressed(item)}
               />

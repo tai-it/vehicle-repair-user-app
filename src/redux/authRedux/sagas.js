@@ -71,12 +71,31 @@ function* updateProfileAsync({ payload }) {
     const { auth: { token } } = store.getState()
     const response = yield callApi('account/me', 'PUT', payload, token)
     const user = response.data
-    console.log("function*updateProfileAsync -> user", user)
     yield put({ type: Types.UPDATE_PROFILE_SUCCEEDED, payload: { user } })
   } catch (error) {
     let message = typeof (error?.response) == typeof ("") ? error?.response : ""
     let errors = typeof (error?.response?.data) == typeof ([]) ? error?.response?.data : []
     yield put({ type: Types.UPDATE_PROFILE_FAILED, payload: { message, errors } })
+  }
+}
+
+function* changePasswordAsync({ payload }) {
+  try {
+    const { auth: { token } } = store.getState()
+    const response = yield callApi('account/password', 'PUT', payload, token)
+    yield put({ type: Types.CHANGE_PASSWORD_SUCCEEDED, payload: { token: response.data } })
+  } catch (error) {
+    let errors = typeof (error?.response?.data) == typeof ([]) ? error?.response?.data : []
+    let message = ""
+    if (typeof (error?.response) == typeof ("")) {
+      message = error?.response
+    } else {
+      errors.push({
+        propertyName: "CurrentPassword",
+        errorMessage: "Mật khẩu không chính xác"
+      })
+    }
+    yield put({ type: Types.CHANGE_PASSWORD_FAILED, payload: { message, errors } })
   }
 }
 
@@ -99,5 +118,6 @@ export const watchAuthSaga = [
   takeLatest(Types.SIGNUP_REQUEST, signupAsync),
   takeLatest(Types.FETCH_PROFILE_REQUEST, fetchProfileAsync),
   takeLatest(Types.UPDATE_PROFILE_REQUEST, updateProfileAsync),
+  takeLatest(Types.CHANGE_PASSWORD_REQUEST, changePasswordAsync),
   takeLatest(Types.UPDATE_DEVICE_TOKEN_REQUEST, updateDeviceTokenAsync)
 ]
