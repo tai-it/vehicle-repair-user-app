@@ -15,6 +15,7 @@ import AuthScreen from './src/screens/AuthScreen'
 import NotificationScreen from "./src/screens/NotificationScreen"
 import ProfileScreen from './src/screens/ProfileScreen'
 import SearchPlaceModal from './src/components/Modals/SearchPlaceModal'
+import ProfileUpdateModal from './src/components/Profile/ProfileUpdateModal'
 
 import OptionsModal from './src/components/Home/OptionsModal'
 import StationListModal from './src/components/Home/StationListModal'
@@ -116,6 +117,12 @@ Navigation.registerComponent(
   () => ReduxProvider(SearchPlaceModal),
   () => SearchPlaceModal,
 )
+
+Navigation.registerComponent(
+  'ProfileUpdateModal',
+  () => ReduxProvider(ProfileUpdateModal),
+  () => ProfileUpdateModal,
+)
 //
 
 // OVERLAY
@@ -137,7 +144,6 @@ Navigation.events().registerAppLaunchedListener(() => {
     root: {
       component: {
         name: 'SplashScreen'
-        // name: 'SearchPlaceModal'
       }
     }
   })

@@ -84,7 +84,7 @@ class SearchPlaceModal extends Component {
             <Icon type="MaterialCommunityIcons" name="close" color="white" />
           </CustomIcon>}
         />
-        {(!searching && searchStarted && address.length > 0 && positions.length < 1) ?
+        {(!searching && searchStarted && address.length > 10 && positions.length < 1) ?
           <Text style={styles.notFoundMessage}
           >
             Không tìm thấy kết quả

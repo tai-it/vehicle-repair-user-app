@@ -69,7 +69,7 @@ class NotificationScreen extends Component {
             data={notifications}
             renderItem={({ item }) => <ListItem
               title={item.title}
-              subtitle={`${item.body}\n\n${format(new Date(item.createdOn), "dd-MM-yyyy H:mma")}`}
+              subtitle={`${item.body}\n\n${format(new Date(item.createdOn), "dd-MM-yyyy H:mm")}`}
               rightIcon={!item.isSeen ? <Badge
                 status="success"
               /> : {}}

@@ -21,6 +21,13 @@ export const updateProfileRequest = user => {
   }
 }
 
+export const changePasswordRequest = payload => {
+  return {
+    type: Types.CHANGE_PASSWORD_REQUEST,
+    payload
+  }
+}
+
 export const updateDeviceTokenRequest = () => {
   return {
     type: Types.UPDATE_DEVICE_TOKEN_REQUEST
