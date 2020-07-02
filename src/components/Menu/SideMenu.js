@@ -1,99 +1,92 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { Icon } from 'react-native-elements'
-import { Navigation } from 'react-native-navigation'
+import { StyleSheet, View } from 'react-native'
+import { Icon, Header, ListItem } from 'react-native-elements'
 import { connect } from 'react-redux'
-import * as Actions from '../../redux/authRedux/actions'
+import { logout } from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
+import CustomIcon from '../../components/CustomIcon'
+import Navigator from '../../utils/Navigator'
 
 class SideMenu extends Component {
 
   handleCloseSideMenu = () => {
-    Navigation.mergeOptions(this.props.componentId, {
-      sideMenu: {
-        left: {
-          visible: false,
-        },
-      },
-    });
+    Navigator.toggleSideMenu(this.props.componentId, false)
   };
 
   handleOpenProfile = () => {
-
+    this.handleCloseSideMenu()
+    Navigator.showModal('ProfileScreen')
   }
 
   handleOpenOrderHistory = () => {
-
+    this.handleCloseSideMenu()
+    Navigator.showModal('OrderListModal')
   }
 
   handleOpenSettings = () => {
-
+    this.handleCloseSideMenu()
+    Navigator.showOverlay({ title: 'Opps', message: 'Chức năng này đang được phát triển!' })
   }
 
   render() {
+    const { user } = this.props.auth
     return (
       <View style={{ flex: 1, backgroundColor: '#FFF', width: '90%' }}>
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            alignItems: "center",
-            justifyContent: 'space-between',
-            padding: 18,
-            borderBottomWidth: 1,
-            borderColor: '#E9E9E9',
-            backgroundColor: APP_COLOR
-          }}>
-          <View />
-          <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>SỬA XE 4.0</Text>
-          <Icon
-            type="EvilIcons"
-            name="close"
-            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
-            onPress={this.handleCloseSideMenu}
-          />
-        </View>
+        <Header
+          centerComponent={{ text: user?.name.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginLeft: -30 } }}
+          rightComponent={
+            <CustomIcon onPress={this.handleCloseSideMenu}>
+              <Icon
+                type="evilicons"
+                name="close"
+                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+              />
+            </CustomIcon>
+          }
+          backgroundColor={APP_COLOR}
+          containerStyle={{
+            paddingHorizontal: 0,
+            paddingTop: 0,
+            height: 60
+          }}
+        />
         <View>
-          <TouchableOpacity
-            style={styles.menu}
+          <ListItem
+            leftIcon={<Icon
+              type="feather"
+              name="user"
+            />}
+            title="Trang cá nhân"
             onPress={this.handleOpenProfile}
-          >
-            <Icon
-              type="font-awesome"
-              name="user-circle"
-            />
-            <Text style={styles.menuTitle}>Trang cá nhân</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.menu}
+            bottomDivider
+          />
+          <ListItem
+            leftIcon={<Icon
+              type="feather"
+              name="list"
+            />}
+            title="Lịch sử cuốc xe"
             onPress={this.handleOpenOrderHistory}
-          >
-            <Icon
-              type="font-awesome"
-              name="list-alt"
-            />
-            <Text style={styles.menuTitle}>Lịch sử</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.menu}
-            onPress={this.handleOpenSettings}
-          >
-            <Icon
+            bottomDivider
+          />
+          <ListItem
+            leftIcon={<Icon
               type="feather"
               name="settings"
-            />
-            <Text style={styles.menuTitle}>Cài đặt</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.menu}
+            />}
+            title="Cài đặt"
+            onPress={this.handleOpenSettings}
+            bottomDivider
+          />
+          <ListItem
+            leftIcon={<Icon
+              type="feather"
+              name="log-out"
+            />}
+            title="Đăng xuất"
             onPress={this.props.onLogout}
-          >
-            <Icon
-              type="antdesign"
-              name="logout"
-            />
-            <Text style={styles.menuTitle}>Đăng xuất</Text>
-          </TouchableOpacity>
+            bottomDivider
+          />
         </View>
       </View>
     )
@@ -108,7 +101,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onLogout: () => dispatch(Actions.logout())
+    onLogout: () => dispatch(logout())
   }
 }
 

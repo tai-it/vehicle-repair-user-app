@@ -1,188 +1,98 @@
 import React, { Component } from 'react'
-import { Text, View, TouchableWithoutFeedback, Modal, ScrollView, TouchableOpacity, Picker, Switch } from 'react-native'
-import { Icon } from 'react-native-elements'
-import firebase from 'react-native-firebase'
-import _ from 'lodash'
+import { Text, View, TouchableOpacity, StyleSheet, FlatList } from 'react-native'
+import { Icon, CheckBox } from 'react-native-elements'
+import Loading from '../Loading'
 import { APP_COLOR } from '../../utils/AppSettings'
-import { Navigation } from 'react-native-navigation'
-import { Alert } from 'react-native'
 import { connect } from 'react-redux'
-import { changeService, changeAmbulatory } from '../../redux/optionsRedux/actions'
+import { changeServices, changeAmbulatory, fetchStations } from '../../redux/optionsRedux/actions'
+import Navigator from '../../utils/Navigator'
 
 class OptionsModal extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      services: [],
-      selectedService: '',
-      useAmbulatory: false
+      selectedServices: props.options.selectedServices,
     }
   }
 
-  componentDidMount() {
-    this.fetchServices()
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.options.vehicle !== prevProps.options.vehicle) {
-      this.fetchServices()
-    }
-  }
-
-  fetchServices = () => {
-    const serviceRef = firebase.database().ref('services')
-    const { vehicle } = this.props.options
-    serviceRef.orderByChild('vehicle')
-      .equalTo(vehicle)
-      .once('value').then(snapshot => {
-        let services = []
-        if (snapshot.val()) {
-          services = _.uniqBy(Object.values(snapshot.val()), 'name')
-          this.props.onChangeService(services[0].name)
-        }
-        this.setState({ services })
-      })
-  }
-
-  handleSubmit = async () => {
-    const { options: { vehicle, serviceName, useAmbulatory } } = this.props
-    const serviceRef = firebase.database().ref('services')
-    let stationIds = []
-    await serviceRef.orderByChild('name')
-      .equalTo(serviceName)
-      .once('value')
-      .then(snapshot => {
-        const services = Object.values(snapshot.val())
-        services.forEach(service => {
-          if (service.vehicle === vehicle) {
-            stationIds.push(service.stationId)
-          }
-        });
-      })
-    const stationRef = firebase.database().ref('stations')
-    let stations = []
-    for (const id of stationIds) {
-      await stationRef.child(id).once('value').then(snapshot => stations.push(snapshot.val()))
-    }
-    if (useAmbulatory) {
-      stations = stations.filter(station => station.hasAmbulatory)
-    }
-    this.props.onDismissModal()
-    if (stations.length > 0) {
-      Navigation.showModal({
-        id: 'foundStationList',
-        component: {
-          name: 'StationListModal',
-          passProps: {
-            stations
-          }
-        }
-      })
+  handleServicePressed = service => {
+    const { selectedServices } = this.state
+    const index = selectedServices.indexOf(service)
+    if (index > -1) {
+      selectedServices.splice(index, 1)
     } else {
-      Alert.alert('Thông báo', 'Xin lỗi. Hiện không có tiệm nào hoạt động gần đây')
+      selectedServices.push(service)
     }
+    this.setState({ selectedServices })
+  }
+
+  handleButtonSearchPressed = () => {
+    this.props.onChangeSelectedServices(this.state.selectedServices)
+    this.props.onFetchStations()
+    Navigator.showModal('StationListModal')
+  }
+
+  handleCloseModal = () => {
+    Navigator.dismissModal(this.props.componentId)
   }
 
   render() {
-    const { visible, options: { vehicle, serviceName, userLocation, useAmbulatory }, auth: { user } } = this.props
-    const { services } = this.state
+    const { fetchingServices, services } = this.props.options
+    const { selectedServices } = this.state
     return (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visible}
-        onRequestClose={this.props.onDismissModal}>
-        <TouchableOpacity
-          activeOpacity={1}
-          onPressOut={this.props.onDismissModal}
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(52, 52, 52, 0.3)',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <TouchableWithoutFeedback>
-            <View
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 5,
-                width: '90%',
-                maxHeight: '85%'
-              }}>
-              <View
-                style={{
-                  width: '100%',
-                  flexDirection: 'row',
-                  alignItems: "center",
-                  justifyContent: 'space-between',
-                  padding: 15,
-                  borderBottomWidth: 1,
-                  borderColor: '#E9E9E9',
-                  borderTopRightRadius: 5,
-                  borderTopLeftRadius: 5,
-                  backgroundColor: APP_COLOR
-                }}>
-                <View />
-                <Text style={{ fontSize: 18, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>CHỌN DỊCH VỤ</Text>
-                <Icon
-                  type="EvilIcons"
-                  name="close"
-                  color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
-                  onPress={this.props.onDismissModal}
+      <View>
+        <View style={styles.header}>
+          <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />
+          <Text style={{ fontSize: 20, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>CHỌN DỊCH VỤ</Text>
+          <View />
+        </View>
+        {fetchingServices && <Loading style={{ justifyContent: "center", alignItems: "center", height: '90%' }} message="Đang tìm dịch vụ" /> ||
+          <>
+            <FlatList
+              data={services}
+              numColumns={2}
+              renderItem={({ item }) =>
+                <CheckBox
+                  containerStyle={{ flex: 1, maxWidth: '44.5%' }}
+                  title={item}
+                  onPress={() => this.handleServicePressed(item)}
+                  checked={selectedServices.indexOf(item) > -1 ? true : false}
                 />
-              </View>
-              <ScrollView
-                style={{ padding: 20 }}
-                showsHorizontalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}
-              >
-                <Text style={{ fontSize: 15 }}>{user?.fullName || 'Anonymous'}</Text>
-                <Text style={{ fontSize: 15 }}>Phương tiện: {vehicle || 'Unknown'}</Text>
-                <Text style={{ fontSize: 15 }}>SĐT: {user?.phone || 'Unknown'}</Text>
-                <Text style={{ fontSize: 15 }}>Vị trí: {userLocation.address}</Text>
-                {services.length > 0 ? <>
-                  <Text style={{ fontSize: 15 }}>Chọn loại dịch vụ:</Text>
-                  <Picker
-                    selectedValue={serviceName}
-                    style={{
-                      width: '100%',
-                    }}
-                    onValueChange={(serviceName, itemIndex) =>
-                      this.props.onChangeService(serviceName)
-                    }>
-                    {services.map((service, index) => <Picker.Item key={index} label={service.name} value={service.name} />)}
-                  </Picker>
-                </> : <Text style={{ fontSize: 15 }}>Đang cập nhật dịch vụ</Text>}
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                  <Text>Sử dụng lưu động</Text>
-                  <Switch
-                    value={useAmbulatory}
-                    onValueChange={() => this.props.onChangeAmbulatory(!useAmbulatory)}
-                  />
-                </View>
-              </ScrollView>
-              <TouchableOpacity
-                style={{
-                  paddingVertical: 15,
-                  backgroundColor: APP_COLOR,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderBottomLeftRadius: 5,
-                  borderBottomRightRadius: 5,
-                  marginTop: 1
-                }}
-                onPress={this.handleSubmit}
-              >
-                <Text style={{ fontSize: 18, color: '#fff' }}>TÌM KIẾM</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableWithoutFeedback>
-        </TouchableOpacity>
-      </Modal>
+              }
+              keyExtractor={item => item}
+              ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
+            />
+            <TouchableOpacity
+              style={{
+                paddingVertical: 18,
+                backgroundColor: APP_COLOR,
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              onPress={this.handleButtonSearchPressed}
+            >
+              <Text style={{ fontSize: 18, color: '#fff' }}>TÌM QUANH ĐÂY</Text>
+            </TouchableOpacity>
+          </>
+        }
+      </View>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: "center",
+    justifyContent: 'space-between',
+    padding: 18,
+    borderBottomWidth: 1,
+    borderColor: '#E9E9E9',
+    backgroundColor: APP_COLOR
+  }
+})
 
 const mapStateToProps = state => {
   return {
@@ -193,8 +103,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onChangeService: service => dispatch(changeService(service)),
-    onChangeAmbulatory: option => dispatch(changeAmbulatory(option))
+    onChangeSelectedServices: services => dispatch(changeServices(services)),
+    onChangeAmbulatory: option => dispatch(changeAmbulatory(option)),
+    onFetchStations: () => dispatch(fetchStations())
   }
 }
 

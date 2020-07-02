@@ -38,6 +38,7 @@ target 'SuaXe4Dot0' do
 
   pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
 
+
   target 'SuaXe4Dot0Tests' do
     inherit! :search_paths
     # Pods for testing

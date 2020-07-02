@@ -1,1 +1,5 @@
 export const CHANGE_APP_COLOR = 'CHANGE_APP_COLOR'
+
+export const CHANGE_DEVICE_TOKEN = 'CHANGE_DEVICE_TOKEN'
+
+export const GET_STARTED = 'GET_STARTED'

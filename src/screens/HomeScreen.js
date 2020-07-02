@@ -1,165 +1,220 @@
 import React, { Component } from 'react'
-import { PermissionsAndroid, BackHandler, View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import { Alert } from 'react-native'
-import { Icon } from 'react-native-elements'
-import { Navigation } from 'react-native-navigation'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { Icon, Header, Button, Card, Badge } from 'react-native-elements'
 import { connect } from 'react-redux'
 import { APP_COLOR } from '../utils/AppSettings'
-import OptionsModal from '../components/Home/OptionsModal'
+import Loading from '../components/Loading'
 import { changeVehicle, changeLocation } from '../redux/optionsRedux/actions'
-import Geocoder from 'react-native-geocoder'
-import Geolocation from 'react-native-geolocation-service'
+import { fetchProfileRequest } from '../redux/authRedux/actions'
 import Vehicle from '../constants/vehicle'
+import MapView from 'react-native-maps'
+import Geocoder from 'react-native-geocoder'
+import CustomIcon from '../components/CustomIcon'
+import Navigator from '../utils/Navigator'
 
 class HomeScreen extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      showOptions: false
-    }
-  }
-
-  componentDidMount = async () => {
-    let locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    if (!locationPermission) {
-      locationPermission = await this.askLocationPermission()
-      if (locationPermission !== 'granted') {
-        Alert.alert('Message', 'We need to access your location!')
-        setTimeout(() => BackHandler.exitApp(), 1000)
+      marginTop: 1,
+      isShowSearchModal: false,
+      address: props.options.userLocation.address,
+      region: {
+        latitude: props.options.userLocation.coords.lat,
+        longitude: props.options.userLocation.coords.lng,
+        latitudeDelta: 0.003,
+        longitudeDelta: 0.003
       }
     }
-    Geolocation.getCurrentPosition(position => {
-      Geocoder.geocodePosition({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      })
-        .then(res => {
-          let location = {
-            address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
-            coords: res[0].position
-          }
-          this.props.onChangeLocation(location)
-        })
-        .catch(err => console.log(err))
-    }, error => {
-      console.log(error)
-    })
-
   }
 
-  askLocationPermission = async () => {
-    const result = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    return result
+  componentDidMount = () => {
+    this.props.onFetchProfile()
   }
 
-  onRegionChange = (mapRegion, lastLatitude, lastLongitude) => {
-    if (this.state.mapRegion !== mapRegion || this.state.lastLatitude !== lastLatitude || this.state.lastLongtitude !== lastLongitude) {
-      this.setState({ mapRegion, lastLatitude, lastLongitude });
+  componentDidUpdate(prevProps) {
+    const { coords: { lat, lng } } = this.props.options.userLocation
+    if (lat !== prevProps.options.userLocation.coords.lat || lng !== prevProps.options.userLocation.coords.lng) {
+      this.setState(prevState => ({
+        ...prevState,
+        region: {
+          ...prevState.region,
+          latitude: lat,
+          longitude: lng
+        }
+      }))
     }
+  }
+
+  onRegionChangeComplete = region => {
+    this.setState({ region })
+    const { latitude, longitude } = region
+    Geocoder.geocodePosition({
+      lat: latitude,
+      lng: longitude
+    })
+      .then(res => {
+        const location = {
+          address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
+          coords: res[0].position
+        }
+        this.setState({ address: location.address })
+      })
+      .catch(err => console.log(err))
+  }
+
+  handleOpenNotificationScreen = () => {
+    Navigator.showModal('NotificationScreen')
+  }
+
+  handleFindStations = () => {
+    const { address, region: { latitude, longitude } } = this.state
+    const location = {
+      address,
+      coords: {
+        lat: latitude,
+        lng: longitude
+      }
+    }
+    this.props.onChangeLocation(location)
+    Navigator.showModal('StationListModal')
+  }
+
+  handleOpenSearchModal = () => {
+    Navigator.showModal('SearchPlaceModal')
   }
 
   handleOpenSideMenu = () => {
-    Navigation.mergeOptions(this.props.componentId, {
-      sideMenu: {
-        left: {
-          visible: true,
-        },
-      },
-    });
-  };
+    Navigator.toggleSideMenu(this.props.componentId, true)
+  }
 
   render() {
-    const { authenticated, user } = this.props.auth
+    const { auth: { authenticated, loading }, options: { vehicle }, notify: { notifications } } = this.props
+    const unreadNotify = notifications.filter(x => !x.isSeen)
+    const { region, address } = this.state
     if (!authenticated) {
-      Navigation.dismissAllModals()
-      Navigation.setRoot({
-        root: {
-          component: {
-            name: 'AuthScreen'
-          }
+      Navigator.setRoot({
+        component: {
+          name: 'AuthScreen'
         }
       })
       return <View />
     }
-    const { showOptions } = this.state
-    const { options: { vehicle, userLocation } } = this.props
+    if (loading) {
+      return <Loading message="Đang tải thông tin" />
+    }
     return (
       <View style={[styles.container]}>
-        <OptionsModal
-          visible={showOptions}
-          onDismissModal={() => this.setState({ showOptions: false })}
-        />
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            padding: 18,
-            borderBottomWidth: 1,
-            borderColor: '#E9E9E9',
-            backgroundColor: APP_COLOR
-          }}>
-          <Icon
-            type="MaterialCommunityIcons"
-            name="menu"
-            color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
-            onPress={this.handleOpenSideMenu}
-          />
-        </View>
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Text style={{ fontSize: 25, textAlign: "center" }}>{`Hi ${user.firstName},`}</Text>
-          <Text style={{ fontSize: 25, textAlign: "center", maxWidth: '90%', marginBottom: 20 }}>{`Bạn đang ở ${userLocation.address}`}</Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity
-            style={[styles.vehicle, vehicle === Vehicle.bike ? styles.active : styles.noneActive]}
-            onPress={() => this.props.onChangeVehicle(Vehicle.bike)}
-          >
-            <Icon
-              type="material-community"
-              name="bike"
-              color={vehicle === Vehicle.bike ? 'white' : 'black'}
-            />
-            <Text style={{ fontSize: 15, color: vehicle === Vehicle.bike ? 'white' : 'black' }}>{Vehicle.bike}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.vehicle, vehicle === Vehicle.motobike ? styles.active : styles.noneActive]}
-            onPress={() => this.props.onChangeVehicle(Vehicle.motobike)}
-          >
-            <Icon
-              type="material-community"
-              name="motorbike"
-              color={vehicle === Vehicle.motobike ? 'white' : 'black'}
-              size={30}
-            />
-            <Text style={{ fontSize: 15, color: vehicle === Vehicle.motobike ? 'white' : 'black' }}>{Vehicle.motobike}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.vehicle, vehicle === Vehicle.car ? styles.active : styles.noneActive]}
-            onPress={() => this.props.onChangeVehicle(Vehicle.car)}
-          >
-            <Icon
-              type="material-community"
-              name="car"
-              color={vehicle === Vehicle.car ? 'white' : 'black'}
-            />
-            <Text style={{ fontSize: 15, color: vehicle === Vehicle.car ? 'white' : 'black' }}>{Vehicle.car}</Text>
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity
-          style={{
-            paddingVertical: 18,
-            backgroundColor: APP_COLOR,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 1
+        {/* HEADER */}
+        <Header
+          leftComponent={
+            <CustomIcon
+              onPress={this.handleOpenSideMenu}
+            >
+              <Icon
+                type="MaterialCommunityIcons"
+                name="menu"
+                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+              />
+            </CustomIcon>
+          }
+          centerComponent={
+            <Text
+              numberOfLines={1}
+              style={{
+                color: '#fff',
+                fontSize: 16,
+                marginHorizontal: -15
+              }}
+              onPress={this.handleOpenSearchModal}
+            >{address || ""}</Text>
+          }
+          rightComponent={
+            <CustomIcon
+              onPress={this.handleOpenNotificationScreen}
+            >
+              <View>
+                <Icon
+                  type="antdesign"
+                  name="bells"
+                  color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+                />
+                {unreadNotify.length > 0 &&
+                  <Badge
+                    status="error"
+                    value={unreadNotify.length}
+                    containerStyle={{ position: 'absolute', top: -4, right: 12 }}
+                  />
+                }
+              </View>
+            </CustomIcon>
+          }
+          backgroundColor={APP_COLOR}
+          containerStyle={{
+            paddingHorizontal: 0,
+            paddingTop: 0,
+            height: 60
           }}
-          onPress={() => this.setState({ showOptions: true })}
-        >
-          <Text style={{ fontSize: 18, color: '#fff' }}>TÌM TIỆM SỬA XE</Text>
-        </TouchableOpacity>
-      </View>
+        />
+
+        {/* MAP VIEW */}
+        <View style={{ flex: 1 }}>
+          <MapView
+            style={[StyleSheet.absoluteFillObject, { marginTop: this.state.marginTop }]}
+            onMapReady={() => this.setState({ marginTop: 0 })}
+            region={region}
+            showsUserLocation={true}
+            showsMyLocationButton={true}
+            followUserLocation={true}
+            showsCompass={true}
+            onRegionChangeComplete={(region) => this.onRegionChangeComplete(region)}
+          />
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <View style={{ marginBottom: 35 }}>
+              <Icon
+                type="material-community"
+                name="map-marker-outline"
+                color="red"
+                size={50}
+              />
+            </View>
+          </View>
+        </View>
+        {/* CARD VEHICLES */}
+        <Card containerStyle={{ margin: 0, padding: 10 }}>
+          <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
+            <TouchableOpacity
+              style={[styles.vehicle, vehicle === Vehicle.motobike ? styles.active : styles.noneActive]}
+              onPress={() => this.props.onChangeVehicle(Vehicle.motobike)}
+            >
+              <Icon
+                type="material-community"
+                name="motorbike"
+                color={vehicle === Vehicle.motobike ? 'white' : 'black'}
+                size={30}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.vehicle, vehicle === Vehicle.car ? styles.active : styles.noneActive]}
+              onPress={() => this.props.onChangeVehicle(Vehicle.car)}
+            >
+              <Icon
+                type="material-community"
+                name="car"
+                color={vehicle === Vehicle.car ? 'white' : 'black'}
+              />
+            </TouchableOpacity>
+          </View>
+          <Button
+            title="TÌM TIỆM SỬA XE"
+            loading={loading}
+            containerStyle={{ marginTop: 5 }}
+            buttonStyle={{ paddingVertical: 15 }}
+            onPress={this.handleFindStations}
+          />
+        </Card>
+      </View >
     )
   }
 }
@@ -170,7 +225,7 @@ const styles = StyleSheet.create({
   },
   vehicle: {
     flex: 1,
-    paddingVertical: 5,
+    paddingVertical: 10,
     justifyContent: "center",
     alignItems: "center"
   },
@@ -186,14 +241,16 @@ const mapStateToProps = state => {
   return {
     auth: state.auth,
     app: state.app,
-    options: state.options
+    options: state.options,
+    notify: state.notify
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     onChangeVehicle: vehicle => dispatch(changeVehicle(vehicle)),
-    onChangeLocation: location => dispatch(changeLocation(location))
+    onChangeLocation: location => dispatch(changeLocation(location)),
+    onFetchProfile: () => dispatch(fetchProfileRequest())
   }
 }
 

@@ -1,20 +1,51 @@
-import { LOGIN_SUCCEEDED, SIGNUP_SUCCEEDED, LOGOUT } from "./types";
+import * as Types from "./types";
 
-export const loginSucceeded = user => {
+export const loginRequest = user => {
   return {
-    type: LOGIN_SUCCEEDED,
+    type: Types.LOGIN_REQUEST,
     payload: user
   }
 }
 
-export const signupSucceeded = user => {
+export const signupRequest = user => {
   return {
-    type: SIGNUP_SUCCEEDED,
+    type: Types.SIGNUP_REQUEST,
     payload: user
+  }
+}
+
+export const updateProfileRequest = user => {
+  return {
+    type: Types.UPDATE_PROFILE_REQUEST,
+    payload: user
+  }
+}
+
+export const changePasswordRequest = payload => {
+  return {
+    type: Types.CHANGE_PASSWORD_REQUEST,
+    payload
+  }
+}
+
+export const updateDeviceTokenRequest = () => {
+  return {
+    type: Types.UPDATE_DEVICE_TOKEN_REQUEST
+  }
+}
+
+export const phoneConfirmed = () => {
+  return {
+    type: Types.PHONE_CONFIRMED
+  }
+}
+
+export const fetchProfileRequest = () => {
+  return {
+    type: Types.FETCH_PROFILE_REQUEST
   }
 }
 
 export const logout = () => {
-  console.log('Logging out');
-  return { type: LOGOUT }
+  return { type: Types.LOGOUT }
 }

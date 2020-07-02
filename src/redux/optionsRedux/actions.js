@@ -7,17 +7,23 @@ export const changeVehicle = vehicle => {
   }
 }
 
-export const changeService = service => {
+export const changeServices = services => {
   return {
-    type: Types.CHANGE_SERVICE,
-    payload: service
+    type: Types.CHANGE_SELECTED_SERVICES,
+    payload: services
   }
 }
 
 export const changeAmbulatory = option => {
   return {
-    type: Types.CHANGE_AMBULATORY,
+    type: Types.CHANGE_AMBULATORY_STATUS,
     payload: option
+  }
+}
+
+export const fetchLocation = () => {
+  return {
+    type: Types.FETCH_LOCATION
   }
 }
 
@@ -25,5 +31,18 @@ export const changeLocation = location => {
   return {
     type: Types.CHANGE_LOCATION,
     payload: location
+  }
+}
+
+export const fetchServices = () => {
+  return {
+    type: Types.FETCH_SERVICES_REQUEST
+  }
+}
+
+export const fetchStations = (pageIndex = 1) => {
+  return {
+    type: Types.FETCH_STATIONS_REQUEST,
+    payload: pageIndex
   }
 }

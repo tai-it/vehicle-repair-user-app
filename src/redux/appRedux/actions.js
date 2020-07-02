@@ -6,3 +6,16 @@ export const changeColor = color => {
     payload: color
   }
 }
+
+export const changeDeviceToken = token => {
+  return {
+    type: Types.CHANGE_DEVICE_TOKEN,
+    payload: token
+  }
+}
+
+export const getStarted = () => {
+  return {
+    type: Types.GET_STARTED
+  }
+}

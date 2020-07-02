@@ -1,149 +1,152 @@
 import React, { Component } from 'react'
 import {
   View,
-  TouchableOpacity,
   Text,
-  TextInput,
   ScrollView,
 } from 'react-native'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
-import { styles } from '../../styles'
-import Loading from '../../components/Loading'
-import firebase from 'react-native-firebase'
 import { APP_COLOR } from '../../utils/AppSettings'
+import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
+import { Header, Input, Card, Button, Image } from 'react-native-elements'
 
 class LoginScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
-      user: {
-        phone: '',
-        password: '',
-      },
-      error: {
-        phone: '',
-        password: '',
-      },
-      message: ''
+      phoneNumber: '',
+      password: ''
     };
   }
 
+  componentDidMount() {
+    this.props.onClearErrorState()
+  }
+
   onSubmit = async () => {
-    this.setState({ loading: true })
-    const { phone, password } = this.state.user
-    const userRef = firebase.database().ref('users')
-    await userRef.orderByChild('phone')
-      .equalTo(phone).once('value')
-      .then(snapshot => {
-        if (snapshot.val()) {
-          const user = Object.values(snapshot.val())[0]
-          if (user?.password === password) {
-            this.setState({ message: '' })
-            this.props.onLoginSucceeded(user)
-          } else {
-            this.setState({ message: 'Tên tài khoản hoặc mật khẩu không đúng' })
-          }
-        } else {
-          this.setState({ message: 'Tên tài khoản không tồn tại' })
-        }
-      })
-    this.setState({ loading: false })
+    const { phoneNumber, password } = this.state
+    if (phoneNumber && password) {
+      this.props.onLoginRequest({ phoneNumber, password })
+    }
   };
 
   onChangeText = (key, value) => {
-    this.setState(prevState => ({
-      user: {
-        ...prevState.user,
-        [key]: value,
-      },
-    }));
+    this.setState({
+      [key]: value
+    });
   };
 
   render() {
-    const { loading, user, message } = this.state
-    if (loading) {
-      return <Loading message='Đang xử lý...' />
-    }
+    const { phoneNumber, password } = this.state
+    const loginError = this.props.auth.message
+    const { loading } = this.props.auth
+    const LOGO_IMAGE = require('../../assets/images/logo_ic.png')
     return (
       <>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingVertical: 20,
-            paddingHorizontal: 20,
-            borderBottomWidth: 1,
-            borderColor: '#E9E9E9',
-            backgroundColor: APP_COLOR
-          }}>
-          <Text style={styles.title}>Đăng nhập</Text>
-        </View>
-        <ScrollView style={styles.container}>
-          <Text style={{ color: 'red', paddingTop: 5, paddingBottom: 10, fontSize: 17 }}>{message}</Text>
-          <View>
-            <Text>Số điện thoại *</Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={value => this.onChangeText('phone', value)}
-              value={user.phone}
-              placeholder="Nhập số điện thoại"
-              autoCapitalize="none"
-              keyboardType="numeric"
+        <Header
+          centerComponent={{ text: "ĐĂNG NHẬP", style: { color: '#fff', fontSize: 18 } }}
+          backgroundColor={APP_COLOR}
+          containerStyle={{
+            paddingTop: 0,
+            paddingHorizontal: 18,
+            height: 60
+          }}
+        />
+        <Card containerStyle={{
+          flex: 1,
+          margin: 5,
+          marginBottom: 5
+        }}>
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={{ justifyContent: "center", alignItems: "center", paddingTop: 10 }}>
+              <Image
+                source={LOGO_IMAGE}
+                style={{ width: 530 * .25, height: 358 * .25 }}
+              />
+            </View>
+
+            <Text style={{
+              flex: 1,
+              paddingTop: 15,
+              paddingHorizontal: 10,
+              color: 'red'
+            }}>
+              {typeof (loginError) == typeof ("") ? loginError : ""}
+            </Text>
+
+            <Input
+              label="Số điện thoại"
+              placeholder="0987 654 321"
+              keyboardType='phone-pad'
               returnKeyType="next"
               onSubmitEditing={() => this.refPassword.focus()}
               blurOnSubmit={false}
+              value={phoneNumber}
+              onChangeText={phoneNumber => this.onChangeText("phoneNumber", phoneNumber)}
+              containerStyle={{ marginTop: 20 }}
+              inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}
+              leftIcon={{ type: 'feather', name: 'phone', color: "#aaaaaa" }}
             />
 
-            <Text>Mật khẩu *</Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={value => this.onChangeText('password', value)}
-              value={user.password}
-              placeholder="Nhập mật khẩu"
+            <Input
+              label="Mật khẩu"
+              placeholder="**************"
+              leftIcon={{ type: 'feather', name: 'lock', color: "#aaaaaa" }}
+              value={password}
               autoCapitalize="none"
-              secureTextEntry={true}
               returnKeyType="done"
               ref={r => (this.refPassword = r)}
               onSubmitEditing={this.onSubmit}
               blurOnSubmit={true}
+              onChangeText={password => this.onChangeText("password", password)}
+              containerStyle={{ marginTop: 20 }}
+              inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}
+              secureTextEntry={true}
             />
-          </View>
 
-          <View
-            style={[
-              styles.formControl,
-              styles.contentCenter,
-              styles.btnContainer,
-            ]}>
-            <TouchableOpacity
-              onPress={() => this.props.onNavigateToSignup()}
-              style={[styles.btn, styles.contentCenter]}>
-              <Text style={{ fontSize: 15 }}>Đăng ký</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
+            <Button
+              title="ĐĂNG NHẬP"
+              loading={loading}
+              containerStyle={{ marginVertical: 8, marginTop: 30 }}
+              buttonStyle={{ paddingVertical: 15 }}
               onPress={this.onSubmit}
-              style={[styles.btn, { backgroundColor: APP_COLOR }, styles.contentCenter]}>
-              <Text style={[{ fontSize: 15 }, styles.textWhite]}>Đăng nhập</Text>
-            </TouchableOpacity>
-          </View>
+            />
 
-          <View style={styles.pavicy}>
-            <Text style={styles.textCenter}>Quên mật khẩu?</Text>
-          </View>
-        </ScrollView>
+            <Text style={{
+              textAlign: "center",
+              fontSize: 15
+            }}>Quên mật khẩu?</Text>
+
+            <Button
+              title="ĐĂNG KÝ"
+              disabled={loading}
+              containerStyle={{ marginVertical: 8 }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: '#aaaaaa' }}
+              onPress={this.props.onNavigateToSignup}
+            />
+          </ScrollView>
+
+        </Card>
       </>
     );
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapStateToProps = state => {
   return {
-    onLoginSucceeded: user => dispatch(Actions.loginSucceeded(user))
+    app: state.app,
+    auth: state.auth
   }
 }
 
-export default connect(null, mapDispatchToProps)(LoginScreen)
+const mapDispatchToProps = dispatch => {
+  return {
+    onClearErrorState: () => dispatch({ type: CLEAR_ERROR_STATE }),
+    onLoginRequest: user => dispatch(Actions.loginRequest(user))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)
