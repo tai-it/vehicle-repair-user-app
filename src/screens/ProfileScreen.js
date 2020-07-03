@@ -10,10 +10,10 @@ import CustomIcon from '../components/CustomIcon'
 import { orderStatus } from '../constants/orderStatus'
 
 class ProfileScreen extends Component {
-
   constructor(props) {
     super(props)
     this.state = {
+      isShowCover: true,
       name: props.auth.user.name || "",
       email: props.auth.user.email || "",
       address: props.auth.user.address || "",
@@ -34,25 +34,26 @@ class ProfileScreen extends Component {
   handleHideCover = () => {
     Animated.timing(this.state.height, {
       toValue: 60,
-      duration: 200,
+      duration: 300,
       easing: Easing.linear
     }).start()
     Animated.timing(this.state.bottomLeftRadius, {
       toValue: 0,
-      duration: 100,
+      duration: 300,
       easing: Easing.linear
     }).start()
     Animated.timing(this.state.bottomRightRadius, {
       toValue: 0,
-      duration: 100,
+      duration: 200,
       easing: Easing.linear
     }).start()
+    this.setState({ isShowCover: false })
   }
 
   handleShowCover = () => {
     Animated.timing(this.state.height, {
       toValue: 200,
-      duration: 200,
+      duration: 500,
       easing: Easing.linear
     }).start()
     Animated.timing(this.state.bottomLeftRadius, {
@@ -65,6 +66,7 @@ class ProfileScreen extends Component {
       duration: 0,
       easing: Easing.linear
     }).start()
+    this.setState({ isShowCover: true })
   }
 
   isScrollToTop = ({ contentOffset }) => {
@@ -91,7 +93,7 @@ class ProfileScreen extends Component {
   }
 
   render() {
-    const { name, email, address, isReachedTop, height, bottomLeftRadius, bottomRightRadius } = this.state
+    const { isShowCover, name, email, address, isReachedTop, height, bottomLeftRadius, bottomRightRadius } = this.state
     const { user: { phoneNumber, createdOn, isActive, phoneNumberConfirmed, roles } } = this.props.auth
     const { orders } = this.props.ordering
     return (
@@ -105,7 +107,7 @@ class ProfileScreen extends Component {
             borderBottomRightRadius: bottomRightRadius
           }}
         >
-          {isReachedTop ?
+          {isShowCover ?
             <>
               <View style={styles.topContainer}>
                 <Text style={styles.name}>{name || ""}</Text>
@@ -141,7 +143,13 @@ class ProfileScreen extends Component {
               {/* SETTINGS BUTTON */}
               <TouchableOpacity
                 style={styles.btnSettings}
-                onPress={this.handleOpenSettings}
+                onPress={() => {
+                  if (isShowCover) {
+                    this.handleHideCover()
+                  } else {
+                    this.handleShowCover()
+                  }
+                }}
               >
                 <Icon type="antdesign" name="setting" color="white" />
               </TouchableOpacity>
@@ -161,7 +169,13 @@ class ProfileScreen extends Component {
                 }
               }}
               rightComponent={
-                <CustomIcon onPress={this.handleOpenSettings}>
+                <CustomIcon onPress={() => {
+                  if (isShowCover) {
+                    this.handleHideCover()
+                  } else {
+                    this.handleShowCover()
+                  }
+                }}>
                   <Icon type="antdesign" name="setting" color="white" />
                 </CustomIcon>
               }
@@ -177,13 +191,6 @@ class ProfileScreen extends Component {
         <ScrollView
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          onScroll={({ nativeEvent }) => {
-            if (this.isScrollToTop(nativeEvent)) {
-              this.handleShowCover()
-            } else {
-              this.handleHideCover()
-            }
-          }}
         >
           {/* INFO */}
           <>
