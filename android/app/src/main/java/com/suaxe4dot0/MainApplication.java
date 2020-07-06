@@ -18,10 +18,9 @@ import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.reactnativenavigation.react.ReactGateway;
 
 // Firebase
-import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
-import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 
 // Maps
@@ -62,7 +61,6 @@ public class MainApplication extends NavigationApplication {
             new MapsPackage(),
             new RNFusedLocationPackage(),
             new RNGeocoderPackage(),
-            new ReactNativeFirebaseDatabasePackage(),
             new ReactNativeFirebaseAppPackage(),
             new ReactNativeFirebaseAuthPackage(),
             new ReactNativeFirebaseMessagingPackage(),

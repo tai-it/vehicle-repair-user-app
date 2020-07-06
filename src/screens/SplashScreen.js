@@ -121,13 +121,13 @@ class SplashScreen extends Component {
         Navigator.setRoot({
           sideMenu
         })
-      } else {
-        Navigator.setRoot({
-          component: {
-            name: 'AuthScreen'
-          }
-        })
       }
+    } else {
+      Navigator.setRoot({
+        component: {
+          name: 'AuthScreen'
+        }
+      })
     }
     return (
       <Swiper

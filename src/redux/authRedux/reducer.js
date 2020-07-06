@@ -5,7 +5,7 @@ const initState = {
   isUpdatingProfile: false,
   isChangingPassword: false,
   authenticated: false,
-  user: null,
+  user: {},
   token: "",
   errors: [],
   message: ""
