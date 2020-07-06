@@ -150,8 +150,8 @@ Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({
     root: {
       component: {
-        // name: 'SplashScreen'
-        name: 'PhoneConfirmScreen'
+        name: 'SplashScreen'
+        // name: 'PhoneConfirmScreen'
       }
     }
   })

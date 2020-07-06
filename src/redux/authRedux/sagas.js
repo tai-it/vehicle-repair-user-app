@@ -6,7 +6,7 @@ import { Roles } from '../../constants/roles';
 import { isPasswordValidated } from '../../utils/Validator'
 import { fetchNotifications } from '../notifyRedux/actions'
 import { fetchOrders } from '../orderRedux/actions';
-import { updateDeviceTokenRequest } from './actions';
+import { updateDeviceTokenRequest, fetchProfileRequest } from './actions';
 
 function* loginAsync(action) {
   try {
@@ -66,6 +66,16 @@ function* fetchProfileAsync() {
   }
 }
 
+function* phoneConfirmedAsync() {
+  try {
+    const { auth: { token } } = store.getState()
+    yield callApi(`account/phone/confirmed`, 'PUT', null, token)
+    yield put(fetchProfileRequest())
+  } catch (error) {
+    console.log("function*phoneConfirmedAsync -> error", error)
+  }
+}
+
 function* updateProfileAsync({ payload }) {
   try {
     const { auth: { token } } = store.getState()
@@ -116,6 +126,7 @@ function* updateDeviceTokenAsync() {
 export const watchAuthSaga = [
   takeLatest(Types.LOGIN_REQUEST, loginAsync),
   takeLatest(Types.SIGNUP_REQUEST, signupAsync),
+  takeLatest(Types.PHONE_CONFIRMED, phoneConfirmedAsync),
   takeLatest(Types.FETCH_PROFILE_REQUEST, fetchProfileAsync),
   takeLatest(Types.UPDATE_PROFILE_REQUEST, updateProfileAsync),
   takeLatest(Types.CHANGE_PASSWORD_REQUEST, changePasswordAsync),

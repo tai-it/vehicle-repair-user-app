@@ -9,7 +9,6 @@ import { changeLocation } from '../redux/optionsRedux/actions'
 import { PermissionsAndroid } from 'react-native'
 import Geolocation from 'react-native-geolocation-service'
 import Geocoder from 'react-native-geocoder'
-import { options } from '../configs/navigation'
 import { fetchNotifications } from '../redux/notifyRedux/actions'
 import { fetchOrders } from '../redux/orderRedux/actions'
 
@@ -21,6 +20,13 @@ import Navigator from '../utils/Navigator'
 //
 
 class SplashScreen extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      isNavigated: false
+    }
+  }
 
   componentDidMount = async () => {
     // Register FCM Service
@@ -89,7 +95,6 @@ class SplashScreen extends Component {
   onOpenNotification = (data) => {
     const notifyId = data?.id
     if (notifyId) {
-      console.log("SplashScreen -> onOpenNotification -> notifyId", notifyId)
       // SHOW POP-UP HERE
       this.props.onFetchOrders()
       this.props.onFetchNotifications()
@@ -114,20 +119,24 @@ class SplashScreen extends Component {
   }
 
   render() {
-    const { authenticated } = this.props.auth
-    const { isStarted } = this.props.app
+    const { app: { isStarted }, auth: { authenticated } } = this.props
+    const { isNavigated } = this.state
     if (isStarted) {
-      if (authenticated) {
-        Navigator.setRoot({
-          sideMenu
-        })
-      }
-    } else {
-      Navigator.setRoot({
-        component: {
-          name: 'AuthScreen'
+      if (!isNavigated) {
+        if (authenticated) {
+          Navigator.setRoot({
+            sideMenu
+          })
+          this.setState({ isNavigated: true })
+        } else {
+          Navigator.setRoot({
+            component: {
+              name: 'AuthScreen'
+            }
+          })
         }
-      })
+      }
+      return <></>
     }
     return (
       <Swiper
@@ -138,16 +147,18 @@ class SplashScreen extends Component {
             bottom: 130,
           },
         }}>
-        {swipers.map((item, index) => {
-          return (
-            <SwiperItem
-              key={index}
-              item={item}
-              onButtonStartPressed={this.handleStartBtnPressed}
-            />
-          );
-        })}
-      </Swiper>
+        {
+          swipers.map((item, index) => {
+            return (
+              <SwiperItem
+                key={index}
+                item={item}
+                onButtonStartPressed={this.handleStartBtnPressed}
+              />
+            );
+          })
+        }
+      </Swiper >
     )
   }
 }

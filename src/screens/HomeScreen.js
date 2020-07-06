@@ -29,8 +29,17 @@ class HomeScreen extends Component {
     }
   }
 
-  componentDidMount = () => {
+  UNSAFE_componentWillMount() {
     this.props.onFetchProfile()
+  }
+
+  componentDidMount = () => {
+    setTimeout(() => {
+      const { user: { phoneNumberConfirmed } } = this.props.auth
+      if (!phoneNumberConfirmed) {
+        Navigator.showModal("PhoneConfirmScreen")
+      }
+    }, 1000)
   }
 
   componentDidUpdate(prevProps) {
@@ -90,7 +99,7 @@ class HomeScreen extends Component {
   }
 
   render() {
-    const { auth: { authenticated, loading, user: { phoneNumberConfirmed } }, options: { vehicle }, notify: { notifications } } = this.props
+    const { auth: { authenticated, loading }, options: { vehicle }, notify: { notifications } } = this.props
     const unreadNotify = notifications.filter(x => !x.isSeen)
     const { region, address } = this.state
     if (!authenticated) {
@@ -99,13 +108,10 @@ class HomeScreen extends Component {
           name: 'AuthScreen'
         }
       })
-      return <View />
+      return <></>
     }
     if (loading) {
       return <Loading message="Đang tải thông tin" />
-    }
-    if (!phoneNumberConfirmed) {
-      Navigator.showModal("PhoneConfirmScreen")
     }
     return (
       <View style={[styles.container]}>
