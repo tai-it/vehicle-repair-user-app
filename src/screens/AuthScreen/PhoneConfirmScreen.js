@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native'
 import { connect } from 'react-redux'
-import { Icon } from 'react-native-elements'
+import { Icon, Button } from 'react-native-elements'
 import LinearGradient from 'react-native-linear-gradient'
 import Navigator from '../../utils/Navigator'
 import auth from '@react-native-firebase/auth'
@@ -14,6 +14,7 @@ class PhoneConfirmScreen extends Component {
     super(props)
     this.state = {
       message: "",
+      countdown: 0,
       codes: []
     }
     this.shakeAnimation = new Animated.Value(0)
@@ -61,13 +62,33 @@ class PhoneConfirmScreen extends Component {
 
   sendVerificationCode = () => {
     const { user: { phoneNumber } } = this.props.auth
+    this.setState({ message: "Đang gửi mã..." })
     if (phoneNumber) {
-      auth().signInWithPhoneNumber(PhoneFormater.normalize(phoneNumber), true)
-        .then(confirmResult => this.setState({ confirmResult, message: "Đã gửi" }))
+      auth().signInWithPhoneNumber(PhoneFormater.normalize("0825590070"), true)
+        .then(confirmResult => {
+          this.setState({
+            confirmResult,
+            message: "Đã gửi",
+            countdown: 60
+          })
+          this.counter = setInterval(this.timer, 1000)
+        })
         .catch(error => console.log("error", error))
     } else {
       setTimeout(() => this.sendVerificationCode(), 1000)
     }
+  }
+
+  timer = () => {
+    this.setState(prevState => ({
+      countdown: prevState.countdown - 1
+    }), () => {
+      const { countdown } = this.state
+      if (countdown <= 0) {
+        clearInterval(this.counter)
+        return
+      }
+    })
   }
 
   confirmCode = () => {
@@ -82,7 +103,7 @@ class PhoneConfirmScreen extends Component {
         .catch(error => {
           this.setState({
             message: "Mã OTP không đúng"
-          }, () => this.startShake())
+          }, this.startShake)
         })
     }
   }
@@ -100,7 +121,7 @@ class PhoneConfirmScreen extends Component {
   }
 
   render() {
-    const { codes, message } = this.state
+    const { codes, message, countdown, confirmResult } = this.state
     const { user: { phoneNumber } } = this.props.auth
     return (
       <LinearGradient
@@ -121,8 +142,22 @@ class PhoneConfirmScreen extends Component {
             Nhập mã OTP đã được gửi tới số điện thoại {PhoneFormater.display(phoneNumber)}
           </Text>
           <Animated.View style={{ transform: [{ translateX: this.shakeAnimation }] }}>
-            <Text style={{ color: 'red' }}>{message}</Text>
+            <Text style={[styles.textWhite, { fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>{message}</Text>
           </Animated.View>
+          {confirmResult && (countdown === 0 ?
+            <Button
+              title="Gửi lại mã"
+              titleStyle={{ paddingHorizontal: 10 }}
+              icon={
+                <Icon
+                  type="font-awesome"
+                  name="send-o"
+                  color="white"
+                />
+              }
+              onPress={this.sendVerificationCode}
+            /> : <Text style={[styles.textWhite, { fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>{`Gửi lại mã sau (${countdown}s)`}</Text>)
+          }
           <View style={styles.codeContainer}>
             <Text style={[styles.textWhite, styles.codeInput]}>{codes[0] || ""}</Text>
             <Text style={[styles.textWhite, styles.codeInput]}>{codes[1] || ""}</Text>
