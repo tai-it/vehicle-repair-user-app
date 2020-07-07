@@ -48,6 +48,14 @@ export default authReducer = (state = initState, action) => {
         message: action.payload.message,
         errors: action.payload.errors,
       };
+    case Types.PHONE_CONFIRMED_SUCCEEDED:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          phoneNumberConfirmed: true
+        }
+      };
     case Types.FETCH_PROFILE_REQUEST:
       return {
         ...state,

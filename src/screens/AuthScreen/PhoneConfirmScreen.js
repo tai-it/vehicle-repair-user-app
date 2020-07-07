@@ -20,10 +20,8 @@ class PhoneConfirmScreen extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    try {
+    if (auth().currentUser) {
       auth().signOut()
-    } catch (e) {
-      console.log("PhoneConfirmScreen -> UNSAFE_componentWillMount -> e", e)
     }
   }
 
@@ -35,8 +33,12 @@ class PhoneConfirmScreen extends Component {
   _subscribeAuth = () => {
     this.unsubscribe = auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log("PhoneConfirmScreen -> this.unsubscribe -> user", user)
-        // this.confirmCode()
+        const { phoneNumber } = this.props.auth.user
+        if (user.phoneNumber === PhoneFormater.normalize(phoneNumber)) {
+          this.props.onPhoneNumberConfirmed()
+          this.handleCloseModal()
+          return
+        }
       }
     })
   }
@@ -59,14 +61,17 @@ class PhoneConfirmScreen extends Component {
 
   sendVerificationCode = () => {
     const { user: { phoneNumber } } = this.props.auth
-    auth().signInWithPhoneNumber(PhoneFormater.normalize(phoneNumber))
-      .then(confirmResult => this.setState({ confirmResult, message: "Đã gửi" }))
-      .catch(error => console.log("error", error))
+    if (phoneNumber) {
+      auth().signInWithPhoneNumber(PhoneFormater.normalize(phoneNumber), true)
+        .then(confirmResult => this.setState({ confirmResult, message: "Đã gửi" }))
+        .catch(error => console.log("error", error))
+    } else {
+      setTimeout(() => this.sendVerificationCode(), 1000)
+    }
   }
 
   confirmCode = () => {
     const { codes, confirmResult } = this.state
-    console.log("PhoneConfirmScreen -> confirmCode -> confirmResult", confirmResult)
     const codeInput = codes.join("")
     if (confirmResult && codeInput.length) {
       confirmResult.confirm(codeInput)
@@ -113,7 +118,7 @@ class PhoneConfirmScreen extends Component {
             Xác minh số điện thoại
           </Text>
           <Text style={[styles.textWhite, { fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>
-            Nhập mã OTP đã được gửi tới số điện thoại {PhoneFormater.normalize(phoneNumber)}
+            Nhập mã OTP đã được gửi tới số điện thoại {PhoneFormater.display(phoneNumber)}
           </Text>
           <Animated.View style={{ transform: [{ translateX: this.shakeAnimation }] }}>
             <Text style={{ color: 'red' }}>{message}</Text>

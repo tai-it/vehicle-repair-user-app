@@ -88,12 +88,19 @@ class ProfileScreen extends Component {
     Navigator.showModal("ProfileUpdateModal")
   }
 
+  handlePhoneNumberPressed = () => {
+    const { phoneNumberConfirmed } = this.props.auth.user
+    if (!phoneNumberConfirmed) {
+      Navigator.showModal("PhoneConfirmModal")
+    }
+  }
+
   handleCloseModal = () => {
     Navigator.dismissModal(this.props.componentId)
   }
 
   render() {
-    const { isShowCover, name, email, address, isReachedTop, height, bottomLeftRadius, bottomRightRadius } = this.state
+    const { isShowCover, name, email, address, height, bottomLeftRadius, bottomRightRadius } = this.state
     const { user: { phoneNumber, createdOn, isActive, phoneNumberConfirmed, roles } } = this.props.auth
     const { orders } = this.props.ordering
     return (
@@ -115,14 +122,17 @@ class ProfileScreen extends Component {
                   <Badge status={isActive ? "success" : "error"} />
                   <Text style={styles.status}>{isActive ? "Đang hoạt động" : "Đang tạm khoá"}</Text>
                 </View>
-                <View style={styles.rowContainer}>
+                <View
+                  style={styles.rowContainer}
+                  onTouchStart={this.handlePhoneNumberPressed}
+                >
                   <Icon
                     type="feather"
                     name="phone"
                     color="white"
                     size={16}
                   />
-                  <Text style={styles.phoneNumber}>{PhoneFormater.normalize(phoneNumber) || ""}</Text>
+                  <Text style={styles.phoneNumber}>{PhoneFormater.display(phoneNumber) || ""}</Text>
                   <Icon
                     type="octicon"
                     name={phoneNumberConfirmed ? "verified" : "unverified"}
@@ -249,13 +259,7 @@ class ProfileScreen extends Component {
                 titleStyle={styles.title}
                 subtitle={`${orders.length || 0} cuốc`}
                 subtitleStyle={styles.subtitle}
-                rightIcon={
-                  <TouchableOpacity
-                    onPress={this.handleOpenOrderListModal}
-                  >
-                    <Icon type="antdesign" name="eye" color={APP_COLOR} />
-                  </TouchableOpacity>
-                }
+                onPress={this.handleOpenOrderListModal}
                 bottomDivider
               />
               <ListItem
@@ -264,6 +268,7 @@ class ProfileScreen extends Component {
                 titleStyle={styles.title}
                 subtitle={`${orders.filter(x => x.status === orderStatus.canceled).length || 0} cuốc`}
                 subtitleStyle={styles.subtitle}
+                onPress={this.handleOpenOrderListModal}
                 bottomDivider
               />
               <ListItem
@@ -272,6 +277,7 @@ class ProfileScreen extends Component {
                 titleStyle={styles.title}
                 subtitle={`${orders.filter(x => x.status === orderStatus.done || 0).length} cuốc`}
                 subtitleStyle={styles.subtitle}
+                onPress={this.handleOpenOrderListModal}
               />
             </Card>
           </>

@@ -39,7 +39,7 @@ class HomeScreen extends Component {
       if (!phoneNumberConfirmed) {
         Navigator.showModal("PhoneConfirmScreen")
       }
-    }, 1000)
+    }, 2000)
   }
 
   componentDidUpdate(prevProps) {

@@ -3,7 +3,7 @@ import * as Types from './types';
 import callApi from '../../utils/apiCaller';
 import { store } from '../store'
 import { Roles } from '../../constants/roles';
-import { isPasswordValidated } from '../../utils/Validator'
+import { isValidPassword } from '../../utils/Validator'
 import { fetchNotifications } from '../notifyRedux/actions'
 import { fetchOrders } from '../orderRedux/actions';
 import { updateDeviceTokenRequest, fetchProfileRequest } from './actions';
@@ -30,7 +30,7 @@ function* signupAsync({ payload }) {
       role: Roles.user
     })
 
-    if (!isPasswordValidated(newUser.password)) {
+    if (!isValidPassword(newUser.password)) {
       let errors = [{
         propertyName: "Password",
         errorMessage: "Mật khẩu phải chứa ít nhất một chữ hoa, chữ thường, số và kí tự đặc biệt"
@@ -70,7 +70,7 @@ function* phoneConfirmedAsync() {
   try {
     const { auth: { token } } = store.getState()
     yield callApi(`account/phone/confirmed`, 'PUT', null, token)
-    yield put(fetchProfileRequest())
+    yield put({ type: Types.PHONE_CONFIRMED_SUCCEEDED })
   } catch (error) {
     console.log("function*phoneConfirmedAsync -> error", error)
   }
