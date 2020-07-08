@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Navigation } from 'react-native-navigation'
 import { sideMenu } from '../configs/menu/sideMenu'
 import { connect } from 'react-redux'
 import { fcmService } from '../configs/notification/FCMService'
@@ -18,6 +17,8 @@ import Swiper from 'react-native-web-swiper'
 import SwiperItem from '../components/Splash/SwiperItem'
 import { swipers } from '../data/swipers'
 //
+
+import SplashScreen from 'react-native-splash-screen'
 
 class GetStartedScreen extends Component {
 
@@ -41,6 +42,7 @@ class GetStartedScreen extends Component {
       await this.checkLocationPermission()
     }
     await this.getCurrentLocation()
+    setTimeout(SplashScreen.hide, 4000)
   }
 
   getCurrentLocation = async () => {

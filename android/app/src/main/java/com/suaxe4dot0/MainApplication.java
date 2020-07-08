@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
@@ -30,6 +31,9 @@ import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 
 // Gradient
 import com.BV.LinearGradient.LinearGradientPackage;
+
+// SplashScreen
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 
 public class MainApplication extends NavigationApplication {
 
@@ -65,7 +69,8 @@ public class MainApplication extends NavigationApplication {
             new ReactNativeFirebaseAuthPackage(),
             new ReactNativeFirebaseMessagingPackage(),
             new ReactNativePushNotificationPackage(),
-            new LinearGradientPackage()
+            new LinearGradientPackage(),
+            new SplashScreenReactPackage()
         );
     }
 
