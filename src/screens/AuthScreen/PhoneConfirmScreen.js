@@ -7,6 +7,7 @@ import Navigator from '../../utils/Navigator'
 import auth from '@react-native-firebase/auth'
 import PhoneFormater from '../../utils/PhoneFormater'
 import { phoneConfirmed } from '../../redux/authRedux/actions'
+import { APP_COLOR } from '../../utils/AppSettings'
 
 class PhoneConfirmScreen extends Component {
 
@@ -27,7 +28,7 @@ class PhoneConfirmScreen extends Component {
   }
 
   componentDidMount() {
-    this.sendVerificationCode()
+    // this.sendVerificationCode()
     this._subscribeAuth()
   }
 
@@ -125,7 +126,7 @@ class PhoneConfirmScreen extends Component {
     const { user: { phoneNumber } } = this.props.auth
     return (
       <LinearGradient
-        colors={['#2730B3', '#6B18A4']}
+        colors={[APP_COLOR, '#2730C0']}
         style={styles.container}
       >
         <TouchableOpacity
