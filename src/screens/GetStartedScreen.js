@@ -5,20 +5,36 @@ import { fcmService } from '../configs/notification/FCMService'
 import { localNotificationService } from '../configs/notification/LocalNotificationService'
 import * as Actions from '../redux/appRedux/actions'
 import { changeLocation } from '../redux/optionsRedux/actions'
-import { PermissionsAndroid, Animated, View } from 'react-native'
+import { PermissionsAndroid, View, StyleSheet, SafeAreaView, Image, Text } from 'react-native'
 import Geolocation from 'react-native-geolocation-service'
 import Geocoder from 'react-native-geocoder'
 import { fetchNotifications } from '../redux/notifyRedux/actions'
 import { fetchOrders } from '../redux/orderRedux/actions'
 import Navigator from '../utils/Navigator'
-
-//
-import Swiper from 'react-native-web-swiper'
-import SwiperItem from '../components/Splash/SwiperItem'
-import { swipers } from '../data/swipers'
-//
-
+import AppIntroSlider from 'react-native-app-intro-slider'
 import SplashScreen from 'react-native-splash-screen'
+import { Icon } from 'react-native-elements'
+
+const data = [
+  {
+    title: 'NHANH CHÓNG, TIỆN LỢI',
+    description: 'Kết nối đến các tiệm sửa xe nhanh chóng',
+    image: require('../assets/images/app_logo_image.png'),
+    bg: '#59b2ab',
+  },
+  {
+    title: 'GIÁ CẢ RÕ RÀNG',
+    description: 'Xem giá từng dịch vụ trước khi đặt',
+    image: require('../assets/images/app_logo_image.png'),
+    bg: '#febe29',
+  },
+  {
+    title: 'BẮT ĐẦU',
+    description: "Cho phép ứng dụng truy cập vị trí của bạn",
+    image: require('../assets/images/app_logo_image.png'),
+    bg: '#22bcb5',
+  }
+]
 
 class GetStartedScreen extends Component {
 
@@ -120,6 +136,50 @@ class GetStartedScreen extends Component {
     }
   }
 
+  _renderItem = ({ item }) => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: item.bg,
+        }}>
+        <SafeAreaView style={styles.slide}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.description}>{item.description}</Text>
+          <Image source={item.image} style={styles.image} />
+        </SafeAreaView>
+      </View>
+    )
+  }
+
+  _renderNextButton = () => {
+    return (
+      <View style={styles.buttonCircle}>
+        <Icon
+          type="feather"
+          name="arrow-right"
+          color="rgba(255, 255, 255, .9)"
+          size={24}
+        />
+      </View>
+    )
+  }
+
+  _renderDoneButton = () => {
+    return (
+      <View style={styles.buttonCircle}>
+        <Icon
+          type="feather"
+          name="check"
+          color="rgba(255, 255, 255, .9)"
+          size={24}
+        />
+      </View>
+    )
+  }
+
+  _keyExtractor = (item) => item.title
+
   render() {
     const { app: { isStarted }, auth: { authenticated } } = this.props
     const { isNavigated } = this.state
@@ -141,39 +201,51 @@ class GetStartedScreen extends Component {
       return <></>
     }
     return (
-      <Swiper
-        controlsProps={{
-          prevPos: false,
-          nextPos: false,
-          dotsWrapperStyle: {
-            bottom: 130,
-          },
-        }}>
-        {
-          swipers.map((item, index) => {
-            return (
-              <SwiperItem
-                key={index}
-                item={item}
-                onButtonStartPressed={this.handleStartBtnPressed}
-              />
-            );
-          })
-        }
-      </Swiper >
-      // <>
-      //   <View style={{ flex: 1 }}>
-      //     <Animated.View>
-            
-      //     </Animated.View>
-      //     <Animated.View>
-            
-      //     </Animated.View>
-      //   </View>
-      // </>
+      <View style={{ flex: 1 }}>
+        <AppIntroSlider
+          renderDoneButton={this._renderDoneButton}
+          renderNextButton={this._renderNextButton}
+          onDone={this.handleStartBtnPressed}
+          renderItem={this._renderItem}
+          keyExtractor={(item) => item.title}
+          data={data}
+        />
+      </View>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  slide: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: 300,
+    height: 300,
+    marginBottom: 50
+  },
+  title: {
+    fontSize: 22,
+    color: 'white',
+    textAlign: 'center',
+  },
+  description: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    textAlign: 'center',
+    paddingHorizontal: 50,
+    fontSize: 16
+  },
+  buttonCircle: {
+    width: 44,
+    height: 44,
+    backgroundColor: 'rgba(0, 0, 0, .2)',
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 const mapStateToProps = state => {
   return {

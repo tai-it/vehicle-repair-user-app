@@ -40,7 +40,7 @@ class LoginScreen extends Component {
     const { phoneNumber, password } = this.state
     const loginError = this.props.auth.message
     const { loading } = this.props.auth
-    const LOGO_IMAGE = require('../../assets/images/logo_ic.png')
+    const LOGO_IMAGE = require('../../assets/images/app_logo_image.png')
     return (
       <>
         <Header
@@ -111,7 +111,7 @@ class LoginScreen extends Component {
               title="ĐĂNG NHẬP"
               loading={loading}
               containerStyle={{ marginVertical: 8, marginTop: 30 }}
-              buttonStyle={{ paddingVertical: 15 }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
               onPress={this.onSubmit}
             />
 

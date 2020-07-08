@@ -37,7 +37,7 @@ export default class CustomAlert extends Component {
             />}
             {btnOK && <Button
               title="Đồng ý"
-              buttonStyle={styles.btn}
+              buttonStyle={[styles.btn, { backgroundColor: APP_COLOR }]}
               onPress={this.props?.onBtnOKPress || this.handleClose}
             />}
             <Button

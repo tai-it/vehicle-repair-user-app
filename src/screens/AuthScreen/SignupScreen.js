@@ -140,7 +140,7 @@ class SignupScreen extends Component {
               title="ĐĂNG KÝ"
               loading={loading}
               containerStyle={{ marginVertical: 8, marginTop: 30 }}
-              buttonStyle={{ paddingVertical: 15 }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
               onPress={this.onSignup}
             />
 

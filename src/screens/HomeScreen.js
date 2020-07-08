@@ -219,7 +219,7 @@ class HomeScreen extends Component {
             title="TÌM TIỆM SỬA XE"
             loading={loading}
             containerStyle={{ marginTop: 5 }}
-            buttonStyle={{ paddingVertical: 15 }}
+            buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
             onPress={this.handleFindStations}
           />
         </Card>
