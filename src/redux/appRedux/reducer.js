@@ -1,7 +1,7 @@
 import * as Types from './types'
 
 const initState = {
-  color: '#1890ff',
+  color: '#1E1E23',
   deviceToken: "",
   isStarted: false
 }

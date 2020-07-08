@@ -64,7 +64,7 @@ class PhoneConfirmScreen extends Component {
     const { user: { phoneNumber } } = this.props.auth
     this.setState({ message: "Đang gửi mã..." })
     if (phoneNumber) {
-      auth().signInWithPhoneNumber(PhoneFormater.normalize("0825590070"), true)
+      auth().signInWithPhoneNumber(PhoneFormater.normalize(phoneNumber), true)
         .then(confirmResult => {
           this.setState({
             confirmResult,

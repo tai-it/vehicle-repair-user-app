@@ -9,7 +9,7 @@ import Loading from './src/components/Loading'
 
 import SideMenu from './src/components/Menu/SideMenu'
 
-import SplashScreen from "./src/screens/SplashScreen"
+import GetStartedScreen from "./src/screens/GetStartedScreen"
 import HomeScreen from "./src/screens/HomeScreen"
 import AuthScreen from './src/screens/AuthScreen'
 import PhoneConfirmScreen from './src/screens/AuthScreen/PhoneConfirmScreen'
@@ -46,9 +46,9 @@ Navigation.registerComponent(
 
 // Screens
 Navigation.registerComponent(
-  'SplashScreen',
-  () => ReduxProvider(SplashScreen),
-  () => SplashScreen,
+  'GetStartedScreen',
+  () => ReduxProvider(GetStartedScreen),
+  () => GetStartedScreen,
 )
 
 Navigation.registerComponent(
@@ -150,7 +150,7 @@ Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({
     root: {
       component: {
-        name: 'SplashScreen'
+        name: 'GetStartedScreen'
         // name: 'PhoneConfirmScreen'
       }
     }

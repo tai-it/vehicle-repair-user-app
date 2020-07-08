@@ -91,7 +91,7 @@ class ProfileScreen extends Component {
   handlePhoneNumberPressed = () => {
     const { phoneNumberConfirmed } = this.props.auth.user
     if (!phoneNumberConfirmed) {
-      Navigator.showModal("PhoneConfirmModal")
+      Navigator.showModal("PhoneConfirmScreen")
     }
   }
 
