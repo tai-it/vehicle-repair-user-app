@@ -28,7 +28,7 @@ class PhoneConfirmScreen extends Component {
   }
 
   componentDidMount() {
-    // this.sendVerificationCode()
+    this.sendVerificationCode()
     this._subscribeAuth()
   }
 

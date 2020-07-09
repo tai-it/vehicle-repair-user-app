@@ -226,7 +226,8 @@ const styles = StyleSheet.create({
   },
   btn: {
     paddingVertical: 15,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+    backgroundColor: APP_COLOR
   },
   input: {
     paddingHorizontal: 10,
