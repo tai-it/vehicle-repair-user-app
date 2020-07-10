@@ -6,7 +6,8 @@ import { Roles } from '../../constants/roles';
 import { isValidPassword } from '../../utils/Validator'
 import { fetchNotifications } from '../notifyRedux/actions'
 import { fetchOrders } from '../orderRedux/actions';
-import { updateDeviceTokenRequest, fetchProfileRequest } from './actions';
+import { updateDeviceTokenRequest } from './actions';
+import SplashScreen from 'react-native-splash-screen'
 
 function* loginAsync(action) {
   try {
@@ -60,8 +61,10 @@ function* fetchProfileAsync() {
       if (user.deviceToken !== deviceToken) {
         yield put(updateDeviceTokenRequest())
       }
+      SplashScreen.hide()
     }
   } catch (error) {
+    console.log("function*fetchProfileAsync -> error", error)
     yield put({ type: Types.FETCH_PROFILE_FAILED })
   }
 }

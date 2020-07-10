@@ -33,7 +33,7 @@ export default class CustomAlert extends Component {
           <View style={styles.btnContainer}>
             {btnShowOrders && <Button
               title="Kiểm tra"
-              buttonStyle={styles.btn}
+              buttonStyle={[styles.btn, { backgroundColor: APP_COLOR }]}
               onPress={this.handleShowOrders}
             />}
             {btnOK && <Button

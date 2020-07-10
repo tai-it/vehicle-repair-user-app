@@ -40,56 +40,30 @@ class GetStartedScreen extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {
-      isNavigated: false
-    }
   }
 
-  componentDidMount = async () => {
+  componentDidMount() {
     // Register FCM Service
     fcmService.register(this.onRegister, this.onNotification, this.onOpenNotification)
     // Configure notification options
     localNotificationService.configure(this.onOpenNotification)
 
-    // Check permission: true/false
-    const locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
     const { isStarted } = this.props.app
-    if (!locationPermission && isStarted) {
-      await this.checkLocationPermission()
+
+    if (isStarted) {
+      this.getCurrentLocation()
+      this.checkAuth()
+    } else {
+      SplashScreen.hide()
     }
-    await this.getCurrentLocation()
-    setTimeout(SplashScreen.hide, 4000)
   }
 
-  getCurrentLocation = async () => {
-    await Geolocation.getCurrentPosition(async position => {
-      await Geocoder.geocodePosition({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      })
-        .then(res => {
-          const location = {
-            address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
-            coords: res[0].position
-          }
-          this.props.onChangeLocation(location)
-        })
-        .catch(err => console.log(err))
-    }, error => {
-      console.log(error)
-    })
-  }
-
-  checkLocationPermission = async () => {
-    let locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    if (!locationPermission) {
-      locationPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-      if (locationPermission !== 'granted') {
-        Navigator.showOverlay({ message: 'Để ứng dụng biết được vị trí chính xác, vui lòng cho phép ứng dụng truy cập vị trí của bạn' })
-        return false
-      }
+  componentDidUpdate = (prevProps) => {
+    const { isStarted } = this.props.app
+    if (isStarted && isStarted !== prevProps.app.isStarted) {
+      this.getCurrentLocation()
+      this.checkAuth()
     }
-    return true
   }
 
   // NOTIFICATION SETUP
@@ -123,9 +97,51 @@ class GetStartedScreen extends Component {
   }
   // END NOTIFICATION SETUP
 
-  componentWillUnmount() {
-    // fcmService.unregister()
-    // localNotificationService.unregister()
+  checkAuth = () => {
+    const { auth: { authenticated } } = this.props
+    if (authenticated) {
+      Navigator.setRoot({
+        sideMenu
+      })
+    } else {
+      Navigator.setRoot({
+        component: {
+          name: 'AuthScreen'
+        }
+      })
+      SplashScreen.hide()
+    }
+  }
+
+  checkLocationPermission = async () => {
+    let locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+    if (!locationPermission) {
+      locationPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+      if (locationPermission !== 'granted') {
+        Navigator.showOverlay({ message: 'Để ứng dụng biết được vị trí chính xác, vui lòng cho phép ứng dụng truy cập vị trí của bạn' })
+        return false
+      }
+    }
+    return true
+  }
+
+  getCurrentLocation = async () => {
+    await Geolocation.getCurrentPosition(async position => {
+      await Geocoder.geocodePosition({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      })
+        .then(res => {
+          const location = {
+            address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
+            coords: res[0].position
+          }
+          this.props.onChangeLocation(location)
+        })
+        .catch(err => console.log(err))
+    }, async error => {
+      await this.checkLocationPermission()
+    })
   }
 
   handleStartBtnPressed = async () => {
@@ -181,25 +197,6 @@ class GetStartedScreen extends Component {
   _keyExtractor = (item) => item.title
 
   render() {
-    const { app: { isStarted }, auth: { authenticated } } = this.props
-    const { isNavigated } = this.state
-    if (isStarted) {
-      if (!isNavigated) {
-        if (authenticated) {
-          Navigator.setRoot({
-            sideMenu
-          })
-          this.setState({ isNavigated: true })
-        } else {
-          Navigator.setRoot({
-            component: {
-              name: 'AuthScreen'
-            }
-          })
-        }
-      }
-      return <></>
-    }
     return (
       <View style={{ flex: 1 }}>
         <AppIntroSlider
