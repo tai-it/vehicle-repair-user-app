@@ -57,7 +57,3 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
-
-
-# API KEY
-android/app/src/main/AndroidManifest.xml
