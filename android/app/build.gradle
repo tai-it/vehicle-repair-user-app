@@ -146,7 +146,7 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('E:\\SuaXe4.0\\app\\android\\app\\src\\main\\suaxe.jks')
+            storeFile file('.\\src\\main\\suaxe.jks')
             storePassword 'password'
             keyAlias 'suaxe'
             keyPassword 'password'
@@ -159,10 +159,9 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
+            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            debuggable = true
-            signingConfig signingConfigs.debug
         }
     }
     // applicationVariants are e.g. debug, release
