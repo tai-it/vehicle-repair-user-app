@@ -39,14 +39,15 @@ class HomeScreen extends Component {
       if (!phoneNumberConfirmed) {
         Navigator.showModal("PhoneConfirmScreen")
       }
-    }, 2000)
+    }, 2000) 
   }
 
   componentDidUpdate(prevProps) {
-    const { coords: { lat, lng } } = this.props.options.userLocation
+    const { address, coords: { lat, lng } } = this.props.options.userLocation
     if (lat !== prevProps.options.userLocation.coords.lat || lng !== prevProps.options.userLocation.coords.lng) {
       this.setState(prevState => ({
         ...prevState,
+        address,
         region: {
           ...prevState.region,
           latitude: lat,
