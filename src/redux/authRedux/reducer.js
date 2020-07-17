@@ -5,6 +5,11 @@ const initState = {
   isUpdatingProfile: false,
   isChangingPassword: false,
   authenticated: false,
+  remember: false,
+  credentials: {
+    phoneNumber: '',
+    password: ''
+  },
   user: {},
   token: "",
   errors: [],
@@ -30,6 +35,15 @@ export default authReducer = (state = initState, action) => {
         loading: false,
         message: action.payload.message
       };
+    case Types.SET_CRIDENTIALS:
+      return {
+        ...state,
+        remember: action.payload.remember,
+        credentials: {
+          phoneNumber: action.payload.remember ? action.payload.phoneNumber : '',
+          password: action.payload.remember ? action.payload.password : ''
+        }
+      };
     case Types.SIGNUP_REQUEST:
       return {
         ...initState,
@@ -45,8 +59,18 @@ export default authReducer = (state = initState, action) => {
       return {
         ...initState,
         loading: false,
-        message: action.payload.message,
         errors: action.payload.errors,
+      };
+    case Types.CHECK_USER_EXISTS_REQUEST:
+      return {
+        ...initState,
+        loading: true
+      };
+    case Types.CHECK_USER_EXISTS_SUCCEEDED:
+      return {
+        ...initState,
+        loading: false,
+        errors: action.payload.errors
       };
     case Types.PHONE_CONFIRMED_SUCCEEDED:
       return {
@@ -125,7 +149,9 @@ export default authReducer = (state = initState, action) => {
       };
     case Types.LOGOUT:
       return {
-        ...initState
+        ...initState,
+        remember: state.remember,
+        credentials: state.credentials
       };
     default:
       return state;

@@ -88,13 +88,6 @@ class ProfileScreen extends Component {
     Navigator.showModal("ProfileUpdateModal")
   }
 
-  handlePhoneNumberPressed = () => {
-    const { phoneNumberConfirmed } = this.props.auth.user
-    if (!phoneNumberConfirmed) {
-      Navigator.showModal("PhoneConfirmScreen")
-    }
-  }
-
   handleCloseModal = () => {
     Navigator.dismissModal(this.props.componentId)
   }
@@ -122,10 +115,7 @@ class ProfileScreen extends Component {
                   <Badge status={isActive ? "success" : "error"} />
                   <Text style={styles.status}>{isActive ? "Đang hoạt động" : "Đang tạm khoá"}</Text>
                 </View>
-                <View
-                  style={styles.rowContainer}
-                  onTouchStart={this.handlePhoneNumberPressed}
-                >
+                <View style={styles.rowContainer}>
                   <Icon
                     type="feather"
                     name="phone"

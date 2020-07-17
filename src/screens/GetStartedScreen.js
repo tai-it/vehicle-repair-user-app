@@ -136,7 +136,6 @@ class GetStartedScreen extends Component {
             address: res[0].formattedAddress.replace('Unnamed Road, ', ''),
             coords: res[0].position
           }
-          console.log("GetStartedScreen -> getCurrentLocation -> location", location)
           this.props.onChangeLocation(location)
         })
         .catch(err => console.log(err))

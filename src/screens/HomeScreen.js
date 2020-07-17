@@ -29,17 +29,9 @@ class HomeScreen extends Component {
     }
   }
 
-  UNSAFE_componentWillMount() {
-    this.props.onFetchProfile()
-  }
-
   componentDidMount = () => {
-    setTimeout(() => {
-      const { user: { phoneNumberConfirmed } } = this.props.auth
-      if (!phoneNumberConfirmed) {
-        Navigator.showModal("PhoneConfirmScreen")
-      }
-    }, 2000) 
+    this.props.onFetchProfile()
+    console.log("HomeScreen -> componentDidMount -> this.props.auth", this.props.auth.credentials)
   }
 
   componentDidUpdate(prevProps) {

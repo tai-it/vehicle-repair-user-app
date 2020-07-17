@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 import { Text, View, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native'
 import { connect } from 'react-redux'
-import { Icon, Button } from 'react-native-elements'
-import LinearGradient from 'react-native-linear-gradient'
+import { Icon, Button, Header } from 'react-native-elements'
 import Navigator from '../../utils/Navigator'
 import auth from '@react-native-firebase/auth'
 import PhoneFormater from '../../utils/PhoneFormater'
-import { phoneConfirmed } from '../../redux/authRedux/actions'
+import { signupRequest } from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
 
 class PhoneConfirmScreen extends Component {
@@ -28,18 +27,16 @@ class PhoneConfirmScreen extends Component {
   }
 
   componentDidMount() {
-    // this.sendVerificationCode()
+    this.sendVerificationCode()
     this._subscribeAuth()
   }
 
   _subscribeAuth = () => {
     this.unsubscribe = auth().onAuthStateChanged((user) => {
       if (user) {
-        const { phoneNumber } = this.props.auth.user
+        const { phoneNumber } = this.props
         if (user.phoneNumber === PhoneFormater.normalize(phoneNumber)) {
-          this.props.onPhoneNumberConfirmed()
-          this.handleCloseModal()
-          return
+          this.onSignUp()
         }
       }
     })
@@ -62,22 +59,18 @@ class PhoneConfirmScreen extends Component {
   }
 
   sendVerificationCode = () => {
-    const { user: { phoneNumber } } = this.props.auth
+    const { phoneNumber } = this.props
     this.setState({ message: "Đang gửi mã..." })
-    if (phoneNumber) {
-      auth().signInWithPhoneNumber(PhoneFormater.normalize(phoneNumber), true)
-        .then(confirmResult => {
-          this.setState({
-            confirmResult,
-            message: "Đã gửi",
-            countdown: 60
-          })
-          this.counter = setInterval(this.timer, 1000)
+    auth().signInWithPhoneNumber(PhoneFormater.normalize(phoneNumber), true)
+      .then(confirmResult => {
+        this.setState({
+          confirmResult,
+          message: "Đã gửi",
+          countdown: 60
         })
-        .catch(error => console.log("error", error))
-    } else {
-      setTimeout(() => this.sendVerificationCode(), 1000)
-    }
+        this.counter = setInterval(this.timer, 1000)
+      })
+      .catch(error => console.log("error", error))
   }
 
   timer = () => {
@@ -97,16 +90,23 @@ class PhoneConfirmScreen extends Component {
     const codeInput = codes.join("")
     if (confirmResult && codeInput.length) {
       confirmResult.confirm(codeInput)
-        .then((user) => {
-          this.props.onPhoneNumberConfirmed()
-          this.handleCloseModal()
-        })
+        .then((user) => { })
         .catch(error => {
           this.setState({
             message: "Mã OTP không đúng"
           }, this.startShake)
         })
     }
+  }
+
+  onSignUp = () => {
+    const { name, phoneNumber, password } = this.props
+    this.props.onSignupRequest({
+      name,
+      phoneNumber,
+      password,
+      phoneNumberConfirmed: true
+    })
   }
 
   startShake = () => {
@@ -123,27 +123,25 @@ class PhoneConfirmScreen extends Component {
 
   render() {
     const { codes, message, countdown, confirmResult } = this.state
-    const { user: { phoneNumber } } = this.props.auth
+    const { phoneNumber } = this.props
     return (
-      <LinearGradient
-        colors={[APP_COLOR, '#2730C0']}
-        style={styles.container}
-      >
-        <TouchableOpacity
-          style={styles.btnBack}
-          onPress={this.handleCloseModal}
-        >
-          <Icon type="antdesign" name="left" color="white" />
-        </TouchableOpacity>
+      <>
+        <Header
+          centerComponent={{ text: "XÁC MINH SĐT", style: { color: '#fff', fontSize: 18 } }}
+          backgroundColor={APP_COLOR}
+          containerStyle={{
+            paddingTop: 0,
+            paddingHorizontal: 18,
+            height: 60
+          }}
+        />
         <View style={styles.contentContainer}>
-          <Text style={[styles.textWhite, { marginTop: 60, paddingVertical: 30, fontSize: 23 }]}>
-            Xác minh số điện thoại
-          </Text>
-          <Text style={[styles.textWhite, { fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>
+          <Text></Text>
+          <Text style={[{ fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>
             Nhập mã OTP đã được gửi tới số điện thoại {PhoneFormater.display(phoneNumber)}
           </Text>
           <Animated.View style={{ transform: [{ translateX: this.shakeAnimation }] }}>
-            <Text style={[styles.textWhite, { fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>{message}</Text>
+            <Text style={[{ fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>{message}</Text>
           </Animated.View>
           {confirmResult && (countdown === 0 ?
             <Button
@@ -157,15 +155,15 @@ class PhoneConfirmScreen extends Component {
                 />
               }
               onPress={this.sendVerificationCode}
-            /> : <Text style={[styles.textWhite, { fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>{`Gửi lại mã sau (${countdown}s)`}</Text>)
+            /> : <Text style={[{ fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>{`Gửi lại mã sau (${countdown}s)`}</Text>)
           }
           <View style={styles.codeContainer}>
-            <Text style={[styles.textWhite, styles.codeInput]}>{codes[0] || ""}</Text>
-            <Text style={[styles.textWhite, styles.codeInput]}>{codes[1] || ""}</Text>
-            <Text style={[styles.textWhite, styles.codeInput]}>{codes[2] || ""}</Text>
-            <Text style={[styles.textWhite, styles.codeInput]}>{codes[3] || ""}</Text>
-            <Text style={[styles.textWhite, styles.codeInput]}>{codes[4] || ""}</Text>
-            <Text style={[styles.textWhite, styles.codeInput]}>{codes[5] || ""}</Text>
+            <Text style={[styles.codeInput]}>{codes[0] || ""}</Text>
+            <Text style={[styles.codeInput]}>{codes[1] || ""}</Text>
+            <Text style={[styles.codeInput]}>{codes[2] || ""}</Text>
+            <Text style={[styles.codeInput]}>{codes[3] || ""}</Text>
+            <Text style={[styles.codeInput]}>{codes[4] || ""}</Text>
+            <Text style={[styles.codeInput]}>{codes[5] || ""}</Text>
           </View>
           <View style={styles.keyboardContainer}>
             <View style={styles.btnRowContainer}>
@@ -173,19 +171,19 @@ class PhoneConfirmScreen extends Component {
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('1')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>1</Text>
+                <Text style={[styles.btnText]}>1</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('2')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>2</Text>
+                <Text style={[styles.btnText]}>2</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('3')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>3</Text>
+                <Text style={[styles.btnText]}>3</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.btnRowContainer}>
@@ -193,19 +191,19 @@ class PhoneConfirmScreen extends Component {
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('4')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>4</Text>
+                <Text style={[styles.btnText]}>4</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('5')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>5</Text>
+                <Text style={[styles.btnText]}>5</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('6')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>6</Text>
+                <Text style={[styles.btnText]}>6</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.btnRowContainer}>
@@ -213,19 +211,19 @@ class PhoneConfirmScreen extends Component {
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('7')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>7</Text>
+                <Text style={[styles.btnText]}>7</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('8')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>8</Text>
+                <Text style={[styles.btnText]}>8</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('9')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>9</Text>
+                <Text style={[styles.btnText]}>9</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.btnRowContainer}>
@@ -233,12 +231,12 @@ class PhoneConfirmScreen extends Component {
                 style={styles.btn}
                 onPress={() => this.handleKeyboardPressed('0')}
               >
-                <Text style={[styles.textWhite, styles.btnText]}>0</Text>
+                <Text style={[styles.btnText]}>0</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
-      </LinearGradient>
+      </>
     )
   }
 }
@@ -281,7 +279,7 @@ const styles = StyleSheet.create({
     minWidth: 35,
     textAlign: "center",
     borderBottomWidth: 2,
-    borderBottomColor: "white"
+    borderBottomColor: APP_COLOR
   },
   keyboardContainer: {
     height: height * .4,
@@ -312,7 +310,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onPhoneNumberConfirmed: () => dispatch(phoneConfirmed())
+    onSignupRequest: user => dispatch(signupRequest(user))
   }
 }
 

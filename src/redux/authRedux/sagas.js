@@ -8,15 +8,36 @@ import { fetchNotifications } from '../notifyRedux/actions'
 import { fetchOrders } from '../orderRedux/actions';
 import { updateDeviceTokenRequest } from './actions';
 import SplashScreen from 'react-native-splash-screen'
+import Navigator from '../../utils/Navigator';
 
-function* loginAsync(action) {
+function* loginAsync({ payload }) {
   try {
-    const response = yield callApi(`account/login`, 'POST', action.payload)
+    const { phoneNumber, password } = payload
+    const response = yield callApi(`account/login`, 'POST', { phoneNumber, password })
     const token = response.data
     yield put({ type: Types.LOGIN_SUCCEEDED, payload: { token } })
+    yield put({ type: Types.SET_CRIDENTIALS, payload })
   } catch (error) {
     let message = error?.response?.data || "Có lỗi xảy ra, vui lòng thử lại"
     yield put({ type: Types.LOGIN_FAILED, payload: { message } })
+  }
+}
+
+function* checkUserExistsAsync({ payload }) {
+  try {
+    const { name, phoneNumber, password } = payload
+    const response = yield callApi(`account/${phoneNumber}`, "POST")
+    if (!response.data) {
+      Navigator.showModal("PhoneConfirmScreen", { name, phoneNumber, password })
+    } else {
+      const errors = [{
+        propertyName: "PhoneNumber",
+        errorMessage: "Số điện thoại này đã được sử dụng bởi tài khoản khác"
+      }]
+      yield put({ type: Types.CHECK_USER_EXISTS_SUCCEEDED, payload: { errors } })
+    }
+  } catch (error) {
+    console.log("function*checkUserExistsAsync -> error", error)
   }
 }
 
@@ -43,9 +64,8 @@ function* signupAsync({ payload }) {
     const token = response.data
     yield put({ type: Types.SIGNUP_SUCCEEDED, payload: { token } })
   } catch (error) {
-    let message = typeof (error?.response) == typeof ("") ? error?.response : ""
     let errors = typeof (error?.response?.data) == typeof ([]) ? error?.response?.data : []
-    yield put({ type: Types.SIGNUP_FAILED, payload: { message, errors } })
+    yield put({ type: Types.SIGNUP_FAILED, payload: { errors } })
   }
 }
 
@@ -128,6 +148,7 @@ function* updateDeviceTokenAsync() {
 
 export const watchAuthSaga = [
   takeLatest(Types.LOGIN_REQUEST, loginAsync),
+  takeLatest(Types.CHECK_USER_EXISTS_REQUEST, checkUserExistsAsync),
   takeLatest(Types.SIGNUP_REQUEST, signupAsync),
   takeLatest(Types.PHONE_CONFIRMED, phoneConfirmedAsync),
   takeLatest(Types.FETCH_PROFILE_REQUEST, fetchProfileAsync),

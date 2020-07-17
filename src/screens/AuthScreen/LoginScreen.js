@@ -8,25 +8,27 @@ import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
-import { Header, Input, Card, Button, Image } from 'react-native-elements'
+import { Header, Input, Card, Button, Image, CheckBox } from 'react-native-elements'
 
 class LoginScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      phoneNumber: '0858222957',
-      password: 'Danang@@2020'
+      phoneNumber: props?.auth?.credentials?.phoneNumber || '',
+      password: props?.auth?.credentials?.password || '',
+      remember: true
     };
   }
 
   componentDidMount() {
     this.props.onClearErrorState()
+    console.log(this.props.auth);
   }
 
   onSubmit = async () => {
-    const { phoneNumber, password } = this.state
+    const { phoneNumber, password, remember } = this.state
     if (phoneNumber && password) {
-      this.props.onLoginRequest({ phoneNumber, password })
+      this.props.onLoginRequest({ phoneNumber, password, remember })
     }
   };
 
@@ -37,10 +39,10 @@ class LoginScreen extends Component {
   };
 
   render() {
-    const { phoneNumber, password } = this.state
+    const { phoneNumber, password, remember } = this.state
     const loginError = this.props.auth.message
     const { loading } = this.props.auth
-    const LOGO_IMAGE = require('../../assets/images/app_logo_image.png')
+    // const LOGO_IMAGE = require('../../assets/images/app_logo_image.png')
     return (
       <>
         <Header
@@ -61,12 +63,12 @@ class LoginScreen extends Component {
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
           >
-            <View style={{ justifyContent: "center", alignItems: "center", paddingTop: 10 }}>
+            {/* <View style={{ justifyContent: "center", alignItems: "center", paddingTop: 10 }}>
               <Image
                 source={LOGO_IMAGE}
                 style={{ width: 530 * .25, height: 358 * .25 }}
               />
-            </View>
+            </View> */}
 
             <Text style={{
               flex: 1,
@@ -88,13 +90,13 @@ class LoginScreen extends Component {
               onChangeText={phoneNumber => this.onChangeText("phoneNumber", phoneNumber)}
               containerStyle={{ marginTop: 20 }}
               inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}
-              leftIcon={{ type: 'feather', name: 'phone', color: "#aaaaaa" }}
+              leftIcon={{ type: 'feather', name: 'phone', color: "#aaaaaa", size: 20 }}
             />
 
             <Input
               label="Mật khẩu"
               placeholder="**************"
-              leftIcon={{ type: 'feather', name: 'lock', color: "#aaaaaa" }}
+              leftIcon={{ type: 'feather', name: 'lock', color: "#aaaaaa", size: 20 }}
               value={password}
               autoCapitalize="none"
               returnKeyType="done"
@@ -105,6 +107,14 @@ class LoginScreen extends Component {
               containerStyle={{ marginTop: 20 }}
               inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}
               secureTextEntry={true}
+            />
+
+            <CheckBox
+              containerStyle={{ flex: 1, marginTop: 10 }}
+              textStyle={{ fontSize: 16, fontWeight: "normal" }}
+              title="Nhớ mật khẩu"
+              onPress={() => this.setState({ remember: !remember })}
+              checked={remember}
             />
 
             <Button

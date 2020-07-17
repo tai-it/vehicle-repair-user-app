@@ -26,6 +26,9 @@ import OrderListModal from './src/components/Home/OrderListModal'
 import OrderDetailModal from './src/components/Home/OrderDetailModal'
 import CustomAlert from './src/components/CustomAlert'
 
+import SignupScreen from './src/screens/AuthScreen/SignupScreen'
+import LoginScreen from './src/screens/AuthScreen/LoginScreen'
+
 ReduxProvider = Component => {
   return props => (
     <Provider store={store}>
@@ -138,7 +141,19 @@ Navigation.registerComponent(
   () => ReduxProvider(CustomAlert),
   () => CustomAlert,
 )
-// 
+//
+
+Navigation.registerComponent(
+  'SignupScreen',
+  () => ReduxProvider(SignupScreen),
+  () => SignupScreen,
+)
+
+Navigation.registerComponent(
+  'LoginScreen',
+  () => ReduxProvider(LoginScreen),
+  () => LoginScreen,
+)
 
 console.disableYellowBox = true;
 
@@ -151,7 +166,7 @@ Navigation.events().registerAppLaunchedListener(() => {
     root: {
       component: {
         name: 'GetStartedScreen'
-        // name: 'PhoneConfirmScreen'
+        // name: 'SignupScreen'
       }
     }
   })
