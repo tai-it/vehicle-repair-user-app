@@ -106,7 +106,7 @@ class GetStartedScreen extends Component {
     } else {
       Navigator.setRoot({
         component: {
-          name: 'AuthScreen'
+          name: 'LoginScreen'
         }
       })
       SplashScreen.hide()

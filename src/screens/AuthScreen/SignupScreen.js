@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
-import { ScrollView, Text } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { connect } from 'react-redux'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
-import { Header, Card, Input, Button, Icon } from 'react-native-elements'
+import { Header, Card, Input, Button } from 'react-native-elements'
 import { checkUserExists } from '../../redux/authRedux/actions'
+import Navigator from '../../utils/Navigator'
+import { sideMenu } from '../../configs/menu/sideMenu'
 
 class SignupScreen extends Component {
   constructor(props) {
@@ -31,17 +33,27 @@ class SignupScreen extends Component {
   onSubmit = () => {
     const { name, phoneNumber, password, confirmPassword } = this.state
     if (name && phoneNumber && password === confirmPassword) {
-      this.props.onCheckUserExistsRequest({name, phoneNumber, password})
+      this.props.onCheckUserExistsRequest({ name, phoneNumber, password })
     }
+  }
+
+  handleCloseModal = () => {
+    Navigator.dismissModal(this.props.componentId)
   }
 
   render() {
     const { name, phoneNumber, password, confirmPassword } = this.state
-    const { loading, errors } = this.props.auth
+    const { loading, errors, authenticated } = this.props.auth
+    if (authenticated) {
+      Navigator.setRoot({
+        sideMenu
+      })
+      return <></>
+    }
     return (
       <>
         <Header
-          centerComponent={{ text: "ĐĂNG KÝ TÀI KHOẢN", style: { color: '#fff', fontSize: 18 } }}
+          centerComponent={{ text: "ĐĂNG KÝ", style: { color: '#fff', fontSize: 18 } }}
           backgroundColor={APP_COLOR}
           containerStyle={{
             paddingTop: 0,
@@ -136,7 +148,7 @@ class SignupScreen extends Component {
               disabled={loading}
               containerStyle={{ marginVertical: 8 }}
               buttonStyle={{ paddingVertical: 15, backgroundColor: '#aaaaaa' }}
-              onPress={this.props.onNavigateToLogin}
+              onPress={this.handleCloseModal}
             />
           </ScrollView>
         </Card>

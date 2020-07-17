@@ -27,13 +27,22 @@ function* checkUserExistsAsync({ payload }) {
   try {
     const { name, phoneNumber, password } = payload
     const response = yield callApi(`account/${phoneNumber}`, "POST")
+    let errors = []
+    if (!isValidPassword(password)) {
+      errors.push({
+        propertyName: "Password",
+        errorMessage: "Mật khẩu phải chứa ít nhất một chữ hoa, chữ thường, số và kí tự đặc biệt"
+      })
+      yield put({ type: Types.SIGNUP_FAILED, payload: { message: "", errors } })
+      return
+    }
     if (!response.data) {
       Navigator.showModal("PhoneConfirmScreen", { name, phoneNumber, password })
     } else {
-      const errors = [{
+      errors.push({
         propertyName: "PhoneNumber",
         errorMessage: "Số điện thoại này đã được sử dụng bởi tài khoản khác"
-      }]
+      })
       yield put({ type: Types.CHECK_USER_EXISTS_SUCCEEDED, payload: { errors } })
     }
   } catch (error) {
@@ -51,7 +60,6 @@ function* signupAsync({ payload }) {
       deviceToken,
       role: Roles.user
     })
-
     if (!isValidPassword(newUser.password)) {
       let errors = [{
         propertyName: "Password",

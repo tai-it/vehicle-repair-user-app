@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {
-  View,
   Text,
   ScrollView,
 } from 'react-native'
@@ -9,6 +8,8 @@ import * as Actions from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
 import { Header, Input, Card, Button, Image, CheckBox } from 'react-native-elements'
+import Navigator from '../../utils/Navigator'
+import { sideMenu } from '../../configs/menu/sideMenu'
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -38,10 +39,20 @@ class LoginScreen extends Component {
     });
   };
 
+  handleOpenSignup = () => {
+    Navigator.showModal("SignupScreen")
+  }
+
   render() {
     const { phoneNumber, password, remember } = this.state
     const loginError = this.props.auth.message
-    const { loading } = this.props.auth
+    const { loading, authenticated } = this.props.auth
+    if (authenticated) {
+      Navigator.setRoot({
+        sideMenu
+      })
+      return <></>
+    }
     // const LOGO_IMAGE = require('../../assets/images/app_logo_image.png')
     return (
       <>
@@ -135,7 +146,7 @@ class LoginScreen extends Component {
               disabled={loading}
               containerStyle={{ marginVertical: 8 }}
               buttonStyle={{ paddingVertical: 15, backgroundColor: '#aaaaaa' }}
-              onPress={this.props.onNavigateToSignup}
+              onPress={this.handleOpenSignup}
             />
           </ScrollView>
 

@@ -88,6 +88,7 @@ class PhoneConfirmScreen extends Component {
   confirmCode = () => {
     const { codes, confirmResult } = this.state
     const codeInput = codes.join("")
+    console.log("PhoneConfirmScreen -> confirmCode -> codeInput", codeInput)
     if (confirmResult && codeInput.length) {
       confirmResult.confirm(codeInput)
         .then((user) => { })
