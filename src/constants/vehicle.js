@@ -1,4 +1,4 @@
 export default Vehicle = {
-  motobike: 'Motobike',
+  motorbike: 'Motorbike',
   car: 'Car'
 }

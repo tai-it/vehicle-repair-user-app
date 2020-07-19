@@ -190,13 +190,13 @@ class HomeScreen extends Component {
         <Card containerStyle={{ margin: 0, padding: 10 }}>
           <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
             <TouchableOpacity
-              style={[styles.vehicle, vehicle === Vehicle.motobike ? styles.active : styles.noneActive]}
-              onPress={() => this.props.onChangeVehicle(Vehicle.motobike)}
+              style={[styles.vehicle, vehicle === Vehicle.motorbike ? styles.active : styles.noneActive]}
+              onPress={() => this.props.onChangeVehicle(Vehicle.motorbike)}
             >
               <Icon
                 type="material-community"
                 name="motorbike"
-                color={vehicle === Vehicle.motobike ? 'white' : 'black'}
+                color={vehicle === Vehicle.motorbike ? 'white' : 'black'}
                 size={30}
               />
             </TouchableOpacity>

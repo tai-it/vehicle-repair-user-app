@@ -43,7 +43,7 @@ class SignupScreen extends Component {
   }
 
   render() {
-    const { name, phoneNumber, password, confirmPassword } = this.state
+    const { name, phoneNumber, password, confirmPassword, isNavigated } = this.state
     const { loading, errors, authenticated } = this.props.auth
     if (authenticated) {
       if (!isNavigated) {
