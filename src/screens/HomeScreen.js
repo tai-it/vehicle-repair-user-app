@@ -25,13 +25,13 @@ class HomeScreen extends Component {
         longitude: props.options.userLocation.coords.lng,
         latitudeDelta: 0.003,
         longitudeDelta: 0.003
-      }
+      },
+      isNavigated: false
     }
   }
 
   componentDidMount = () => {
     this.props.onFetchProfile()
-    console.log("HomeScreen -> componentDidMount -> this.props.auth", this.props.auth.credentials)
   }
 
   componentDidUpdate(prevProps) {
@@ -94,13 +94,16 @@ class HomeScreen extends Component {
   render() {
     const { auth: { authenticated, loading }, options: { vehicle }, notify: { notifications } } = this.props
     const unreadNotify = notifications.filter(x => !x.isSeen)
-    const { region, address } = this.state
+    const { region, address, isNavigated } = this.state
     if (!authenticated) {
-      Navigator.setRoot({
-        component: {
-          name: 'AuthScreen'
-        }
-      })
+      if (!isNavigated) {
+        this.setState({ isNavigated: true })
+        Navigator.setRoot({
+          component: {
+            name: 'LoginScreen'
+          }
+        })
+      }
       return <></>
     }
     if (loading) {

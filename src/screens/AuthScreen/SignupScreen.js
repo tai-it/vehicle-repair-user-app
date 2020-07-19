@@ -16,7 +16,8 @@ class SignupScreen extends Component {
       name: "",
       phoneNumber: "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      isNavigated: false
     }
   }
 
@@ -45,9 +46,12 @@ class SignupScreen extends Component {
     const { name, phoneNumber, password, confirmPassword } = this.state
     const { loading, errors, authenticated } = this.props.auth
     if (authenticated) {
-      Navigator.setRoot({
-        sideMenu
-      })
+      if (!isNavigated) {
+        this.setState({ isNavigated: true })
+        Navigator.setRoot({
+          sideMenu
+        })
+      }
       return <></>
     }
     return (

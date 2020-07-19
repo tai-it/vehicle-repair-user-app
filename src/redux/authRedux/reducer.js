@@ -20,18 +20,20 @@ export default authReducer = (state = initState, action) => {
   switch (action.type) {
     case Types.LOGIN_REQUEST:
       return {
-        ...initState,
+        ...state,
+        errors: [],
+        message: '',
         loading: true
       };
     case Types.LOGIN_SUCCEEDED:
       return {
-        ...initState,
+        ...state,
         authenticated: true,
         token: action.payload.token,
       };
     case Types.LOGIN_FAILED:
       return {
-        ...initState,
+        ...state,
         loading: false,
         message: action.payload.message
       };
@@ -46,29 +48,33 @@ export default authReducer = (state = initState, action) => {
       };
     case Types.SIGNUP_REQUEST:
       return {
-        ...initState,
+        ...state,
+        errors: [],
+        message: '',
         loading: true
       };
     case Types.SIGNUP_SUCCEEDED:
       return {
-        ...initState,
+        ...state,
         authenticated: true,
         token: action.payload.token,
       };
     case Types.SIGNUP_FAILED:
       return {
-        ...initState,
+        ...state,
         loading: false,
         errors: action.payload.errors,
       };
     case Types.CHECK_USER_EXISTS_REQUEST:
       return {
-        ...initState,
+        ...state,
+        errors: [],
+        message: '',
         loading: true
       };
     case Types.CHECK_USER_EXISTS_SUCCEEDED:
       return {
-        ...initState,
+        ...state,
         loading: false,
         errors: action.payload.errors
       };
@@ -83,6 +89,8 @@ export default authReducer = (state = initState, action) => {
     case Types.FETCH_PROFILE_REQUEST:
       return {
         ...state,
+        errors: [],
+        message: '',
         loading: true
       };
     case Types.FETCH_PROFILE_SUCCEEDED:
@@ -93,7 +101,8 @@ export default authReducer = (state = initState, action) => {
       };
     case Types.FETCH_PROFILE_FAILED:
       return {
-        ...initState,
+        ...state,
+        errors: [],
         message: "Phiên đã hết hạn, vui lòng đăng nhập lại"
       };
     case Types.UPDATE_PROFILE_REQUEST:

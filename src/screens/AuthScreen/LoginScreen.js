@@ -17,13 +17,13 @@ class LoginScreen extends Component {
     this.state = {
       phoneNumber: props?.auth?.credentials?.phoneNumber || '',
       password: props?.auth?.credentials?.password || '',
-      remember: true
+      remember: true,
+      isNavigated: false
     };
   }
 
   componentDidMount() {
     this.props.onClearErrorState()
-    console.log(this.props.auth);
   }
 
   onSubmit = async () => {
@@ -44,13 +44,16 @@ class LoginScreen extends Component {
   }
 
   render() {
-    const { phoneNumber, password, remember } = this.state
+    const { phoneNumber, password, remember, isNavigated } = this.state
     const loginError = this.props.auth.message
     const { loading, authenticated } = this.props.auth
     if (authenticated) {
-      Navigator.setRoot({
-        sideMenu
-      })
+      if (!isNavigated) {
+        this.setState({ isNavigated: true })
+        Navigator.setRoot({
+          sideMenu
+        })
+      }
       return <></>
     }
     // const LOGO_IMAGE = require('../../assets/images/app_logo_image.png')
