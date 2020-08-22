@@ -8,10 +8,5 @@ export const sideMenu = {
     component: {
       name: 'HomeScreen'
     },
-  },
-  // right: {
-  //   component: {
-  //     name: 'HomeScreen'
-  //   }
-  // }
+  }
 }

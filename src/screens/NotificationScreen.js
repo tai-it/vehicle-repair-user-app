@@ -9,6 +9,7 @@ import Loading from '../components/Loading'
 import { format } from 'date-fns'
 import CustomIcon from '../components/CustomIcon'
 import Navigator from '../utils/Navigator'
+import { NotiTypes } from '../constants/notificationType'
 
 class NotificationScreen extends Component {
 
@@ -27,9 +28,20 @@ class NotificationScreen extends Component {
     }
   }
 
-  handleNotificationPressed = notify => {
-    const { order } = notify
-    Navigator.showModal('OrderDetailModal', {order})
+  handleNotificationPressed = async notify => {
+    if (notify.type === NotiTypes.orderTracking) {
+      try {
+        const { token } = this.props.auth
+        const response = await callApi(`notifications/${notify.id}`, 'GET', null, token)
+        const { order } = response.data
+        Navigator.showModal('OrderDetailModal', { order })
+      } catch (e) {
+        console.log(e?.response)
+      }
+    } else {
+      console.log(notify)
+    }
+    this.props.onFetchNotifications()
   }
 
   handleCloseModal = () => {

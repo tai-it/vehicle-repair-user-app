@@ -111,7 +111,7 @@ class ProfileUpdateModal extends Component {
               placeholder="6x Tên đường, Tên quận, Tên thành phố"
               leftIcon={{ type: 'feather', name: 'map-pin', color: "#aaaaaa" }}
               value={address}
-              autoCapitalize="none"
+              autoCapitalize="words"
               returnKeyType="next"
               ref={r => (this.refAddress = r)}
               onSubmitEditing={() => this.refEmail.focus()}
@@ -226,7 +226,8 @@ const styles = StyleSheet.create({
   },
   btn: {
     paddingVertical: 15,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+    backgroundColor: APP_COLOR
   },
   input: {
     paddingHorizontal: 10,

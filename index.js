@@ -9,9 +9,10 @@ import Loading from './src/components/Loading'
 
 import SideMenu from './src/components/Menu/SideMenu'
 
-import SplashScreen from "./src/screens/SplashScreen"
+import GetStartedScreen from "./src/screens/GetStartedScreen"
 import HomeScreen from "./src/screens/HomeScreen"
 import AuthScreen from './src/screens/AuthScreen'
+import PhoneConfirmScreen from './src/screens/AuthScreen/PhoneConfirmScreen'
 import NotificationScreen from "./src/screens/NotificationScreen"
 import ProfileScreen from './src/screens/ProfileScreen'
 import SearchPlaceModal from './src/components/Modals/SearchPlaceModal'
@@ -24,6 +25,9 @@ import StationModal from './src/components/Home/StationModal'
 import OrderListModal from './src/components/Home/OrderListModal'
 import OrderDetailModal from './src/components/Home/OrderDetailModal'
 import CustomAlert from './src/components/CustomAlert'
+
+import SignupScreen from './src/screens/AuthScreen/SignupScreen'
+import LoginScreen from './src/screens/AuthScreen/LoginScreen'
 
 ReduxProvider = Component => {
   return props => (
@@ -45,15 +49,21 @@ Navigation.registerComponent(
 
 // Screens
 Navigation.registerComponent(
-  'SplashScreen',
-  () => ReduxProvider(SplashScreen),
-  () => SplashScreen,
+  'GetStartedScreen',
+  () => ReduxProvider(GetStartedScreen),
+  () => GetStartedScreen,
 )
 
 Navigation.registerComponent(
   'AuthScreen',
   () => ReduxProvider(AuthScreen),
   () => AuthScreen,
+)
+
+Navigation.registerComponent(
+  'PhoneConfirmScreen',
+  () => ReduxProvider(PhoneConfirmScreen),
+  () => PhoneConfirmScreen,
 )
 
 Navigation.registerComponent(
@@ -131,7 +141,19 @@ Navigation.registerComponent(
   () => ReduxProvider(CustomAlert),
   () => CustomAlert,
 )
-// 
+//
+
+Navigation.registerComponent(
+  'SignupScreen',
+  () => ReduxProvider(SignupScreen),
+  () => SignupScreen,
+)
+
+Navigation.registerComponent(
+  'LoginScreen',
+  () => ReduxProvider(LoginScreen),
+  () => LoginScreen,
+)
 
 console.disableYellowBox = true;
 
@@ -143,7 +165,8 @@ Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setRoot({
     root: {
       component: {
-        name: 'SplashScreen'
+        name: 'GetStartedScreen'
+        // name: 'SignupScreen'
       }
     }
   })

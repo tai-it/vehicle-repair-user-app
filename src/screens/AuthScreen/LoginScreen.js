@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {
-  View,
   Text,
   ScrollView,
 } from 'react-native'
@@ -8,14 +7,18 @@ import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
 import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
-import { Header, Input, Card, Button, Image } from 'react-native-elements'
+import { Header, Input, Card, Button, Image, CheckBox } from 'react-native-elements'
+import Navigator from '../../utils/Navigator'
+import { sideMenu } from '../../configs/menu/sideMenu'
 
 class LoginScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      phoneNumber: '',
-      password: ''
+      phoneNumber: props?.auth?.credentials?.phoneNumber || '',
+      password: props?.auth?.credentials?.password || '',
+      remember: true,
+      isNavigated: false
     };
   }
 
@@ -24,9 +27,9 @@ class LoginScreen extends Component {
   }
 
   onSubmit = async () => {
-    const { phoneNumber, password } = this.state
+    const { phoneNumber, password, remember } = this.state
     if (phoneNumber && password) {
-      this.props.onLoginRequest({ phoneNumber, password })
+      this.props.onLoginRequest({ phoneNumber, password, remember })
     }
   };
 
@@ -36,11 +39,24 @@ class LoginScreen extends Component {
     });
   };
 
+  handleOpenSignup = () => {
+    Navigator.showModal("SignupScreen")
+  }
+
   render() {
-    const { phoneNumber, password } = this.state
+    const { phoneNumber, password, remember, isNavigated } = this.state
     const loginError = this.props.auth.message
-    const { loading } = this.props.auth
-    const LOGO_IMAGE = require('../../assets/images/logo_ic.png')
+    const { loading, authenticated } = this.props.auth
+    if (authenticated) {
+      if (!isNavigated) {
+        this.setState({ isNavigated: true })
+        Navigator.setRoot({
+          sideMenu
+        })
+      }
+      return <></>
+    }
+    // const LOGO_IMAGE = require('../../assets/images/app_logo_image.png')
     return (
       <>
         <Header
@@ -61,12 +77,12 @@ class LoginScreen extends Component {
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
           >
-            <View style={{ justifyContent: "center", alignItems: "center", paddingTop: 10 }}>
+            {/* <View style={{ justifyContent: "center", alignItems: "center", paddingTop: 10 }}>
               <Image
                 source={LOGO_IMAGE}
                 style={{ width: 530 * .25, height: 358 * .25 }}
               />
-            </View>
+            </View> */}
 
             <Text style={{
               flex: 1,
@@ -88,13 +104,13 @@ class LoginScreen extends Component {
               onChangeText={phoneNumber => this.onChangeText("phoneNumber", phoneNumber)}
               containerStyle={{ marginTop: 20 }}
               inputStyle={{ paddingHorizontal: 10, paddingVertical: 5, color: '#555555' }}
-              leftIcon={{ type: 'feather', name: 'phone', color: "#aaaaaa" }}
+              leftIcon={{ type: 'feather', name: 'phone', color: "#aaaaaa", size: 20 }}
             />
 
             <Input
               label="Mật khẩu"
               placeholder="**************"
-              leftIcon={{ type: 'feather', name: 'lock', color: "#aaaaaa" }}
+              leftIcon={{ type: 'feather', name: 'lock', color: "#aaaaaa", size: 20 }}
               value={password}
               autoCapitalize="none"
               returnKeyType="done"
@@ -107,11 +123,19 @@ class LoginScreen extends Component {
               secureTextEntry={true}
             />
 
+            <CheckBox
+              containerStyle={{ flex: 1, marginTop: 10 }}
+              textStyle={{ fontSize: 16, fontWeight: "normal" }}
+              title="Nhớ mật khẩu"
+              onPress={() => this.setState({ remember: !remember })}
+              checked={remember}
+            />
+
             <Button
               title="ĐĂNG NHẬP"
               loading={loading}
               containerStyle={{ marginVertical: 8, marginTop: 30 }}
-              buttonStyle={{ paddingVertical: 15 }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
               onPress={this.onSubmit}
             />
 
@@ -125,7 +149,7 @@ class LoginScreen extends Component {
               disabled={loading}
               containerStyle={{ marginVertical: 8 }}
               buttonStyle={{ paddingVertical: 15, backgroundColor: '#aaaaaa' }}
-              onPress={this.props.onNavigateToSignup}
+              onPress={this.handleOpenSignup}
             />
           </ScrollView>
 

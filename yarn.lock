@@ -1007,11 +1007,6 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-8.0.6.tgz#31c48bb5c281c69577313b9b1303c56bbf971540"
   integrity sha512-VjHQU0M6zMUL84+a0dcPQqW4RACSZYXMKvVv/TbbYy7L4mazWIsAO07J+EJkb5gL4LpQVwzfGYht6HQxZXLZkg==
 
-"@react-native-firebase/database@^7.1.2":
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/database/-/database-7.2.2.tgz#80dd0a06cf0a6d04487854856944c080463c7ca2"
-  integrity sha512-nYrNkXBHmUUsk48JuuqseI3v2NPRUcW+gxqOeZ8DhRAmcDOrISMVrGxknOsr8xQZryeXUB8A+DMGv7rODVYd0A==
-
 "@react-native-firebase/messaging@^7.1.3":
   version "7.1.6"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-7.1.6.tgz#f02ce64d9c8ddcf2163dfc179c44a1d337787d86"
@@ -5364,6 +5359,11 @@ react-lifecycles-compat@2.0.0:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-2.0.0.tgz#71d9c4cde47114c4102454f76da055c2bc48c948"
   integrity sha512-txfpPCQYiazVdcbMRhatqWKcAxJweUu2wDXvts5/7Wyp6+Y9cHojqXHsLPEckzutfHlxZhG8Oiundbmp8Fd6eQ==
 
+react-native-app-intro-slider@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-app-intro-slider/-/react-native-app-intro-slider-4.0.4.tgz#fa5cda7057db62c448ac975ffd2ba0cff94cc8d8"
+  integrity sha512-Zkjaol6X3BbZkHUpVDj2LjdidpS6rCgKi0fx80xgGKa0pHxBRd4swWTv2bHnnvu5k1/HXwYk0mY2TbK+2jHl5w==
+
 react-native-datepicker@^1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/react-native-datepicker/-/react-native-datepicker-1.7.2.tgz#58d0822591a0ac9b32aba082650222a0ee29669d"
@@ -5442,6 +5442,11 @@ react-native-ratings@^6.3.0:
     lodash "^4.17.4"
     prop-types "^15.5.10"
 
+react-native-splash-screen@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
+  integrity sha512-Ls9qiNZzW/OLFoI25wfjjAcrf2DZ975hn2vr6U9gyuxi2nooVbzQeFoQS5vQcbCt9QX5NY8ASEEAtlLdIa6KVg==
+
 react-native-status-bar-height@^2.2.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/react-native-status-bar-height/-/react-native-status-bar-height-2.5.0.tgz#bc0fb85230603850aab9667ee8111a62954de90c"
@@ -5460,13 +5465,6 @@ react-native-vector-icons@^6.6.0:
     lodash "^4.0.0"
     prop-types "^15.6.2"
     yargs "^13.2.2"
-
-react-native-web-swiper@^2.1.3:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/react-native-web-swiper/-/react-native-web-swiper-2.1.3.tgz#05c5c7d5d510c1a2be9fc60cd69587da1fd704d0"
-  integrity sha512-HPxLEccyngvaj93CiyhHR5kzvPowBpbuvej8Tx68lsOtCzHSkMTTVg6BF9g6SqgQCydQOyVuLqNZ+R1VHVKcbA==
-  dependencies:
-    prop-types "^15.6.2"
 
 react-native@0.61.5:
   version "0.61.5"

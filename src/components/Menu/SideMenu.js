@@ -33,7 +33,7 @@ class SideMenu extends Component {
     return (
       <View style={{ flex: 1, backgroundColor: '#FFF', width: '90%' }}>
         <Header
-          centerComponent={{ text: user?.name.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginLeft: -30 } }}
+          centerComponent={{ text: user?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginLeft: -30 } }}
           rightComponent={
             <CustomIcon onPress={this.handleCloseSideMenu}>
               <Icon

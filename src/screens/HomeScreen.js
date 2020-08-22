@@ -25,7 +25,8 @@ class HomeScreen extends Component {
         longitude: props.options.userLocation.coords.lng,
         latitudeDelta: 0.003,
         longitudeDelta: 0.003
-      }
+      },
+      isNavigated: false
     }
   }
 
@@ -34,10 +35,11 @@ class HomeScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { coords: { lat, lng } } = this.props.options.userLocation
+    const { address, coords: { lat, lng } } = this.props.options.userLocation
     if (lat !== prevProps.options.userLocation.coords.lat || lng !== prevProps.options.userLocation.coords.lng) {
       this.setState(prevState => ({
         ...prevState,
+        address,
         region: {
           ...prevState.region,
           latitude: lat,
@@ -92,14 +94,17 @@ class HomeScreen extends Component {
   render() {
     const { auth: { authenticated, loading }, options: { vehicle }, notify: { notifications } } = this.props
     const unreadNotify = notifications.filter(x => !x.isSeen)
-    const { region, address } = this.state
+    const { region, address, isNavigated } = this.state
     if (!authenticated) {
-      Navigator.setRoot({
-        component: {
-          name: 'AuthScreen'
-        }
-      })
-      return <View />
+      if (!isNavigated) {
+        this.setState({ isNavigated: true })
+        Navigator.setRoot({
+          component: {
+            name: 'LoginScreen'
+          }
+        })
+      }
+      return <></>
     }
     if (loading) {
       return <Loading message="Đang tải thông tin" />
@@ -185,13 +190,13 @@ class HomeScreen extends Component {
         <Card containerStyle={{ margin: 0, padding: 10 }}>
           <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
             <TouchableOpacity
-              style={[styles.vehicle, vehicle === Vehicle.motobike ? styles.active : styles.noneActive]}
-              onPress={() => this.props.onChangeVehicle(Vehicle.motobike)}
+              style={[styles.vehicle, vehicle === Vehicle.motorbike ? styles.active : styles.noneActive]}
+              onPress={() => this.props.onChangeVehicle(Vehicle.motorbike)}
             >
               <Icon
                 type="material-community"
                 name="motorbike"
-                color={vehicle === Vehicle.motobike ? 'white' : 'black'}
+                color={vehicle === Vehicle.motorbike ? 'white' : 'black'}
                 size={30}
               />
             </TouchableOpacity>
@@ -210,7 +215,7 @@ class HomeScreen extends Component {
             title="TÌM TIỆM SỬA XE"
             loading={loading}
             containerStyle={{ marginTop: 5 }}
-            buttonStyle={{ paddingVertical: 15 }}
+            buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
             onPress={this.handleFindStations}
           />
         </Card>

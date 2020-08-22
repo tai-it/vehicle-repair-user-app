@@ -3,19 +3,50 @@ import * as Types from './types';
 import callApi from '../../utils/apiCaller';
 import { store } from '../store'
 import { Roles } from '../../constants/roles';
-import { isPasswordValidated } from '../../utils/Validator'
+import { isValidPassword } from '../../utils/Validator'
 import { fetchNotifications } from '../notifyRedux/actions'
 import { fetchOrders } from '../orderRedux/actions';
 import { updateDeviceTokenRequest } from './actions';
+import SplashScreen from 'react-native-splash-screen'
+import Navigator from '../../utils/Navigator';
 
-function* loginAsync(action) {
+function* loginAsync({ payload }) {
   try {
-    const response = yield callApi(`account/login`, 'POST', action.payload)
+    const { phoneNumber, password } = payload
+    const response = yield callApi(`account/login`, 'POST', { phoneNumber, password })
     const token = response.data
     yield put({ type: Types.LOGIN_SUCCEEDED, payload: { token } })
+    yield put({ type: Types.SET_CRIDENTIALS, payload })
   } catch (error) {
     let message = error?.response?.data || "Có lỗi xảy ra, vui lòng thử lại"
     yield put({ type: Types.LOGIN_FAILED, payload: { message } })
+  }
+}
+
+function* checkUserExistsAsync({ payload }) {
+  try {
+    const { name, phoneNumber, password } = payload
+    const response = yield callApi(`account/${phoneNumber}`, "POST")
+    let errors = []
+    if (!isValidPassword(password)) {
+      errors.push({
+        propertyName: "Password",
+        errorMessage: "Mật khẩu phải chứa ít nhất một chữ hoa, chữ thường, số và kí tự đặc biệt"
+      })
+      yield put({ type: Types.SIGNUP_FAILED, payload: { message: "", errors } })
+      return
+    }
+    if (!response.data) {
+      Navigator.showModal("PhoneConfirmScreen", { name, phoneNumber, password })
+    } else {
+      errors.push({
+        propertyName: "PhoneNumber",
+        errorMessage: "Số điện thoại này đã được sử dụng bởi tài khoản khác"
+      })
+      yield put({ type: Types.CHECK_USER_EXISTS_SUCCEEDED, payload: { errors } })
+    }
+  } catch (error) {
+    console.log("function*checkUserExistsAsync -> error", error)
   }
 }
 
@@ -29,8 +60,7 @@ function* signupAsync({ payload }) {
       deviceToken,
       role: Roles.user
     })
-
-    if (!isPasswordValidated(newUser.password)) {
+    if (!isValidPassword(newUser.password)) {
       let errors = [{
         propertyName: "Password",
         errorMessage: "Mật khẩu phải chứa ít nhất một chữ hoa, chữ thường, số và kí tự đặc biệt"
@@ -42,9 +72,8 @@ function* signupAsync({ payload }) {
     const token = response.data
     yield put({ type: Types.SIGNUP_SUCCEEDED, payload: { token } })
   } catch (error) {
-    let message = typeof (error?.response) == typeof ("") ? error?.response : ""
     let errors = typeof (error?.response?.data) == typeof ([]) ? error?.response?.data : []
-    yield put({ type: Types.SIGNUP_FAILED, payload: { message, errors } })
+    yield put({ type: Types.SIGNUP_FAILED, payload: { errors } })
   }
 }
 
@@ -60,9 +89,21 @@ function* fetchProfileAsync() {
       if (user.deviceToken !== deviceToken) {
         yield put(updateDeviceTokenRequest())
       }
+      SplashScreen.hide()
     }
   } catch (error) {
+    console.log("function*fetchProfileAsync -> error", error)
     yield put({ type: Types.FETCH_PROFILE_FAILED })
+  }
+}
+
+function* phoneConfirmedAsync() {
+  try {
+    const { auth: { token } } = store.getState()
+    yield callApi(`account/phone/confirmed`, 'PUT', null, token)
+    yield put({ type: Types.PHONE_CONFIRMED_SUCCEEDED })
+  } catch (error) {
+    console.log("function*phoneConfirmedAsync -> error", error)
   }
 }
 
@@ -115,7 +156,9 @@ function* updateDeviceTokenAsync() {
 
 export const watchAuthSaga = [
   takeLatest(Types.LOGIN_REQUEST, loginAsync),
+  takeLatest(Types.CHECK_USER_EXISTS_REQUEST, checkUserExistsAsync),
   takeLatest(Types.SIGNUP_REQUEST, signupAsync),
+  takeLatest(Types.PHONE_CONFIRMED, phoneConfirmedAsync),
   takeLatest(Types.FETCH_PROFILE_REQUEST, fetchProfileAsync),
   takeLatest(Types.UPDATE_PROFILE_REQUEST, updateProfileAsync),
   takeLatest(Types.CHANGE_PASSWORD_REQUEST, changePasswordAsync),

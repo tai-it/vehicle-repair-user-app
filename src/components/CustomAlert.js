@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import { Overlay, Button } from 'react-native-elements'
 import Navigator from '../utils/Navigator'
+import { APP_COLOR } from '../utils/AppSettings'
 
 export default class CustomAlert extends Component {
 
@@ -32,12 +33,12 @@ export default class CustomAlert extends Component {
           <View style={styles.btnContainer}>
             {btnShowOrders && <Button
               title="Kiểm tra"
-              buttonStyle={styles.btn}
+              buttonStyle={[styles.btn, { backgroundColor: APP_COLOR }]}
               onPress={this.handleShowOrders}
             />}
             {btnOK && <Button
               title="Đồng ý"
-              buttonStyle={styles.btn}
+              buttonStyle={[styles.btn, { backgroundColor: APP_COLOR }]}
               onPress={this.props?.onBtnOKPress || this.handleClose}
             />}
             <Button

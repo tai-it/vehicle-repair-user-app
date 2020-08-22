@@ -7,6 +7,13 @@ export const loginRequest = user => {
   }
 }
 
+export const checkUserExists = params => {
+  return {
+    type: Types.CHECK_USER_EXISTS_REQUEST,
+    payload: params
+  }
+}
+
 export const signupRequest = user => {
   return {
     type: Types.SIGNUP_REQUEST,

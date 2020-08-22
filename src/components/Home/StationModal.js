@@ -146,7 +146,7 @@ class StationModal extends Component {
               title="ĐẶT DỊCH VỤ"
               loading={booking}
               containerStyle={{ marginTop: 10 }}
-              buttonStyle={{ paddingVertical: 15 }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
               onPress={this.handleBooking}
             />
           </Card>

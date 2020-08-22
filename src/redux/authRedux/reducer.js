@@ -5,7 +5,12 @@ const initState = {
   isUpdatingProfile: false,
   isChangingPassword: false,
   authenticated: false,
-  user: null,
+  remember: false,
+  credentials: {
+    phoneNumber: '',
+    password: ''
+  },
+  user: {},
   token: "",
   errors: [],
   message: ""
@@ -15,42 +20,77 @@ export default authReducer = (state = initState, action) => {
   switch (action.type) {
     case Types.LOGIN_REQUEST:
       return {
-        ...initState,
+        ...state,
+        errors: [],
+        message: '',
         loading: true
       };
     case Types.LOGIN_SUCCEEDED:
       return {
-        ...initState,
+        ...state,
         authenticated: true,
         token: action.payload.token,
       };
     case Types.LOGIN_FAILED:
       return {
-        ...initState,
+        ...state,
         loading: false,
         message: action.payload.message
       };
+    case Types.SET_CRIDENTIALS:
+      return {
+        ...state,
+        remember: action.payload.remember,
+        credentials: {
+          phoneNumber: action.payload.remember ? action.payload.phoneNumber : '',
+          password: action.payload.remember ? action.payload.password : ''
+        }
+      };
     case Types.SIGNUP_REQUEST:
       return {
-        ...initState,
+        ...state,
+        errors: [],
+        message: '',
         loading: true
       };
     case Types.SIGNUP_SUCCEEDED:
       return {
-        ...initState,
+        ...state,
         authenticated: true,
         token: action.payload.token,
       };
     case Types.SIGNUP_FAILED:
       return {
-        ...initState,
+        ...state,
         loading: false,
-        message: action.payload.message,
         errors: action.payload.errors,
+      };
+    case Types.CHECK_USER_EXISTS_REQUEST:
+      return {
+        ...state,
+        errors: [],
+        message: '',
+        loading: true
+      };
+    case Types.CHECK_USER_EXISTS_SUCCEEDED:
+      return {
+        ...state,
+        loading: false,
+        errors: action.payload.errors
+      };
+    case Types.PHONE_CONFIRMED_SUCCEEDED:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          phoneNumberConfirmed: true
+        }
       };
     case Types.FETCH_PROFILE_REQUEST:
       return {
         ...state,
+        errors: [],
+        message: '',
         loading: true
       };
     case Types.FETCH_PROFILE_SUCCEEDED:
@@ -61,7 +101,8 @@ export default authReducer = (state = initState, action) => {
       };
     case Types.FETCH_PROFILE_FAILED:
       return {
-        ...initState,
+        ...state,
+        errors: [],
         message: "Phiên đã hết hạn, vui lòng đăng nhập lại"
       };
     case Types.UPDATE_PROFILE_REQUEST:
@@ -117,7 +158,9 @@ export default authReducer = (state = initState, action) => {
       };
     case Types.LOGOUT:
       return {
-        ...initState
+        ...initState,
+        remember: state.remember,
+        credentials: state.credentials
       };
     default:
       return state;

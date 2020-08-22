@@ -15,7 +15,7 @@ class SearchPlaceModal extends Component {
     this.state = {
       searching: false,
       searchStarted: false,
-      address: props.options.userLocation.address || "",
+      address: "",
       positions: []
     }
   }

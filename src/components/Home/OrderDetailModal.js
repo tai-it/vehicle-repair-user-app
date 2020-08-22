@@ -3,7 +3,7 @@ import { StyleSheet, Linking, ScrollView } from 'react-native'
 import { Card, ListItem, Icon, Header, Button } from 'react-native-elements'
 import { APP_COLOR } from '../../utils/AppSettings'
 import StepIndicator from 'react-native-step-indicator'
-import { orderStatus, orderUncompletedLabels, orderCanceledLabels } from '../../constants/orderStatus'
+import { orderStatus, orderUncompletedLabels, orderCanceledLabels, orderRejectedLabels } from '../../constants/orderStatus'
 import { connect } from 'react-redux'
 import { cancelOrder } from '../../redux/orderRedux/actions'
 import CustomIcon from '../CustomIcon'
@@ -27,7 +27,7 @@ class OrderDetailModal extends Component {
 
   render() {
     const { order, ordering: { canceling } } = this.props
-    const labels = Object.values(order.status == orderStatus.canceled ? orderCanceledLabels : orderUncompletedLabels);
+    const labels = Object.values(order.status == orderStatus.canceled ? orderCanceledLabels : (order.status == orderStatus.rejected ? orderRejectedLabels : orderUncompletedLabels));
     return (
       <>
         {/* HEADER */}
@@ -158,19 +158,20 @@ class OrderDetailModal extends Component {
               currentPosition={labels.indexOf(order?.status)}
               labels={labels}
             />
+
             {order.status !== orderStatus.canceled && order.status === orderStatus.done && <Button
               title="ĐÁNH GIÁ"
               loading={false}
               containerStyle={{ marginTop: 10 }}
-              buttonStyle={{ paddingVertical: 15 }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
               onPressOut={this.handleReview}
             />}
 
-            {order.status !== orderStatus.canceled && order.status !== orderStatus.done && <Button
+            {order.status !== orderStatus.canceled && order.status !== orderStatus.rejected && order.status !== orderStatus.done && <Button
               title="HUỶ CUỐC XE"
               loading={canceling}
               containerStyle={{ marginTop: 10 }}
-              buttonStyle={{ paddingVertical: 15 }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
               onPressOut={this.handleCancelOrder}
             />}
           </Card>

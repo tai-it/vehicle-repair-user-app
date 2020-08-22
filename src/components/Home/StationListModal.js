@@ -147,7 +147,7 @@ class StationListModal extends Component {
             title="ĐẶT LẠI"
             disabled={fetchingServices}
             containerStyle={{ margin: 10 }}
-            buttonStyle={{ paddingVertical: 15 }}
+            buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
             onPress={() => this.setState({ selectedServices: [] })}
           />
         </Overlay>

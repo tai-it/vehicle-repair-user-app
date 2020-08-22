@@ -5,7 +5,7 @@ const initState = {
   fetchingServices: false,
   fetchingStations: false,
   error: '',
-  vehicle: vehicle.motobike,
+  vehicle: vehicle.motorbike,
   services: [], // string
   pageIndex: 1,
   hasNextPage: false,

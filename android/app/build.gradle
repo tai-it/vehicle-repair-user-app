@@ -146,10 +146,10 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file('.\\src\\main\\suaxe.jks')
+            storePassword 'password'
+            keyAlias 'suaxe'
+            keyPassword 'password'
         }
     }
     buildTypes {
@@ -175,18 +175,18 @@ android {
                 output.versionCodeOverride =
                         versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
             }
-
         }
     }
 }
 
 dependencies {
+    implementation project(':react-native-splash-screen')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(':react-native-navigation')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-push-notification')
-    compile project(':react-native-geocoder')
+    implementation project(':react-native-geocoder')
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
