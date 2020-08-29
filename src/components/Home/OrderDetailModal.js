@@ -136,8 +136,8 @@ class OrderDetailModal extends Component {
             />
             <ListItem
               title="Tổng cộng:"
-              titleStyle={[styles.totalPrice, { color: textColor }]}
-              rightTitleStyle={[styles.totalPrice, { color: textColor, width: '100%' }]}
+              titleStyle={[styles.totalPrice, { color: 'black' }]}
+              rightTitleStyle={[styles.totalPrice, { color: 'black', width: '100%' }]}
               rightTitle={order?.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ"}
             />
           </Card>
