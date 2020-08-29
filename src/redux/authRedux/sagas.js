@@ -112,6 +112,7 @@ function* updateProfileAsync({ payload }) {
     const { auth: { token } } = store.getState()
     const response = yield callApi('account/me', 'PUT', payload, token)
     const user = response.data
+    Navigator.showOverlay({ message: 'Cập nhật thông tin thành công' })
     yield put({ type: Types.UPDATE_PROFILE_SUCCEEDED, payload: { user } })
   } catch (error) {
     let message = typeof (error?.response) == typeof ("") ? error?.response : ""
@@ -124,6 +125,7 @@ function* changePasswordAsync({ payload }) {
   try {
     const { auth: { token } } = store.getState()
     const response = yield callApi('account/password', 'PUT', payload, token)
+    Navigator.showOverlay({ message: 'Đổi mật khẩu thành công' })
     yield put({ type: Types.CHANGE_PASSWORD_SUCCEEDED, payload: { token: response.data } })
   } catch (error) {
     let errors = typeof (error?.response?.data) == typeof ([]) ? error?.response?.data : []

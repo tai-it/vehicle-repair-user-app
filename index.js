@@ -20,7 +20,6 @@ import ProfileUpdateModal from './src/components/Profile/ProfileUpdateModal'
 
 import OptionsModal from './src/components/Home/OptionsModal'
 import StationListModal from './src/components/Home/StationListModal'
-import FilterServiceModal from './src/components/Home/FilterServiceModal'
 import StationModal from './src/components/Home/StationModal'
 import OrderListModal from './src/components/Home/OrderListModal'
 import OrderDetailModal from './src/components/Home/OrderDetailModal'
@@ -166,7 +165,6 @@ Navigation.events().registerAppLaunchedListener(() => {
     root: {
       component: {
         name: 'GetStartedScreen'
-        // name: 'SignupScreen'
       }
     }
   })

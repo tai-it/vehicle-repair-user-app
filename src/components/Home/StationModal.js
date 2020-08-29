@@ -16,7 +16,14 @@ class StationModal extends Component {
     this.state = {
       selectedServices: [],
       totalServiceFee: 0,
-      ambulatoryFee: props.options.useAmbulatory ? props.station.distance * 8 : 0
+      ambulatoryFee: props.options.useAmbulatory ? props.station.distance * props.station.coefficient : 0
+    }
+  }
+
+  componentDidMount() {
+    const { options: { useAmbulatory }, station: { hasAmbulatory } } = this.props
+    if (!hasAmbulatory && useAmbulatory) {
+      this.props.onChangeAmbulatory(false)
     }
   }
 
@@ -48,9 +55,9 @@ class StationModal extends Component {
   }
 
   handleChangeAmbulatoryOption = (useAmbulatory) => {
-    const { distance, hasAmbulatory } = this.props.station
+    const { distance, hasAmbulatory, coefficient } = this.props.station
     if (hasAmbulatory) {
-      this.setState({ ambulatoryFee: useAmbulatory ? distance * 8 : 0 }, () => {
+      this.setState({ ambulatoryFee: useAmbulatory ? distance * coefficient : 0 }, () => {
         this.props.onChangeAmbulatory(useAmbulatory)
         this.totalSalcserviceFee(this.state.selectedServices)
       })
@@ -86,10 +93,7 @@ class StationModal extends Component {
   }
 
   getServiceTitle = service => {
-    const { name, description, price } = service
-    if (description !== null) {
-      return `${name}\n(${description})\n${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ`
-    }
+    const { name, price } = service
     return `${name}\n${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ`
   }
 

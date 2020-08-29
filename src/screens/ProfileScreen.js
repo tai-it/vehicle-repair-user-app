@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Animated, Easing } from 'react-native'
-import { Icon, Card, ListItem, Badge, Header } from 'react-native-elements'
+import { View, StyleSheet, ScrollView } from 'react-native'
+import { Icon, Card, ListItem, Header } from 'react-native-elements'
 import { connect } from 'react-redux'
 import Navigator from '../utils/Navigator'
-import PhoneFormater from '../utils/PhoneFormater'
 import { format } from 'date-fns'
 import { APP_COLOR } from '../utils/AppSettings'
 import CustomIcon from '../components/CustomIcon'
@@ -13,14 +12,9 @@ class ProfileScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isShowCover: true,
       name: props.auth.user.name || "",
       email: props.auth.user.email || "",
       address: props.auth.user.address || "",
-      isReachedTop: true,
-      height: new Animated.Value(200),
-      bottomLeftRadius: new Animated.Value(50),
-      bottomRightRadius: new Animated.Value(185)
     }
   }
 
@@ -29,51 +23,6 @@ class ProfileScreen extends Component {
     if (prevProps.auth.user.name !== name || prevProps.auth.user.email !== email || prevProps.auth.user.address !== address) {
       this.setState({ name, email, address })
     }
-  }
-
-  handleHideCover = () => {
-    Animated.timing(this.state.height, {
-      toValue: 60,
-      duration: 300,
-      easing: Easing.linear
-    }).start()
-    Animated.timing(this.state.bottomLeftRadius, {
-      toValue: 0,
-      duration: 300,
-      easing: Easing.linear
-    }).start()
-    Animated.timing(this.state.bottomRightRadius, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.linear
-    }).start()
-    this.setState({ isShowCover: false })
-  }
-
-  handleShowCover = () => {
-    Animated.timing(this.state.height, {
-      toValue: 200,
-      duration: 500,
-      easing: Easing.linear
-    }).start()
-    Animated.timing(this.state.bottomLeftRadius, {
-      toValue: 50,
-      duration: 0,
-      easing: Easing.linear
-    }).start()
-    Animated.timing(this.state.bottomRightRadius, {
-      toValue: 185,
-      duration: 0,
-      easing: Easing.linear
-    }).start()
-    this.setState({ isShowCover: true })
-  }
-
-  isScrollToTop = ({ contentOffset }) => {
-    const isReachedTop = contentOffset.y <= 0
-    this.setState({ isReachedTop })
-    // setTimeout(() => this.setState({ isReachedTop }), isReachedTop ? 300 : 0)
-    return isReachedTop
   }
 
   handleOpenSettings = () => {
@@ -93,101 +42,37 @@ class ProfileScreen extends Component {
   }
 
   render() {
-    const { isShowCover, name, email, address, height, bottomLeftRadius, bottomRightRadius } = this.state
-    const { user: { phoneNumber, createdOn, isActive, phoneNumberConfirmed, roles } } = this.props.auth
+    const { name, email, address } = this.state
+    const { user: { phoneNumber, createdOn, roles } } = this.props.auth
     const { orders } = this.props.ordering
     return (
       <View style={styles.container}>
-        <Animated.View
-          style={{
-            height: height,
-            width: "100%",
-            backgroundColor: APP_COLOR,
-            borderBottomLeftRadius: bottomLeftRadius,
-            borderBottomRightRadius: bottomRightRadius
-          }}
-        >
-          {isShowCover ?
-            <>
-              <View style={styles.topContainer}>
-                <Text style={styles.name}>{name || ""}</Text>
-                <View style={styles.rowContainer}>
-                  <Badge status={isActive ? "success" : "error"} />
-                  <Text style={styles.status}>{isActive ? "Đang hoạt động" : "Đang tạm khoá"}</Text>
-                </View>
-                <View style={styles.rowContainer}>
-                  <Icon
-                    type="feather"
-                    name="phone"
-                    color="white"
-                    size={16}
-                  />
-                  <Text style={styles.phoneNumber}>{PhoneFormater.display(phoneNumber) || ""}</Text>
-                  <Icon
-                    type="octicon"
-                    name={phoneNumberConfirmed ? "verified" : "unverified"}
-                    color="white"
-                    size={16}
-                  />
-                </View>
-              </View>
-
-              {/* BACK BUTTON */}
-              <TouchableOpacity
-                style={styles.btnBack}
-                onPress={this.handleCloseModal}
-              >
-                <Icon type="antdesign" name="left" color="white" />
-              </TouchableOpacity>
-
-              {/* SETTINGS BUTTON */}
-              <TouchableOpacity
-                style={styles.btnSettings}
-                onPress={() => {
-                  if (isShowCover) {
-                    this.handleHideCover()
-                  } else {
-                    this.handleShowCover()
-                  }
-                }}
-              >
-                <Icon type="antdesign" name="setting" color="white" />
-              </TouchableOpacity>
-            </> :
-            <Header
-              leftComponent={
-                <CustomIcon onPress={this.handleCloseModal}>
-                  <Icon type="antdesign" name="left" color='white' />
-                </CustomIcon>
-              }
-              centerComponent={{
-                text: name.toUpperCase() || "",
-                style: {
-                  color: '#fff',
-                  fontSize: 18,
-                  marginHorizontal: -30
-                }
-              }}
-              rightComponent={
-                <CustomIcon onPress={() => {
-                  if (isShowCover) {
-                    this.handleHideCover()
-                  } else {
-                    this.handleShowCover()
-                  }
-                }}>
-                  <Icon type="antdesign" name="setting" color="white" />
-                </CustomIcon>
-              }
-              backgroundColor={APP_COLOR}
-              containerStyle={{
-                paddingHorizontal: 0,
-                paddingTop: 0,
-                height: 60
-              }}
-            />
+        <Header
+          leftComponent={
+            <CustomIcon onPress={this.handleCloseModal}>
+              <Icon type="antdesign" name="left" color='white' />
+            </CustomIcon>
           }
-        </Animated.View>
+          centerComponent={{
+            text: name.toUpperCase() || "",
+            style: {
+              color: '#fff',
+              fontSize: 18,
+              marginHorizontal: -30
+            }
+          }}
+          rightComponent={
+            <CustomIcon onPress={this.handleOpenProfileUpdateModal}>
+              <Icon type="antdesign" name="edit" color='white' />
+            </CustomIcon>
+          }
+          backgroundColor={APP_COLOR}
+          containerStyle={{
+            paddingHorizontal: 0,
+            paddingTop: 0,
+            height: 60
+          }}
+        />
         <ScrollView
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
@@ -201,13 +86,6 @@ class ProfileScreen extends Component {
                 titleStyle={styles.title}
                 subtitle={name}
                 subtitleStyle={styles.subtitle}
-                rightIcon={
-                  <TouchableOpacity
-                    onPress={this.handleOpenProfileUpdateModal}
-                  >
-                    <Icon type="antdesign" name="edit" color={APP_COLOR} />
-                  </TouchableOpacity>
-                }
                 bottomDivider
               />
               <ListItem
@@ -231,6 +109,14 @@ class ProfileScreen extends Component {
                 title="Email"
                 titleStyle={styles.title}
                 subtitle={email || "Chưa cập nhật"}
+                subtitleStyle={styles.subtitle}
+                bottomDivider
+              />
+              <ListItem
+                leftIcon={{ type: 'feather', name: 'phone', color: "#aaaaaa" }}
+                title="Số điện thoại"
+                titleStyle={styles.title}
+                subtitle={phoneNumber || "Chưa cập nhật"}
                 subtitleStyle={styles.subtitle}
                 bottomDivider
               />

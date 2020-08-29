@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { Icon, Header, ListItem } from 'react-native-elements'
+import { StyleSheet, View, Text } from 'react-native'
+import { Icon, ListItem, Image, Avatar } from 'react-native-elements'
 import { connect } from 'react-redux'
 import { logout } from '../../redux/authRedux/actions'
 import { APP_COLOR } from '../../utils/AppSettings'
 import CustomIcon from '../../components/CustomIcon'
 import Navigator from '../../utils/Navigator'
+import PhoneFormater from '../../utils/PhoneFormater'
+
+const logo = require('../../assets/images/app_logo_image.png')
+const drawerBackground = require('../../assets/images/drawer-bg.jpg')
+const avatar = require('../../assets/images/avatar.jpg')
 
 class SideMenu extends Component {
 
@@ -32,25 +37,54 @@ class SideMenu extends Component {
     const { user } = this.props.auth
     return (
       <View style={{ flex: 1, backgroundColor: '#FFF', width: '90%' }}>
-        <Header
-          centerComponent={{ text: user?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginLeft: -30 } }}
-          rightComponent={
-            <CustomIcon onPress={this.handleCloseSideMenu}>
+        <View style={{ position: "absolute", top: 0, right: 0, zIndex: 1000 }}>
+          <CustomIcon onPress={this.handleCloseSideMenu}>
+            <Icon
+              type="evilicons"
+              name="close"
+              color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+            />
+          </CustomIcon>
+        </View>
+        <View
+          style={{ height: 200, backgroundColor: APP_COLOR }}
+          onTouchStart={this.handleOpenProfile}
+        >
+          <Image source={drawerBackground} style={{ height: 200 }} />
+          <View
+            style={{
+              position: "absolute",
+              left: 0, bottom: 0,
+              width: '100%',
+              padding: 20
+            }}
+          >
+            <Avatar
+              rounded
+              source={avatar}
+              size={70}
+            />
+            <View style={{ flexDirection: "row", paddingVertical: 5 }}>
+              <Text style={{ color: "white", fontSize: 18 }}>{user?.name?.toUpperCase() || ""}</Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
               <Icon
-                type="evilicons"
-                name="close"
-                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+                type="feather"
+                name="phone"
+                color="white"
+                size={16}
               />
-            </CustomIcon>
-          }
-          backgroundColor={APP_COLOR}
-          containerStyle={{
-            paddingHorizontal: 0,
-            paddingTop: 0,
-            height: 60
-          }}
-        />
-        <View>
+              <Text style={{ color: "white", marginHorizontal: 10 }}>{PhoneFormater.display(user?.phoneNumber || "")}</Text>
+              <Icon
+                type="octicon"
+                name={user?.phoneNumberConfirmed ? "verified" : "unverified"}
+                color="white"
+                size={16}
+              />
+            </View>
+          </View>
+        </View>
+        <View style={{ flex: 1 }}>
           <ListItem
             leftIcon={<Icon
               type="feather"
@@ -87,6 +121,9 @@ class SideMenu extends Component {
             onPress={this.props.onLogout}
             bottomDivider
           />
+        </View>
+        <View style={{ justifyContent: "center", alignItems: 'center', paddingHorizontal: 20, paddingVertical: 10, borderTopWidth: 1, borderColor: '#e8e8e8' }}>
+          <Text style={{ fontSize: 15 }}>Powered by: Tuesday Team</Text>
         </View>
       </View>
     )
