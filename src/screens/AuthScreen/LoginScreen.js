@@ -5,7 +5,6 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import * as Actions from '../../redux/authRedux/actions'
-import { APP_COLOR } from '../../utils/AppSettings'
 import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
 import { Header, Input, Card, Button, Image, CheckBox } from 'react-native-elements'
 import Navigator from '../../utils/Navigator'
@@ -46,7 +45,7 @@ class LoginScreen extends Component {
   render() {
     const { phoneNumber, password, remember, isNavigated } = this.state
     const loginError = this.props.auth.message
-    const { loading, authenticated } = this.props.auth
+    const { auth: { loading, authenticated }, app: { backgroundColor, textColor } } = this.props
     if (authenticated) {
       if (!isNavigated) {
         this.setState({ isNavigated: true })
@@ -56,12 +55,11 @@ class LoginScreen extends Component {
       }
       return <></>
     }
-    // const LOGO_IMAGE = require('../../assets/images/app_logo_image.png')
     return (
       <>
         <Header
-          centerComponent={{ text: "ĐĂNG NHẬP", style: { color: '#fff', fontSize: 18 } }}
-          backgroundColor={APP_COLOR}
+          centerComponent={{ text: "ĐĂNG NHẬP", style: { color: textColor, fontSize: 18 } }}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingTop: 0,
             paddingHorizontal: 18,
@@ -77,13 +75,6 @@ class LoginScreen extends Component {
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
           >
-            {/* <View style={{ justifyContent: "center", alignItems: "center", paddingTop: 10 }}>
-              <Image
-                source={LOGO_IMAGE}
-                style={{ width: 530 * .25, height: 358 * .25 }}
-              />
-            </View> */}
-
             <Text style={{
               flex: 1,
               paddingTop: 15,
@@ -135,7 +126,7 @@ class LoginScreen extends Component {
               title="ĐĂNG NHẬP"
               loading={loading}
               containerStyle={{ marginVertical: 8, marginTop: 30 }}
-              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: backgroundColor }}
               onPress={this.onSubmit}
             />
 

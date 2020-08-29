@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, ScrollView } from 'react-native'
+import { View, StyleSheet, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
 import { updateProfileRequest, changePasswordRequest } from '../../redux/authRedux/actions'
 import { Card, Input, Header, Icon, Button } from 'react-native-elements'
 import CustomIcon from '../CustomIcon'
-import { APP_COLOR } from '../../utils/AppSettings'
 import Navigator from '../../utils/Navigator'
 
 class ProfileUpdateModal extends Component {
@@ -62,7 +61,7 @@ class ProfileUpdateModal extends Component {
 
   render() {
     const { name, email, address, currentPassword, newPassword, confirmPassword } = this.state
-    const { auth: { errors, isUpdatingProfile, isChangingPassword } } = this.props
+    const { auth: { errors, isUpdatingProfile, isChangingPassword }, app: { backgroundColor } } = this.props
     return (
       <View style={styles.container}>
         <Header
@@ -79,7 +78,7 @@ class ProfileUpdateModal extends Component {
               marginHorizontal: -30
             }
           }}
-          backgroundColor={APP_COLOR}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingHorizontal: 0,
             paddingTop: 0,
@@ -143,7 +142,7 @@ class ProfileUpdateModal extends Component {
               loading={isUpdatingProfile}
               disabled={isChangingPassword}
               containerStyle={{ paddingTop: 15 }}
-              buttonStyle={styles.btn}
+              buttonStyle={[styles.btn, { backgroundColor: backgroundColor }]}
               onPress={this.handleSaveUpdateProfile}
             />
           </Card>
@@ -202,7 +201,7 @@ class ProfileUpdateModal extends Component {
               loading={isChangingPassword}
               disabled={isUpdatingProfile}
               containerStyle={{ paddingTop: 15 }}
-              buttonStyle={styles.btn}
+              buttonStyle={[styles.btn, { backgroundColor: backgroundColor }]}
               onPress={this.handleChangePassword}
             />
           </Card>
@@ -226,8 +225,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     paddingVertical: 15,
-    paddingHorizontal: 20,
-    backgroundColor: APP_COLOR
+    paddingHorizontal: 20
   },
   input: {
     paddingHorizontal: 10,
@@ -239,6 +237,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     auth: state.auth
   }
 }

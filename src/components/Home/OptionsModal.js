@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Text, View, TouchableOpacity, StyleSheet, FlatList } from 'react-native'
 import { Icon, CheckBox } from 'react-native-elements'
 import Loading from '../Loading'
-import { APP_COLOR } from '../../utils/AppSettings'
 import { connect } from 'react-redux'
 import { changeServices, changeAmbulatory, fetchStations } from '../../redux/optionsRedux/actions'
 import Navigator from '../../utils/Navigator'
@@ -38,13 +37,13 @@ class OptionsModal extends Component {
   }
 
   render() {
-    const { fetchingServices, services } = this.props.options
+    const { options: { fetchingServices, services }, app: { backgroundColor, textColor } } = this.props
     const { selectedServices } = this.state
     return (
       <View>
-        <View style={styles.header}>
-          <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} onPress={this.handleCloseModal} />
-          <Text style={{ fontSize: 20, color: APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white' }}>CHỌN DỊCH VỤ</Text>
+        <View style={[styles.header, { backgroundColor: backgroundColor }]}>
+          <Icon type="antdesign" name="left" color={textColor} onPress={this.handleCloseModal} />
+          <Text style={{ fontSize: 20, color: textColor }}>CHỌN DỊCH VỤ</Text>
           <View />
         </View>
         {fetchingServices && <Loading style={{ justifyContent: "center", alignItems: "center", height: '90%' }} message="Đang tìm dịch vụ" /> ||
@@ -66,7 +65,7 @@ class OptionsModal extends Component {
             <TouchableOpacity
               style={{
                 paddingVertical: 18,
-                backgroundColor: APP_COLOR,
+                backgroundColor: backgroundColor,
                 justifyContent: "center",
                 alignItems: "center"
               }}
@@ -89,13 +88,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 18,
     borderBottomWidth: 1,
-    borderColor: '#E9E9E9',
-    backgroundColor: APP_COLOR
+    borderColor: '#E9E9E9'
   }
 })
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     auth: state.auth,
     options: state.options
   }

@@ -3,7 +3,6 @@ import { FlatList, View, Text } from 'react-native'
 import { connect } from 'react-redux'
 import { Icon, Header, ListItem, Card } from 'react-native-elements'
 import Loading from '../Loading'
-import { APP_COLOR } from '../../utils/AppSettings'
 import { fetchOrders } from '../../redux/orderRedux/actions'
 import { format } from 'date-fns'
 import CustomIcon from '../CustomIcon'
@@ -27,17 +26,17 @@ class OrderListModal extends Component {
   }
 
   render() {
-    const { loading, orders, hasNextPage } = this.props.ordering
+    const { ordering: { loading, orders, hasNextPage }, app: { backgroundColor, textColor } } = this.props
     return (
       <>
         <Header
           leftComponent={
             <CustomIcon onPress={this.handleCloseModal}>
-              <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+              <Icon type="antdesign" name="left" color={textColor} />
             </CustomIcon>
           }
-          centerComponent={{ text: "LỊCH SỬ HOẠT ĐỘNG", style: { color: '#fff', fontSize: 18 } }}
-          backgroundColor={APP_COLOR}
+          centerComponent={{ text: "LỊCH SỬ HOẠT ĐỘNG", style: { color: textColor, fontSize: 18 } }}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingHorizontal: 0,
             paddingTop: 0,
@@ -85,6 +84,7 @@ class OrderListModal extends Component {
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     auth: state.auth,
     ordering: state.ordering
   }

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { ScrollView, View } from 'react-native'
 import { connect } from 'react-redux'
-import { APP_COLOR } from '../../utils/AppSettings'
 import { CLEAR_ERROR_STATE } from '../../redux/authRedux/types'
 import { Header, Card, Input, Button } from 'react-native-elements'
 import { checkUserExists } from '../../redux/authRedux/actions'
@@ -44,7 +43,7 @@ class SignupScreen extends Component {
 
   render() {
     const { name, phoneNumber, password, confirmPassword, isNavigated } = this.state
-    const { loading, errors, authenticated } = this.props.auth
+    const { auth: { loading, errors, authenticated }, app: { backgroundColor, textColor } } = this.props
     if (authenticated) {
       if (!isNavigated) {
         this.setState({ isNavigated: true })
@@ -57,8 +56,8 @@ class SignupScreen extends Component {
     return (
       <>
         <Header
-          centerComponent={{ text: "ĐĂNG KÝ", style: { color: '#fff', fontSize: 18 } }}
-          backgroundColor={APP_COLOR}
+          centerComponent={{ text: "ĐĂNG KÝ", style: { color: textColor, fontSize: 18 } }}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingTop: 0,
             paddingHorizontal: 18,
@@ -143,7 +142,7 @@ class SignupScreen extends Component {
               title="ĐĂNG KÝ"
               loading={loading}
               containerStyle={{ marginVertical: 8, marginTop: 30 }}
-              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: backgroundColor }}
               onPress={this.onSubmit}
             />
 
@@ -163,8 +162,8 @@ class SignupScreen extends Component {
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth,
-    app: state.app
+    app: state.app,
+    auth: state.auth
   }
 }
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Linking, FlatList } from 'react-native'
-import { APP_COLOR } from '../../utils/AppSettings'
 import { Icon, CheckBox, Header, Card, Button } from 'react-native-elements'
 import { connect } from 'react-redux'
 import ToggleSwitch from 'toggle-switch-react-native'
@@ -98,7 +97,7 @@ class StationModal extends Component {
   }
 
   render() {
-    const { options: { useAmbulatory }, ordering: { booking }, station } = this.props
+    const { options: { useAmbulatory }, ordering: { booking }, station, app: { backgroundColor, textColor } } = this.props
     const { selectedServices, totalServiceFee, ambulatoryFee } = this.state
     return (
       <View style={{ flex: 1 }}>
@@ -106,11 +105,11 @@ class StationModal extends Component {
         <Header
           leftComponent={
             <CustomIcon onPress={this.handleCloseModal}>
-              <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+              <Icon type="antdesign" name="left" color={textColor} />
             </CustomIcon>
           }
           centerComponent={{ text: station?.name?.toUpperCase() || "", style: { color: '#fff', fontSize: 18, marginHorizontal: -30 } }}
-          backgroundColor={APP_COLOR}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingHorizontal: 0,
             paddingTop: 0,
@@ -138,8 +137,8 @@ class StationModal extends Component {
           <Card containerStyle={{ margin: 0 }}>
             <ToggleSwitch
               isOn={useAmbulatory}
-              onColor={APP_COLOR}
-              offColor="red"
+              onColor={backgroundColor}
+              offColor="grey"
               label={`Sử dụng lưu động (${ambulatoryFee.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ)`}
               labelStyle={{ flex: 1, fontSize: 16 }}
               size="medium"
@@ -150,7 +149,7 @@ class StationModal extends Component {
               title="ĐẶT DỊCH VỤ"
               loading={booking}
               containerStyle={{ marginTop: 10 }}
-              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: backgroundColor }}
               onPress={this.handleBooking}
             />
           </Card>
@@ -162,6 +161,7 @@ class StationModal extends Component {
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     options: state.options,
     ordering: state.ordering
   }
@@ -175,36 +175,3 @@ const mapDispatchToProps = dispatch => {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(StationModal)
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 10
-  },
-  header: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: "center",
-    justifyContent: 'space-between',
-    padding: 18,
-    borderBottomWidth: 1,
-    borderColor: '#E9E9E9',
-    backgroundColor: APP_COLOR
-  },
-  heading: {
-    fontSize: 16,
-    paddingBottom: 5,
-    color: '#555'
-  },
-  service: {
-    flex: 1,
-    maxWidth: '50%',
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    borderColor: '#E9EBEE',
-    borderWidth: 1,
-    borderRadius: 2,
-    marginHorizontal: 1
-  }
-})

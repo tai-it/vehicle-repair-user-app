@@ -36,7 +36,7 @@
       </intent-filter>
     </service>
 
-    <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyC5_5R7U9OrXn478uXviYcSRELdkeP3QMI" />
+    <meta-data android:name="com.google.android.geo.API_KEY" android:value="" />
 
     <meta-data android:name="com.dieam.reactnativepushnotification.notification_foreground" android:value="false" />
 

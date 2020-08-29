@@ -7,6 +7,13 @@ export const changeColor = color => {
   }
 }
 
+export const changeDarkMode = value => {
+  return {
+    type: Types.CHANGE_DARK_MODE,
+    payload: value
+  }
+}
+
 export const changeDeviceToken = token => {
   return {
     type: Types.CHANGE_DEVICE_TOKEN,

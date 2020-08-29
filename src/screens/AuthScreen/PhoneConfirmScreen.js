@@ -6,7 +6,6 @@ import Navigator from '../../utils/Navigator'
 import auth from '@react-native-firebase/auth'
 import PhoneFormater from '../../utils/PhoneFormater'
 import { signupRequest } from '../../redux/authRedux/actions'
-import { APP_COLOR } from '../../utils/AppSettings'
 
 class PhoneConfirmScreen extends Component {
 
@@ -124,12 +123,12 @@ class PhoneConfirmScreen extends Component {
 
   render() {
     const { codes, message, countdown, confirmResult } = this.state
-    const { phoneNumber } = this.props
+    const { phoneNumber, app: { backgroundColor, textColor } } = this.props
     return (
       <>
         <Header
-          centerComponent={{ text: "XÁC MINH SĐT", style: { color: '#fff', fontSize: 18 } }}
-          backgroundColor={APP_COLOR}
+          centerComponent={{ text: "XÁC MINH SĐT", style: { color: textColor, fontSize: 18 } }}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingTop: 0,
             paddingHorizontal: 18,
@@ -159,12 +158,12 @@ class PhoneConfirmScreen extends Component {
             /> : <Text style={[{ fontSize: 16, textAlign: "center", paddingHorizontal: 50 }]}>{`Gửi lại mã sau (${countdown}s)`}</Text>)
           }
           <View style={styles.codeContainer}>
-            <Text style={[styles.codeInput]}>{codes[0] || ""}</Text>
-            <Text style={[styles.codeInput]}>{codes[1] || ""}</Text>
-            <Text style={[styles.codeInput]}>{codes[2] || ""}</Text>
-            <Text style={[styles.codeInput]}>{codes[3] || ""}</Text>
-            <Text style={[styles.codeInput]}>{codes[4] || ""}</Text>
-            <Text style={[styles.codeInput]}>{codes[5] || ""}</Text>
+            <Text style={[styles.codeInput, { backgroundColor: backgroundColor }]}>{codes[0] || ""}</Text>
+            <Text style={[styles.codeInput, { backgroundColor: backgroundColor }]}>{codes[1] || ""}</Text>
+            <Text style={[styles.codeInput, { backgroundColor: backgroundColor }]}>{codes[2] || ""}</Text>
+            <Text style={[styles.codeInput, { backgroundColor: backgroundColor }]}>{codes[3] || ""}</Text>
+            <Text style={[styles.codeInput, { backgroundColor: backgroundColor }]}>{codes[4] || ""}</Text>
+            <Text style={[styles.codeInput, { backgroundColor: backgroundColor }]}>{codes[5] || ""}</Text>
           </View>
           <View style={styles.keyboardContainer}>
             <View style={styles.btnRowContainer}>
@@ -279,8 +278,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     minWidth: 35,
     textAlign: "center",
-    borderBottomWidth: 2,
-    borderBottomColor: APP_COLOR
+    borderBottomWidth: 2
   },
   keyboardContainer: {
     height: height * .4,
@@ -305,6 +303,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     auth: state.auth
   }
 }

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, Linking, ScrollView } from 'react-native'
 import { Card, ListItem, Icon, Header, Button } from 'react-native-elements'
-import { APP_COLOR } from '../../utils/AppSettings'
 import StepIndicator from 'react-native-step-indicator'
 import { orderStatus, orderUncompletedLabels, orderCanceledLabels, orderRejectedLabels } from '../../constants/orderStatus'
 import { connect } from 'react-redux'
@@ -26,7 +25,7 @@ class OrderDetailModal extends Component {
   }
 
   render() {
-    const { order, ordering: { canceling } } = this.props
+    const { order, ordering: { canceling }, app: { backgroundColor, textColor } } = this.props
     const labels = Object.values(order.status == orderStatus.canceled ? orderCanceledLabels : (order.status == orderStatus.rejected ? orderRejectedLabels : orderUncompletedLabels));
     return (
       <>
@@ -39,7 +38,7 @@ class OrderDetailModal extends Component {
               <Icon
                 type="antdesign"
                 name="left"
-                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+                color={textColor}
               />
             </CustomIcon>
           }
@@ -54,12 +53,12 @@ class OrderDetailModal extends Component {
               <Icon
                 type="material-community"
                 name="directions"
-                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+                color={textColor}
               />
             </CustomIcon>
             : {}
           }
-          backgroundColor={APP_COLOR}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingHorizontal: 0,
             paddingTop: 0,
@@ -73,7 +72,7 @@ class OrderDetailModal extends Component {
           {/* ORDER INFORMATION */}
           <Card
             title="THÔNG TIN CUỐC XE"
-            titleStyle={styles.cardTitle}
+            titleStyle={Object.assign({ color: backgroundColor }, styles.cardTitle)}
             containerStyle={{
               flex: 1,
               margin: 5
@@ -111,7 +110,7 @@ class OrderDetailModal extends Component {
           {/* SELECTED SERVICES */}
           <Card
             title="DỊCH VỤ ĐÃ CHỌN"
-            titleStyle={styles.cardTitle}
+            titleStyle={Object.assign({ color: backgroundColor }, styles.cardTitle)}
             containerStyle={{
               flex: 1,
               margin: 5
@@ -137,15 +136,15 @@ class OrderDetailModal extends Component {
             />
             <ListItem
               title="Tổng cộng:"
-              titleStyle={styles.totalPrice}
-              rightTitleStyle={[styles.totalPrice, { width: '100%' }]}
+              titleStyle={[styles.totalPrice, { color: textColor }]}
+              rightTitleStyle={[styles.totalPrice, { color: textColor, width: '100%' }]}
               rightTitle={order?.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ"}
             />
           </Card>
           {/* ORDER STATUS */}
           <Card
             title="TÌNH TRẠNG CUỐC XE"
-            titleStyle={styles.cardTitle}
+            titleStyle={Object.assign({ color: backgroundColor }, styles.cardTitle)}
             containerStyle={{
               flex: 1,
               margin: 5,
@@ -153,7 +152,15 @@ class OrderDetailModal extends Component {
             }}
           >
             <StepIndicator
-              customStyles={customStyles}
+              customStyles={Object.assign(customStyles, {
+                stepStrokeCurrentColor: backgroundColor,
+                stepStrokeFinishedColor: backgroundColor,
+                separatorFinishedColor: backgroundColor,
+                stepIndicatorFinishedColor: backgroundColor,
+                stepIndicatorCurrentColor: backgroundColor,
+                labelColor: backgroundColor,
+                currentStepLabelColor: backgroundColor
+              })}
               stepCount={labels.length}
               currentPosition={labels.indexOf(order?.status)}
               labels={labels}
@@ -163,7 +170,7 @@ class OrderDetailModal extends Component {
               title="ĐÁNH GIÁ"
               loading={false}
               containerStyle={{ marginTop: 10 }}
-              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: backgroundColor }}
               onPressOut={this.handleReview}
             />}
 
@@ -171,7 +178,7 @@ class OrderDetailModal extends Component {
               title="HUỶ CUỐC XE"
               loading={canceling}
               containerStyle={{ marginTop: 10 }}
-              buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
+              buttonStyle={{ paddingVertical: 15, backgroundColor: backgroundColor }}
               onPressOut={this.handleCancelOrder}
             />}
           </Card>
@@ -186,51 +193,33 @@ const customStyles = {
   currentStepIndicatorSize: 30,
   separatorStrokeWidth: 3,
   currentStepStrokeWidth: 3,
-  stepStrokeCurrentColor: APP_COLOR,
   stepStrokeWidth: 3,
-  stepStrokeFinishedColor: APP_COLOR,
   stepStrokeUnFinishedColor: '#aaaaaa',
-  separatorFinishedColor: APP_COLOR,
   separatorUnFinishedColor: '#aaaaaa',
-  stepIndicatorFinishedColor: APP_COLOR,
   stepIndicatorUnFinishedColor: '#ffffff',
-  stepIndicatorCurrentColor: APP_COLOR,
   stepIndicatorLabelFontSize: 13,
   currentStepIndicatorLabelFontSize: 13,
   stepIndicatorLabelCurrentColor: '#ffffff',
   stepIndicatorLabelFinishedColor: '#ffffff',
   stepIndicatorLabelUnFinishedColor: '#aaaaaa',
-  labelColor: APP_COLOR,
-  labelSize: 13,
-  currentStepLabelColor: APP_COLOR
+  labelSize: 13
 }
 
 const styles = StyleSheet.create({
-  header: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: "center",
-    justifyContent: 'space-between',
-    padding: 18,
-    borderBottomWidth: 1,
-    borderColor: '#E9E9E9',
-    backgroundColor: APP_COLOR
-  },
   cardTitle: {
     fontSize: 16,
     marginBottom: 0,
-    paddingBottom: 15,
-    color: APP_COLOR
+    paddingBottom: 15
   },
   totalPrice: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: APP_COLOR
+    fontWeight: "bold"
   }
 })
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     auth: state.auth,
     ordering: state.ordering
   }

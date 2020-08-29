@@ -3,7 +3,6 @@ import { FlatList, Text, StyleSheet, Keyboard } from 'react-native'
 import Geocoder from 'react-native-geocoder'
 import { SearchBar, ListItem, Icon } from 'react-native-elements'
 import CustomIcon from '../CustomIcon'
-import { APP_COLOR } from '../../utils/AppSettings'
 import { connect } from 'react-redux'
 import Navigator from '../../utils/Navigator'
 import { changeLocation } from '../../redux/optionsRedux/actions'
@@ -40,7 +39,6 @@ class SearchPlaceModal extends Component {
       }
       this.setState({ positions, searching: false })
     } catch (error) {
-      console.log("TestScreen -> componentDidMount -> error", error)
     }
   }
 
@@ -61,6 +59,7 @@ class SearchPlaceModal extends Component {
 
   render() {
     const { searchStarted, searching, address, positions } = this.state
+    const { app: { backgroundColor, textColor } } = this.props
     return (
       <>
         <SearchBar
@@ -73,15 +72,15 @@ class SearchPlaceModal extends Component {
           autoCapitalize="words"
           onSubmitEditing={this.handleSearchLocation}
           inputStyle={styles.input}
-          containerStyle={styles.inputContainer}
+          containerStyle={[styles.inputContainer, { backgroundColor: backgroundColor }]}
           searchIcon={<CustomIcon onPress={this.handleCloseModal}>
-            <Icon type="feather" name="arrow-left" color="white" />
+            <Icon type="feather" name="arrow-left" color={textColor} />
           </CustomIcon>}
           cancelIcon={<CustomIcon onPress={this.handleCloseModal}>
-            <Icon type="feather" name="arrow-left" color="white" />
+            <Icon type="feather" name="arrow-left" color={textColor} />
           </CustomIcon>}
           clearIcon={<CustomIcon onPress={() => this.setState({ address: "", positions: [] })} >
-            <Icon type="MaterialCommunityIcons" name="close" color="white" />
+            <Icon type="MaterialCommunityIcons" name="close" color={textColor} />
           </CustomIcon>}
         />
         {(!searching && searchStarted && address.length > 10 && positions.length < 1) ?
@@ -111,8 +110,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     height: 60,
     paddingVertical: 0,
-    marginHorizontal: -8,
-    backgroundColor: APP_COLOR
+    marginHorizontal: -8
   },
   input: {
     fontSize: 16,
@@ -129,6 +127,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     options: state.options
   }
 }

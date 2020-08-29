@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import { Overlay, Button } from 'react-native-elements'
 import Navigator from '../utils/Navigator'
-import { APP_COLOR } from '../utils/AppSettings'
+import { store } from '../redux/store'
 
 export default class CustomAlert extends Component {
 
@@ -18,6 +18,7 @@ export default class CustomAlert extends Component {
 
   render() {
     const { title, message, btnOK, btnShowOrders } = this.props
+    const { backgroundColor } = store.getState().app
     return (
       <>
         <Overlay
@@ -33,12 +34,12 @@ export default class CustomAlert extends Component {
           <View style={styles.btnContainer}>
             {btnShowOrders && <Button
               title="Kiểm tra"
-              buttonStyle={[styles.btn, { backgroundColor: APP_COLOR }]}
+              buttonStyle={[styles.btn, { backgroundColor: backgroundColor }]}
               onPress={this.handleShowOrders}
             />}
             {btnOK && <Button
               title="Đồng ý"
-              buttonStyle={[styles.btn, { backgroundColor: APP_COLOR }]}
+              buttonStyle={[styles.btn, { backgroundColor: backgroundColor }]}
               onPress={this.props?.onBtnOKPress || this.handleClose}
             />}
             <Button

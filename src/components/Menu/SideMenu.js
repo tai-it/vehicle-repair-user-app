@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Text } from 'react-native'
+import { View, Text } from 'react-native'
 import { Icon, ListItem, Image, Avatar } from 'react-native-elements'
 import { connect } from 'react-redux'
 import { logout } from '../../redux/authRedux/actions'
-import { APP_COLOR } from '../../utils/AppSettings'
+import { changeDarkMode } from '../../redux/appRedux/actions'
 import CustomIcon from '../../components/CustomIcon'
 import Navigator from '../../utils/Navigator'
 import PhoneFormater from '../../utils/PhoneFormater'
+import ToggleSwitch from 'toggle-switch-react-native'
 
-const logo = require('../../assets/images/app_logo_image.png')
 const drawerBackground = require('../../assets/images/drawer-bg.jpg')
 const avatar = require('../../assets/images/avatar.jpg')
 
@@ -34,20 +34,20 @@ class SideMenu extends Component {
   }
 
   render() {
-    const { user } = this.props.auth
+    const { auth: { user }, app: { isDarkMode, backgroundColor, textColor } } = this.props
     return (
-      <View style={{ flex: 1, backgroundColor: '#FFF', width: '90%' }}>
+      <View style={{ flex: 1, backgroundColor: '#ffffff', width: '90%' }}>
         <View style={{ position: "absolute", top: 0, right: 0, zIndex: 1000 }}>
           <CustomIcon onPress={this.handleCloseSideMenu}>
             <Icon
               type="evilicons"
               name="close"
-              color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+              color={textColor}
             />
           </CustomIcon>
         </View>
         <View
-          style={{ height: 200, backgroundColor: APP_COLOR }}
+          style={{ height: 200, backgroundColor: backgroundColor }}
           onTouchStart={this.handleOpenProfile}
         >
           <Image source={drawerBackground} style={{ height: 200 }} />
@@ -114,6 +114,22 @@ class SideMenu extends Component {
           />
           <ListItem
             leftIcon={<Icon
+              type="material-community"
+              name={isDarkMode ? "brightness-4" : "brightness-5"}
+            />}
+            title="Chế độ tối"
+            rightElement={<ToggleSwitch
+              isOn={isDarkMode}
+              onColor={backgroundColor}
+              offColor="grey"
+              labelStyle={{ flex: 1, fontSize: 16 }}
+              size="medium"
+              onToggle={() => this.props.onChangeDarkMode(!isDarkMode)}
+            />}
+            bottomDivider
+          />
+          <ListItem
+            leftIcon={<Icon
               type="feather"
               name="log-out"
             />}
@@ -122,8 +138,16 @@ class SideMenu extends Component {
             bottomDivider
           />
         </View>
-        <View style={{ justifyContent: "center", alignItems: 'center', paddingHorizontal: 20, paddingVertical: 10, borderTopWidth: 1, borderColor: '#e8e8e8' }}>
-          <Text style={{ fontSize: 15 }}>Powered by: Tuesday Team</Text>
+        <View style={{
+          backgroundColor: backgroundColor,
+          justifyContent: "center",
+          alignItems: 'center',
+          paddingHorizontal: 20,
+          paddingVertical: 7,
+          borderTopWidth: 1,
+          borderColor: '#e8e8e8'
+        }}>
+          <Text style={{ fontSize: 15, color: 'white' }}>Powered by: Tuesday Team</Text>
         </View>
       </View>
     )
@@ -132,28 +156,16 @@ class SideMenu extends Component {
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth
+    auth: state.auth,
+    app: state.app
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
+    onChangeDarkMode: (value) => dispatch(changeDarkMode(value)),
     onLogout: () => dispatch(logout())
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SideMenu)
-
-const styles = StyleSheet.create({
-  menu: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderColor: '#e9e9e9'
-  }, menuTitle: {
-    fontSize: 15,
-    paddingLeft: 10
-  }
-})

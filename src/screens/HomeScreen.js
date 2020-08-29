@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { Icon, Header, Button, Card, Badge } from 'react-native-elements'
 import { connect } from 'react-redux'
-import { APP_COLOR } from '../utils/AppSettings'
 import Loading from '../components/Loading'
 import { changeVehicle, changeLocation } from '../redux/optionsRedux/actions'
 import { fetchProfileRequest } from '../redux/authRedux/actions'
@@ -92,7 +91,7 @@ class HomeScreen extends Component {
   }
 
   render() {
-    const { auth: { authenticated, loading }, options: { vehicle }, notify: { notifications } } = this.props
+    const { auth: { authenticated, loading }, options: { vehicle }, notify: { notifications }, app: { backgroundColor, textColor } } = this.props
     const unreadNotify = notifications.filter(x => !x.isSeen)
     const { region, address, isNavigated } = this.state
     if (!authenticated) {
@@ -120,7 +119,7 @@ class HomeScreen extends Component {
               <Icon
                 type="MaterialCommunityIcons"
                 name="menu"
-                color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+                color={textColor}
               />
             </CustomIcon>
           }
@@ -128,7 +127,7 @@ class HomeScreen extends Component {
             <Text
               numberOfLines={1}
               style={{
-                color: '#fff',
+                color: textColor,
                 fontSize: 16,
                 marginHorizontal: -15
               }}
@@ -143,7 +142,7 @@ class HomeScreen extends Component {
                 <Icon
                   type="antdesign"
                   name="bells"
-                  color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'}
+                  color={textColor}
                 />
                 {unreadNotify.length > 0 &&
                   <Badge
@@ -155,7 +154,7 @@ class HomeScreen extends Component {
               </View>
             </CustomIcon>
           }
-          backgroundColor={APP_COLOR}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingHorizontal: 0,
             paddingTop: 0,
@@ -188,26 +187,26 @@ class HomeScreen extends Component {
         </View>
         {/* CARD VEHICLES */}
         <Card containerStyle={{ margin: 0, padding: 10 }}>
-          <View style={{ flexDirection: 'row', borderColor: APP_COLOR, borderWidth: 1 }}>
+          <View style={{ flexDirection: 'row', borderColor: backgroundColor, borderWidth: 1 }}>
             <TouchableOpacity
-              style={[styles.vehicle, vehicle === Vehicle.motorbike ? styles.active : styles.noneActive]}
+              style={[styles.vehicle, { backgroundColor: vehicle === Vehicle.motorbike ? backgroundColor : '#ffffff' }]}
               onPress={() => this.props.onChangeVehicle(Vehicle.motorbike)}
             >
               <Icon
                 type="material-community"
                 name="motorbike"
-                color={vehicle === Vehicle.motorbike ? 'white' : 'black'}
+                color={vehicle === Vehicle.motorbike ? textColor : 'grey'}
                 size={30}
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.vehicle, vehicle === Vehicle.car ? styles.active : styles.noneActive]}
+              style={[styles.vehicle, { backgroundColor: vehicle === Vehicle.car ? backgroundColor : '#ffffff' }]}
               onPress={() => this.props.onChangeVehicle(Vehicle.car)}
             >
               <Icon
                 type="material-community"
                 name="car"
-                color={vehicle === Vehicle.car ? 'white' : 'black'}
+                color={vehicle === Vehicle.car ? textColor : 'grey'}
               />
             </TouchableOpacity>
           </View>
@@ -215,7 +214,7 @@ class HomeScreen extends Component {
             title="TÌM TIỆM SỬA XE"
             loading={loading}
             containerStyle={{ marginTop: 5 }}
-            buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
+            buttonStyle={{ paddingVertical: 15, backgroundColor: backgroundColor }}
             onPress={this.handleFindStations}
           />
         </Card>
@@ -233,19 +232,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     justifyContent: "center",
     alignItems: "center"
-  },
-  active: {
-    backgroundColor: APP_COLOR
-  },
-  noneActive: {
-    backgroundColor: '#fff'
   }
 })
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth,
     app: state.app,
+    auth: state.auth,
     options: state.options,
     notify: state.notify
   }

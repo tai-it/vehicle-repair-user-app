@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Text, View, FlatList } from 'react-native'
 import { Icon, ListItem, Header, Card, Overlay, CheckBox, Button, Badge } from 'react-native-elements'
 import Loading from '../Loading'
-import { APP_COLOR } from '../../utils/AppSettings'
 import _ from 'lodash'
 import { connect } from 'react-redux'
 import { fetchServices, fetchStations, changeAmbulatory } from '../../redux/optionsRedux/actions'
@@ -69,7 +68,7 @@ class StationListModal extends Component {
   }
 
   render() {
-    const { stations, services, hasNextPage, fetchingStations, fetchingServices, useAmbulatory } = this.props.options
+    const { options: { stations, services, hasNextPage, fetchingStations, fetchingServices, useAmbulatory }, app: { backgroundColor, textColor } } = this.props
     const { isShowSortModal, selectedServices } = this.state
     const list = this.sort(stations)
     return (
@@ -78,16 +77,16 @@ class StationListModal extends Component {
         <Header
           leftComponent={
             <CustomIcon onPress={this.handleCloseModal}>
-              <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+              <Icon type="antdesign" name="left" color={textColor} />
             </CustomIcon>
           }
           centerComponent={{ text: "TIỆM XE QUANH ĐÂY", style: { color: '#fff', fontSize: 18, marginHorizontal: -10 } }}
           rightComponent={
             <CustomIcon onPress={() => this.setState({ isShowSortModal: true })}>
-              <Icon type="antdesign" name="filter" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+              <Icon type="antdesign" name="filter" color={textColor} />
             </CustomIcon>
           }
-          backgroundColor={APP_COLOR}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingHorizontal: 0,
             paddingTop: 0,
@@ -117,8 +116,8 @@ class StationListModal extends Component {
           <View style={{ marginRight: 10 }}>
             <ToggleSwitch
               isOn={useAmbulatory}
-              onColor={APP_COLOR}
-              offColor="red"
+              onColor={backgroundColor}
+              offColor="grey"
               label="Sử dụng lưu động"
               labelStyle={{ flex: 1, paddingVertical: 10, fontSize: 16 }}
               size="medium"
@@ -147,7 +146,7 @@ class StationListModal extends Component {
             title="ĐẶT LẠI"
             disabled={fetchingServices}
             containerStyle={{ margin: 10 }}
-            buttonStyle={{ paddingVertical: 15, backgroundColor: APP_COLOR }}
+            buttonStyle={{ paddingVertical: 15, backgroundColor: backgroundColor }}
             onPress={() => this.setState({ selectedServices: [] })}
           />
         </Overlay>
@@ -197,6 +196,7 @@ class StationListModal extends Component {
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     options: state.options
   }
 }

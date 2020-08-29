@@ -4,7 +4,6 @@ import { Icon, Card, ListItem, Header } from 'react-native-elements'
 import { connect } from 'react-redux'
 import Navigator from '../utils/Navigator'
 import { format } from 'date-fns'
-import { APP_COLOR } from '../utils/AppSettings'
 import CustomIcon from '../components/CustomIcon'
 import { orderStatus } from '../constants/orderStatus'
 
@@ -25,10 +24,6 @@ class ProfileScreen extends Component {
     }
   }
 
-  handleOpenSettings = () => {
-    console.log("Open settings")
-  }
-
   handleOpenOrderListModal = () => {
     Navigator.showModal("OrderListModal")
   }
@@ -43,8 +38,7 @@ class ProfileScreen extends Component {
 
   render() {
     const { name, email, address } = this.state
-    const { user: { phoneNumber, createdOn, roles } } = this.props.auth
-    const { orders } = this.props.ordering
+    const { auth: { user: { phoneNumber, createdOn, roles } }, ordering: { orders }, app: { backgroundColor } } = this.props
     return (
       <View style={styles.container}>
         <Header
@@ -66,7 +60,7 @@ class ProfileScreen extends Component {
               <Icon type="antdesign" name="edit" color='white' />
             </CustomIcon>
           }
-          backgroundColor={APP_COLOR}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingHorizontal: 0,
             paddingTop: 0,
@@ -236,6 +230,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     auth: state.auth,
     ordering: state.ordering
   }

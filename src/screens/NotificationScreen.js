@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { fetchNotifications } from '../redux/notifyRedux/actions'
 import callApi from '../utils/apiCaller'
 import { Header, Icon, Card, ListItem, Badge } from 'react-native-elements'
-import { APP_COLOR } from '../utils/AppSettings'
 import Loading from '../components/Loading'
 import { format } from 'date-fns'
 import CustomIcon from '../components/CustomIcon'
@@ -49,22 +48,22 @@ class NotificationScreen extends Component {
   }
 
   render() {
-    const { loading, hasNextPage, notifications } = this.props.notify
+    const { notify: { loading, hasNextPage, notifications }, app: { backgroundColor, textColor } } = this.props
     return (
       <>
         <Header
           leftComponent={
             <CustomIcon onPress={this.handleCloseModal}>
-              <Icon type="antdesign" name="left" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+              <Icon type="antdesign" name="left" color={textColor} />
             </CustomIcon>
           }
           centerComponent={{ text: "THÔNG BÁO", style: { color: '#fff', fontSize: 18 } }}
           rightComponent={
             <CustomIcon onPress={this.handleMarkAllAsRead}>
-              <Icon type="entypo" name="unread" color={APP_COLOR === '#ffffff' || APP_COLOR === '#fff' ? 'black' : 'white'} />
+              <Icon type="entypo" name="unread" color={textColor} />
             </CustomIcon>
           }
-          backgroundColor={APP_COLOR}
+          backgroundColor={backgroundColor}
           containerStyle={{
             paddingHorizontal: 0,
             paddingTop: 0,
@@ -111,6 +110,7 @@ class NotificationScreen extends Component {
 
 const mapStateToProps = state => {
   return {
+    app: state.app,
     auth: state.auth,
     notify: state.notify
   }
